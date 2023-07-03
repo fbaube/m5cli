@@ -1,4 +1,4 @@
-package cli
+package mcm_cli
 
 import (
 	// "flag"
@@ -17,7 +17,6 @@ func myFlagFunc(p *flag.Flag) {
 }
 
 // DisableAllFlags operates on flag.CommandLine
-//
 func DisableAllFlags() {
 	flag.CommandLine.VisitAll(disableFlag)
 }
@@ -26,7 +25,6 @@ func disableFlag(p *flag.Flag) {
 }
 
 // EnableAllFlags operates on flag.CommandLine
-//
 func EnableAllFlags() {
 	flag.CommandLine.VisitAll(enableFlag)
 }
@@ -37,7 +35,6 @@ func enableFlag(p *flag.Flag) {
 var flagsToEnable, flagsToDisable string
 
 // DisableFlags operates on flag.CommandLine
-//
 func DisableFlags(s string) {
 	flagsToDisable = s
 	flag.CommandLine.VisitAll(maybeDisableFlag)
@@ -50,7 +47,6 @@ func maybeDisableFlag(p *flag.Flag) {
 }
 
 // EnableFlags operates on flag.CommandLine
-//
 func EnableFlags(s string) {
 	flagsToEnable = s
 	flag.CommandLine.VisitAll(maybeEnableFlag)
