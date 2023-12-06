@@ -1,7 +1,6 @@
-# mcm-cli
+# m5cli
 
-mcm-cli is the CLI element of the Mixed Content Mixenator
-(XML,HTML,Markdown). Written in Go. Aimed at LwDITA.
+m5cli is the CLI element of the m5 Go application. Aimed at LwDITA and beyond. 
 
 ## License
 
