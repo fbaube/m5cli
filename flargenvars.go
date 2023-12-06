@@ -1,4 +1,4 @@
-package mcm_cli
+package m5cli
 
 import (
 	"flag"

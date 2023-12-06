@@ -1,4 +1,4 @@
-module github.com/fbaube/mcm_cli
+module github.com/fbaube/m5cli
 
 go 1.20
 
@@ -37,7 +37,7 @@ require (
 	github.com/mgutz/str v1.2.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/yuin/goldmark v1.6.0 // indirect
-	golang.org/x/exp v0.0.0-20231127185646-65229373498e // indirect
+	golang.org/x/exp v0.0.0-20231206192017-f3f8817b8deb // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/tools v0.16.0 // indirect

@@ -1,4 +1,4 @@
-package mcm_cli
+package m5cli
 
 import (
 	L "github.com/fbaube/mlog" // Brings in global var L log.Logger

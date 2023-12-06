@@ -1,6 +1,6 @@
-// flargdefs is flag argument definitions
+package m5cli
 
-package mcm_cli
+// flargdefs is flag argument definitions
 
 import (
 	"fmt"
