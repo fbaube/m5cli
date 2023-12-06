@@ -2,8 +2,10 @@ package mcm_cli
 
 import (
 	"errors"
+
 	L "github.com/fbaube/mlog"
 	WU "github.com/fbaube/wasmutils"
+
 	// flag "github.com/spf13/pflag"
 	"os"
 	"runtime/debug"
@@ -98,6 +100,7 @@ func CLI() error {
 		// return e
 	}
 	L.L.Flush()
+	// Give messages a chance to get visible.
 	time.Sleep(500 * time.Millisecond)
 
 	if cfg.AllFlargs.webPort != 0 {

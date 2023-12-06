@@ -10,16 +10,25 @@ import (
 
 var sWebPortNr string
 
-// Does not launch a goroutine.
-// Call with env.WebPort .
-// Uses Gorilla mux, mainly cos now it's in archive mode.
-// Instructions for usage are found
-// [here](https://github.com/gorilla/mux#examples)
-// or in alternate format [github.com/gorilla/mux]
-// or in alternate format [mux]
-// or in alternate format "[muxdox]"
+// Notes:
+//  - Does not launch a goroutine.
+//  - Call with env.WebPort .
+//  - Used Gorilla mux, but now use pilot version of new Go ServeMux.
 //
-// [muxdox]: https://github.com/gorilla/mux#examples
+// Dedicated servers:
+//  - /events :: SSE
+//  - /ws :: websocket upgrader
+//  - /rest :: REST server (on a different port nr)
+//  - /htmx :: htmx responder (??; https://github.com/angelofallars/htmx-go)
+// Main server (with h2c):
+//  - /all :: list of all endpoints 
+//  - / :: something bland
+//  - /app :: the wasm SPA
+//  - /static :: static content 
+//  - /about
+//  - /contact
+//  - /health (or?)
+// - /db
 // .
 func RunWeb(portNr int) error {
 	if portNr == 0 { // env.WebPort
