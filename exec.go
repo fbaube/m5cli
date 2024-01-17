@@ -8,19 +8,15 @@ import (
 	"time"
 
 	"database/sql"
-	LU "github.com/fbaube/logutils"
 	"github.com/fbaube/mcfile"
 	L "github.com/fbaube/mlog" // Brings in global var L
-	RS "github.com/fbaube/reposqlite"
+	DRS "github.com/fbaube/datarepo/sqlite"
 	SU "github.com/fbaube/stringutils"
 	// mime "github.com/fbaube/fileutils/contentmime"
 	// "github.com/fbaube/tags"
-)
 
-var LOG_LEVEL_FILE_READING = LU.LevelDbg
-var LOG_LEVEL_EXEC_STAGES = LU.LevelDbg
-var LOG_LEVEL_REF_LINKING = LU.LevelDbg
-var LOG_LEVEL_WEB = LU.LevelDbg
+	RM "github.com/fbaube/datarepo/rowmodels"
+)
 
 // The general approach:
 // 1. Filename via cmd line (can be Rel.FP)
@@ -33,6 +29,17 @@ var LOG_LEVEL_WEB = LU.LevelDbg
 // 7. ForesTree
 
 func (env *XmlAppEnv) Exec() error {
+
+     /* func ColumnPtrsINB(inbro *InbatchRow) []any { // barfs on []db.PtrFields
+        return []any{&inbro.Idx_Inbatch, &inbro.FilCt, &inbro.RelFP,
+                &inbro.AbsFP, &inbro.T_Cre, &inbro.Descr} */
+	var IB = new(RM.InbatchRow)
+	var AA = RM.ColumnPtrsINB(IB)
+	fmt.Fprintf(os.Stderr, "IB<%T> AA <%T> \n", IB, AA)
+	for iii, ppp := range AA {
+	    fmt.Fprintf(os.Stderr, "[%d] <%T> \n", iii, ppp)
+	    }
+
 	var e error
 	// println("==> Exec: starting")
 	// Timing: // tt := MU.Into("Input file processing")
@@ -392,7 +399,11 @@ func (env *XmlAppEnv) Exec() error {
 
 	var usingDB bool = (env.SimpleRepo != nil)
 	var batchIndex int
-	if usingDB && env.cfg.b.DBdoImport {
+	// if usingDB && env.cfg.b.DBdoImport {
+	if env.cfg.b.DBdoImport {
+	   	if !usingDB {
+		   panic("Exec: doImport but not usingDB")
+		}
 		var contIndex int
 		var err error
 		var inTx bool
@@ -408,18 +419,24 @@ func (env *XmlAppEnv) Exec() error {
 		} else {
 			inTx = true
 		}
-		pSQR, ok := env.SimpleRepo.(*RS.SqliteRepo)
+		pSR, ok := env.SimpleRepo.(*DRS.SqliteRepo)
 		if !ok {
-			panic("NOT SQLITE")
+			panic("Exec: repo is not SimpleSqliteRepo")
 		}
 		for _, pMCF := range InputCtysSlice {
 			// Prepare a DB record for the File
 			pMCF.T_Imp = time.Now().UTC().Format(time.RFC3339)
-			contIndex, e = pSQR.InsertContentityRow(&pMCF.ContentityRow) //,pTx)
+			L.L.Warning("TRYING NEW")
+			// contIndex, e =
+			// pSR.InsertContentityRow(&pMCF.ContentityRow) //,pTx)
+			var stmt string
+			stmt, e =
+			pSR.NewInsertStmt(&pMCF.ContentityRow) 
 			if e != nil {
 				return mcfile.WrapAsContentityError(
 					e, "insert contentity to DB (cli.exec)", pMCF)
 			}
+			L.L.Warning("TRYING EXEC STMT: " + stmt)
 			L.L.Info("Added file to import batch, ID: %d", contIndex)
 		}
 		if inTx {

@@ -11,7 +11,7 @@ import (
 // TODO: Should not return info for flags that are Hidden (i.e. disabled).
 func myUsage() {
 	fmt.Println(os.Args[0], "[-a] [-h] [-m] [-t] [-v] [-z] [-D] [-d dbdir] [-r port] Infile")
-	fmt.Println("   Process mixed content XML, XHTML/XDITA, and Markdown/MDITA input.")
+	fmt.Println("   Process mixed content XML, XHTML/XDITA, HTML/HDITA, and Markdown/MDITA input.")
 	fmt.Println("   Inpath(s)s are file or directory paths; no wildcards (?,*).")
 	fmt.Println("           A directory is processed recursively.")
 	fmt.Println("   The first Inpath may be \"-\" for Stdin: input that is typed (or pasted)")

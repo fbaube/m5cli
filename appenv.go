@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"io"
 
+	D "github.com/fbaube/dsmnd"
+	// DI "github.com/fbaube/dbinit"
 	FU "github.com/fbaube/fileutils"
 	"github.com/fbaube/mcfile"
 	L "github.com/fbaube/mlog"
-	"github.com/fbaube/repo"
+	DR "github.com/fbaube/datarepo"
 	SU "github.com/fbaube/stringutils"
 	XU "github.com/fbaube/xmlutils"
+	DRM "github.com/fbaube/datarepo/rowmodels"
 )
 
 type ExpanDir struct {
@@ -21,7 +24,7 @@ type ExpanDir struct {
 
 type XmlAppEnv struct {
 	cfg *XmlAppCfg
-	repo.SimpleRepo
+	DR.SimpleRepo
 	Infiles       []FU.PathProps
 	Indirs        []FU.PathProps
 	Inexpandirs   []ExpanDir
@@ -64,11 +67,22 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	//   PROCESS DATABASE DIRECTORY ARGUMENT
 	// =======================================
 	// A relative filepath is OK
-	e = env.ProcessDatabaseArgs()
+	// e = env.ProcessDatabaseArgs()
+	dbargs := *new(DR.Init9nArgs)
+	dbargs.DB_type = D.DB_SQLite
+	dbargs.BaseFilename = "" // DR.DEFAULT_FILENAME // if omitted, still default! 
+	dbargs.Dir = env.cfg.p.sDbdir
+	dbargs.DoImport = env.cfg.b.DBdoImport
+	dbargs.DoZeroOut = env.cfg.b.DBdoZeroOut
+	dbargs.DoBackup = true 
+	dbargs.TableDetailz = DRM.MmmcTableDetails
+	env.SimpleRepo, e = dbargs.ProcessInit9nArgs()
+
 	if e != nil {
 		return nil, errors.New(
 			"Bad DB directory argument(s): " + e.Error())
 	}
+	
 	// ===================================
 	//   PROCESS XML CATALOG ARGUMENT(S)
 	// ===================================

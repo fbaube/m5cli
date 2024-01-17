@@ -1,24 +1,26 @@
 package m5cli
 
 import (
+	"github.com/fbaube/mcfile"
+	XU "github.com/fbaube/xmlutils"
+       /*
 	"errors"
 	"fmt"
 	FU "github.com/fbaube/fileutils"
-	"github.com/fbaube/mcfile"
 	L "github.com/fbaube/mlog"
-	RS "github.com/fbaube/reposqlite"
-	RM "github.com/fbaube/rowmodels"
-	_ "github.com/fbaube/sqlite3"
+	DRS "github.com/fbaube/datarepo/sqlite"
+	DRM "github.com/fbaube/datarepo/rowmodels"
+	_ "github.com/mattn/go-sqlite3"
 	SU "github.com/fbaube/stringutils"
-	XU "github.com/fbaube/xmlutils"
 	"os"
 	// "runtime/pprof"
 	// "github.com/davecheney/profile"
 	// "github.com/fbaube/tags"
 	_ "database/sql"
+	*/
 )
 
-var DB_FILENAME = "mmmc.db"
+// var DB_FILENAME = "mmmc.db"
 
 // FIXME:
 // hide a flag by specifying its name
@@ -34,13 +36,25 @@ func (f *FlagSet) SetOutput(output io.Writer) {
 
 var multipleXmlCatalogFiles []*XU.XmlCatalogFile
 
+// inputExts more than covers the file types associated with the LwDITA spec.
+// Of course, when we check for them we do so case-insensitively.
+var inputExts = []string{
+	".dita", ".map", ".ditamap", ".xml",
+	".md", ".markdown", ".mdown", ".mkdn",
+	".html", ".htm", ".xhtml", ".png", ".gif", ".jpg"}
+
+// AllGLinks gathers all GLinks in the current run's input set.
+var AllGLinks mcfile.GLinks
+
+/*
+
 // ProcessDatabaseArgs should be able to process
 // either a new DB OR an existing DB.
 // .
 func (env *XmlAppEnv) ProcessDatabaseArgs() error {
 
 	// type-checking
-	// var _ repo.SimpleRepo = (*RS.SqliteRepo)(nil)
+	// var _ repo.SimpleRepo = (*DRS.SqliteRepo)(nil)
 
 	var mustAccessTheDB bool
 	var e error
@@ -118,13 +132,13 @@ func (env *XmlAppEnv) ProcessDatabaseArgs() error {
 		EmptyAppTables() error
 		// CreateTables creates/empties the app's tables
 		CreateAppTables() error
-	} */
+	} * /
 	if !filexist {
 		// env.SimpleRepo.ForceExistDBandTables()
 		e = pSQR.CreateAppTables()
 
 	} else if env.cfg.b.DBdoZeroOut {
-		L.L.Progress("Zeroing out DB")
+		L.L.Progress("Zeroing out DB (misc.go)")
 		_, e := env.SimpleRepo.CopyToBackup()
 		if e != nil {
 			panic(e)
@@ -134,21 +148,5 @@ func (env *XmlAppEnv) ProcessDatabaseArgs() error {
 	return nil
 }
 
-// The general approach:
-// 1. rel.filepath
-// 2. abs.filepath
-// 3. PathProps
-// 4. ContentityRecord
-// 5. MCFile
-// 6. GTree
-// 7. ForesTree
+*/
 
-// inputExts more than covers the file types associated with the LwDITA spec.
-// Of course, when we check for them we do so case-insensitively.
-var inputExts = []string{
-	".dita", ".map", ".ditamap", ".xml",
-	".md", ".markdown", ".mdown", ".mkdn",
-	".html", ".htm", ".xhtml", ".png", ".gif", ".jpg"}
-
-// AllGLinks gathers all GLinks in the current run's input set.
-var AllGLinks mcfile.GLinks
