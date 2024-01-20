@@ -70,12 +70,12 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	// e = env.ProcessDatabaseArgs()
 	dbargs := *new(DR.Init9nArgs)
 	dbargs.DB_type = D.DB_SQLite
-	dbargs.BaseFilename = "" // DR.DEFAULT_FILENAME // if omitted, still default! 
+	dbargs.BaseFilename = "m5" // DR.DEFAULT_FILENAME // if omitted, still default! 
 	dbargs.Dir = env.cfg.p.sDbdir
 	dbargs.DoImport = env.cfg.b.DBdoImport
 	dbargs.DoZeroOut = env.cfg.b.DBdoZeroOut
 	dbargs.DoBackup = true 
-	dbargs.TableDetailz = DRM.MmmcTableDetails
+	dbargs.TableDetailz = DRM.M5_TableDetails
 	env.SimpleRepo, e = dbargs.ProcessInit9nArgs()
 
 	if e != nil {
