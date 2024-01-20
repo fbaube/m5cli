@@ -426,7 +426,7 @@ func (env *XmlAppEnv) Exec() error {
 		for _, pMCF := range InputCtysSlice {
 			// Prepare a DB record for the File
 			pMCF.T_Imp = time.Now().UTC().Format(time.RFC3339)
-			L.L.Warning("TRYING NEW")
+			L.L.Info("exec.L429: Trying new INSERT")
 			// contIndex, e =
 			// pSR.InsertContentityRow(&pMCF.ContentityRow) //,pTx)
 			var stmt string
@@ -434,9 +434,20 @@ func (env *XmlAppEnv) Exec() error {
 			pSR.NewInsertStmt(&pMCF.ContentityRow) 
 			if e != nil {
 				return mcfile.WrapAsContentityError(
+					e, "new insert contentity stmt (cli.exec)", pMCF)
+			}
+			L.L.Info("exec.L439: Trying EXEC STMT: " + stmt)
+			/*
+			res, err := db.Exec(stmt)
+			if e != nil {
+				return mcfile.WrapAsContentityError(
 					e, "insert contentity to DB (cli.exec)", pMCF)
 			}
-			L.L.Warning("TRYING EXEC STMT: " + stmt)
+			*/
+			var id int 
+			res2 := pSR.QueryRow(stmt)
+			err2 := res2.Scan(&id)
+			fmt.Printf("INSERTed: id:<%d> err2:<%#v> \n", id, err2)
 			L.L.Info("Added file to import batch, ID: %d", contIndex)
 		}
 		if inTx {
