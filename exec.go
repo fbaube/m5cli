@@ -18,7 +18,7 @@ import (
 	RM "github.com/fbaube/datarepo/rowmodels"
 )
 
-// The general approach:
+// The general approach (semi-OBS): 
 // 1. Filename via cmd line (can be Rel.FP)
 // 2. Filename absolute path  (i.e. Abs.FP)
 // 3. PathProps
@@ -30,18 +30,16 @@ import (
 
 func (env *XmlAppEnv) Exec() error {
 
-     /* func ColumnPtrsINB(inbro *InbatchRow) []any { // barfs on []db.PtrFields
-        return []any{&inbro.Idx_Inbatch, &inbro.FilCt, &inbro.RelFP,
-                &inbro.AbsFP, &inbro.T_Cre, &inbro.Descr} */
-	var IB = new(RM.InbatchRow)
-	var AA = RM.ColumnPtrsINB(IB)
-	fmt.Fprintf(os.Stderr, "IB<%T> AA <%T> \n", IB, AA)
-	for iii, ppp := range AA {
+	var cntro = new(RM.ContentityRow)
+	var cptrs = RM.ColumnPtrsCNT(cntro, true)
+	fmt.Fprintf(os.Stderr, "ContentityRow TableDetails: \n")
+	fmt.Fprintf(os.Stderr, "\t cntRow<%T> colPtrs <%T> \n",
+		cntro, cptrs) 
+	for iii, ppp := range cptrs {
 	    fmt.Fprintf(os.Stderr, "[%d] <%T> \n", iii, ppp)
 	    }
 
 	var e error
-	// println("==> Exec: starting")
 	// Timing: // tt := MU.Into("Input file processing")
 	defer func() {
 		L.L.Flush()
@@ -64,8 +62,8 @@ func (env *XmlAppEnv) Exec() error {
 	//
 	// Infiles []FU.PathProps :: is all the files
 	// that were specified individually on the CLI.
-	// Note that if a wildcard is used, all the files
-	// in the expansion appear here.
+	// Note that if a wildcard was used, all the 
+	// files in the expansion appear here.
 	//
 	// Indirs []FU.PathProps :: is all the directories
 	// that were specified individually on the CLI.
@@ -145,6 +143,9 @@ func (env *XmlAppEnv) Exec() error {
 	// 2a. FOR EVERY CLI INPUT FILE
 	//     Make a new Contentity
 	// =============================
+	// DUMP env.Indirs, Inexpandirs
+	fmt.Printf("==> env.Indirs: %#v \n", env.Indirs)
+	fmt.Printf("==> env.Inexpandirs: %#v \n", env.Inexpandirs)
 	for i, pIF := range env.Infiles {
 		var pCty *mcfile.Contentity
 		L.L.Info("Input item [%02d] %s",
@@ -163,7 +164,10 @@ func (env *XmlAppEnv) Exec() error {
 			i, len(pCty.PathProps.Raw),
 			pCty.MarkupType(), pCty.AbsFP())
 		if pCty.MarkupType() == "UNK" {
-			panic("UNK MarkupType in ExecuteStages")
+		   	s := fmt.Sprintf("INfile[%d]: [%d] %s %s",
+                        i, len(pCty.PathProps.Raw),
+                        pCty.MarkupType(), pCty.AbsFP())
+			panic("UNK MarkupType in ExecuteStages; \n" + s)
 		}
 		InputCtysSlice = append(InputCtysSlice, pCty)
 	}
@@ -252,7 +256,7 @@ func (env *XmlAppEnv) Exec() error {
 			continue
 		}
 		if cty.MarkupType() == "UNK" {
-			panic("UNK MarkupType in ExecuteStages")
+			panic("UNK MarkupType in ExecuteStages (2nd chance)")
 		}
 
 		L.L.SetCategory(fmt.Sprintf("%02d", ii))
@@ -404,7 +408,6 @@ func (env *XmlAppEnv) Exec() error {
 	   	if !usingDB {
 		   panic("Exec: doImport but not usingDB")
 		}
-		var contIndex int
 		var err error
 		var inTx bool
 		L.L.Progress("Loading content for import batch, ID:%d",
@@ -423,33 +426,46 @@ func (env *XmlAppEnv) Exec() error {
 		if !ok {
 			panic("Exec: repo is not SimpleSqliteRepo")
 		}
+		var timeNow = time.Now().UTC().Format(time.RFC3339)
 		for _, pMCF := range InputCtysSlice {
 			// Prepare a DB record for the File
-			pMCF.T_Imp = time.Now().UTC().Format(time.RFC3339)
-			L.L.Info("exec.L429: Trying new INSERT")
-			// contIndex, e =
-			// pSR.InsertContentityRow(&pMCF.ContentityRow) //,pTx)
+			pMCF.T_Imp = timeNow
+			L.L.Info("exec.L429: Trying new INSERT Generic")
 			var stmt string
-			stmt, e =
-			pSR.NewInsertStmt(&pMCF.ContentityRow) 
+			// stmt, e = pSR.NewInsertStmt(&pMCF.ContentityRow) 
+			stmt, e = DRS.NewInsertStmtGeneric(pSR, &pMCF.ContentityRow) 
 			if e != nil {
-				return mcfile.WrapAsContentityError(
-					e, "new insert contentity stmt (cli.exec)", pMCF)
+				return mcfile.WrapAsContentityError(e, 
+				  "new insert contentity stmt (cli.exec)", pMCF)
 			}
-			L.L.Info("exec.L439: Trying EXEC STMT: " + stmt)
-			/*
-			res, err := db.Exec(stmt)
+			var insertedID int
+			insertedID, e = pSR.ExecInsertStmt(stmt)
 			if e != nil {
-				return mcfile.WrapAsContentityError(
-					e, "insert contentity to DB (cli.exec)", pMCF)
-			}
-			*/
-			var id int 
-			res2 := pSR.QueryRow(stmt)
-			err2 := res2.Scan(&id)
-			fmt.Printf("INSERTed: id:<%d> err2:<%#v> \n", id, err2)
-			L.L.Info("Added file to import batch, ID: %d", contIndex)
+				return mcfile.WrapAsContentityError(e, 
+				"insert contentity to DB (cli.exec)", pMCF)
+			} 
+			fmt.Printf("exec.go: INSERT'd OK, ID:%d \n", insertedID)
+			L.L.Info("Added file to import batch, ID: %d", insertedID)
 		}
+		
+		pIB := new(RM.InbatchRow)
+		pIB.FilCt = len(InputCtysSlice)
+		pIB.Descr = "CLI import"
+		// pIB.RelFP =
+		// pIB.AnsFP =
+		pIB.T_Cre, pIB.T_Imp = timeNow, timeNow
+		var stmt string
+                stmt, e = pSR.NewInsertStmt(pIB)
+                if e != nil {
+                        return fmt.Errorf("new insert inbatch stmt (cli.exec): %w", e)
+                        }
+                var insertedID int
+                insertedID, e = pSR.ExecInsertStmt(stmt)
+                if e != nil {
+                        return fmt.Errorf("new insert inbatch to DB (cli.exec): %w", e)
+                        }
+                fmt.Printf("exec.go: INSERT'd inbatch OK, ID:%d \n", insertedID)
+
 		if inTx {
 			e = pTx.Commit()
 			if e != nil {
@@ -463,4 +479,9 @@ func (env *XmlAppEnv) Exec() error {
 		// fmt.Printf("    DD:Files len %d id[last] %d \n", len(pp), fileIndex)
 	}
 	return nil
+}
+
+func prerr(e error) string {
+     if e == nil { return "-" }
+     return e.Error()
 }
