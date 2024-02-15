@@ -2,15 +2,20 @@ package m5cli
 
 import (
 	"errors"
-
+	"fmt"
+	// "os/signal" 
 	L "github.com/fbaube/mlog"
 	WU "github.com/fbaube/wasmutils"
+	"context" 
 
 	// flag "github.com/spf13/pflag"
 	"os"
 	"runtime/debug"
 	"time"
 )
+
+// ctx is a global to quiet the compiler.
+var ctx context.Context 
 
 // The general approach:
 // 1. Filename via command line (RelFP = relative filepath)
@@ -49,9 +54,25 @@ import (
 // .
 func CLI() error {
 
+     	// We're not really using contexts yet, but...
+	// Let's think about catching Control-C 
+	// func NotifyContext(parent context.Context, signals ...os.Signal)
+	// 	(ctx context.Context, stop context.CancelFunc)
+	// NotifyContext returns a copy of the parent context that is marked
+	// done (its Done channel is closed) when one of the listed signals
+	// arrives, when the returned stop function is called, or when the
+	// parent context's Done channel is closed, whichever happens first.
+	/*
+	ctx = context.Background()
+     	ctx, cancel := signal.NotifyContext(ctx, os.Interrupt)
+	defer cancel()
+	fmt.Printf("CTX: %#v \n", ctx)
+	*/
+	
 	defer func() {
 		if err := recover(); err != nil {
-			println("RUNTIME PANIC! cli.CLI() failed:", err)
+			fmt.Printf("PANIC! cli.CLI() failed: %#v \n", err)
+			println("STACK DUMP:")
 			debug.PrintStack()
 		}
 	}()
