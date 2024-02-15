@@ -1,7 +1,7 @@
 package m5cli
 
 import (
-	"errors"
+	// "errors"
 	"fmt"
 	"io"
 	"os"
@@ -12,10 +12,11 @@ import (
 	L "github.com/fbaube/mlog" // Brings in global var L
 	DRS "github.com/fbaube/datarepo/sqlite"
 	SU "github.com/fbaube/stringutils"
+	"github.com/fbaube/m5cli/exec"
 	// mime "github.com/fbaube/fileutils/contentmime"
 	// "github.com/fbaube/tags"
 
-	RM "github.com/fbaube/datarepo/rowmodels"
+	DRM "github.com/fbaube/datarepo/rowmodels"
 )
 
 // The general approach (semi-OBS): 
@@ -28,17 +29,25 @@ import (
 // 6. GTree
 // 7. ForesTree
 
+// Exec does all execution, altho only after all
+// prep has already been done by other funcs.
+// .
 func (env *XmlAppEnv) Exec() error {
 
-	var cntro = new(RM.ContentityRow)
-	var cptrs = RM.ColumnPtrsCNT(cntro, true)
+     // =======================
+     //  1. INTRODUCTORY STUFF 
+     // =======================
+     /* DBG
+     // Dump out what a ContentityRow looks like in the DB
+	var cntro = new(DRM.ContentityRow)
+	var cptrs = DRM.ColumnPtrsFuncCNT(cntro, true)
 	fmt.Fprintf(os.Stderr, "ContentityRow TableDetails: \n")
 	fmt.Fprintf(os.Stderr, "\t cntRow<%T> colPtrs <%T> \n",
 		cntro, cptrs) 
 	for iii, ppp := range cptrs {
 	    fmt.Fprintf(os.Stderr, "[%d] <%T> \n", iii, ppp)
 	    }
-
+	*/
 	var e error
 	// Timing: // tt := MU.Into("Input file processing")
 	defer func() {
@@ -46,9 +55,10 @@ func (env *XmlAppEnv) Exec() error {
 		/* ; fmt.Printf("%s: done.", os.Args[0]) */
 	}()
 
-	// ==========================
-	//  1. IDENTIFY INPUT ITEMS
-	// ==========================
+	// ======================
+	//  2. INTRO to: PROCESS
+	//       ALL INPUT ITEMS
+	// ======================
 
 	L.SetMaxLevel(LOG_LEVEL_FILE_READING)
 	L.L.Okay(" ")
@@ -62,25 +72,69 @@ func (env *XmlAppEnv) Exec() error {
 	//
 	// Infiles []FU.PathProps :: is all the files
 	// that were specified individually on the CLI.
-	// Note that if a wildcard was used, all the 
-	// files in the expansion appear here.
+	// Note that if a wildcard was used, all files
+	// in the expansion appear individually here.
 	//
 	// Indirs []FU.PathProps :: is all the directories
 	// that were specified individually on the CLI.
 	//
 	// Inexpandirs []Expandir (still empty at this point)
-	// :: is for all the entries in Indirs, to be expanded
-	// into ContentityFS's and then flattened into slices.
+	// :: will be filled with all the entries (both files
+	// and directories) found in the directories listed in
+	// Indirs, which will be expanded into ContentityFS's
+	// and then flattened into slices.
 	//
 	// reference:
 	//   type ExpanDir struct {
 	//	   DirCt, FileCt, ItemCt  int
 	//     CtyFS *mcfile.ContentityFS  }
 
+	// ======================
+	//  EVERY CLI INPUT ITEM
+	// (BOTH FILES AND DIRS)
+	//    IS COLLECTED HERE 
+	// ======================
+	var InputContentities []*mcfile.Contentity
+
+	// DUMP env.Indirs, Inexpandirs
+	fmt.Printf("==> env.Infiles: (%d): %#v \n", len(env.Infiles), env.Infiles)
+	fmt.Printf("==> env.Indirs:: (%d): %#v \n", len(env.Indirs), env.Indirs)
+	// fmt.Printf("==> env.Inexpandirs: %#v \n", env.Inexpandirs)
+
+	// =============================
+	// 2a. FOR EVERY CLI INPUT FILE
+	//     Make a new Contentity
+	// =============================
+
+	var ee []error
+	InputContentities, ee = exec.LoadFilepathsContents(env.Infiles)
+	gotCtys := InputContentities != nil || len(InputContentities)	> 0
+	gotErrs := ee != nil || len(ee) > 0
+	if gotCtys || gotErrs {
+	   	L.L.Info("RESULTS for %d infiles: %d OK, %d not OK \n",
+	   		len(env.Indirs), len(InputContentities), len(ee))
+		for i, pC := range InputContentities {
+		    L.L.Info("InFile[%02d] OK! [%d] %s :: %s", 
+			i, len(pC.PathProps.Raw), pC.MarkupType(),
+			SU.ElideHomeDir(pC.AbsFP()))
+		/* if pCty.MarkupType() == "UNK" {
+		   	s := fmt.Sprintf("INfile[%d]: [%d] %s %s",
+                        i, len(pCty.PathProps.Raw),
+                        pCty.MarkupType(), pCty.AbsFP())
+			panic("UNK MarkupType in ExecuteStages; \n" + s) */
+		} 
+		for i, eC := range ee {
+		    L.L.Info("InfileErr[%02d] ERR :: %s", i, eC.Error())
+		}
+	}
+	// ==================================
+	//  FOR EVERY CLI INPUT DIRECTORY
+	//  Make a new Contentity filesystem
+	// ==================================
 	var pExpdDir *ExpanDir
 	for iDir, pDir := range env.Indirs {
-		L.L.Info("InDir[%d]: %s", iDir,
-			SU.Tildotted(pDir.AbsFP.S()))
+	    	var shortName = SU.Tildotted(pDir.AbsFP.S()) 
+		L.L.Info("InDir[%d]: %s", iDir, shortName)
 		pExpdDir = new(ExpanDir)
 		pExpdDir.CtFS = mcfile.NewContentityFS(pDir.AbsFP.S(), nil)
 		pExpdDir.ItemCt = pExpdDir.CtFS.Size()
@@ -88,96 +142,61 @@ func (env *XmlAppEnv) Exec() error {
 		pExpdDir.DirCt = pExpdDir.CtFS.DirCount()
 		L.L.Okay("Found %d item(s) total (%d dirs, %d files)",
 			pExpdDir.ItemCt, pExpdDir.DirCt, pExpdDir.FileCt)
+		// Some old code about filtering in/out files by extension 
 		// InputFileSet.FilterInBySuffix(inputExts)
 		// fmt.Printf("==> Found %d input file(s) " +
 		//       "(after filtering) \n", nFiles)
 		if pExpdDir.FileCt == 0 {
-			L.L.Info("No content inputs to process! Aborting!")
-			L.L.Close()
+			L.L.Info("No content inputs to process: " + shortName)
+			// L.L.Close()
 			// os.Exit(0)
-			return errors.New("No inputs to process")
+			// return errors.New("No inputs to process")
+			continue
 		}
 		env.Inexpandirs = append(env.Inexpandirs, *pExpdDir)
 
-		L.L.Warning("Skip'd wrtg out tree rep: [%d]", iDir)
-		/*
-			var f *os.File
-			var filename string
-			// Now write out a tree representation
-			filename = fmt.Sprintf("./input-tree-%d", iDir)
-			f, e = os.Create(filename)
-			if e != nil {
-				// An error here does not need to be fatal
-				L.L.Error(filename + ": " + e.Error())
-			} else {
-				L.L.Progress("Writing input tree to " + filename + " ...")
-				pExpdDir.CtFS.RootContentity().PrintTree(f)
-				f.Close()
-				L.L.Okay("Wrote input tree: " + filename)
-			}
-		*/
-		// Now write out a css-enabled tree for html
-		L.L.Warning("SKIP'D: css-enabled tree for html, exec.go.L107")
-		/*
-			filename = fmt.Sprintf("./css-tree", iDir)
-			f, e = os.Create(filename)
-			if e != nil {
-				// An error here does not need to be fatal
-				L.L.Error(filename + ": " + e.Error())
-			} else {
-				L.L.Progress("Writing css tree to " + filename + " ...")
-				pExpdDir.CtFS.RootContentity().PrintTree(f)
-				pExpdDir.CtFS.RootContentity().PrintCssTree(f)
-				f.Close()
-				L.L.Okay("Wrote css tree: " + filename)
-			}
-		*/
+		// ==============================
+		// Write out a tree rep to a file 
+		// ==============================
+		// L.L.Warning("Skip'd wrtg out tree rep: [%d]", iDir)
+		var treeFile *os.File
+		var treeFilename string
+		// Now write out a tree representation
+		treeFilename = fmt.Sprintf("./input-tree-%d", iDir)
+		treeFile, e = os.Create(treeFilename)
+		if e != nil {
+			// An error here does not need to be fatal
+			L.L.Error("Treefile " + treeFilename + ": " + e.Error())
+		} else {
+			pExpdDir.CtFS.RootContentity().PrintTree(treeFile)
+			L.L.Okay("Wrote input tree file: " + treeFilename)
+		}
+		treeFile.Close()
+
+		// =================================
+		// Write out a css-enabled html tree
+		// =================================
+		// L.L.Warning("SKIP'D: css-enabled tree for html, exec.go.L132")
+		treeFilename = fmt.Sprintf("./css-tree", iDir)
+		treeFile, e = os.Create(treeFilename)
+		if e != nil {
+			// An error here does not need to be fatal
+			L.L.Error("CssTreefile " + treeFilename + ": " + e.Error())
+		} else {
+			pExpdDir.CtFS.RootContentity().PrintTree(treeFile)
+			pExpdDir.CtFS.RootContentity().PrintCssTree(treeFile)
+			L.L.Okay("Wrote css tree file: " + treeFilename)
+		}
+		treeFile.Close()
 	}
 
-	// =============================
-	//  2. FOR EVERY CLI INPUT ITEM
-	// =============================
-	var InputCtysSlice []*mcfile.Contentity
-
-	// =============================
-	// 2a. FOR EVERY CLI INPUT FILE
-	//     Make a new Contentity
-	// =============================
-	// DUMP env.Indirs, Inexpandirs
-	fmt.Printf("==> env.Indirs: %#v \n", env.Indirs)
-	fmt.Printf("==> env.Inexpandirs: %#v \n", env.Inexpandirs)
-	for i, pIF := range env.Infiles {
-		var pCty *mcfile.Contentity
-		L.L.Info("Input item [%02d] %s",
-			i, SU.ElideHomeDir(pIF.AbsFP.S()))
-
-		pCty, e = mcfile.NewContentity(pIF.AbsFP.S())
-		if pCty == nil || e != nil || pCty.HasError() {
-			if e == nil {
-				e = errors.New("placeholder error")
-			}
-			L.L.Error("exec: newcontentity<%s>: %s",
-				pIF.AbsFP, e.Error())
-			continue
-		}
-		L.L.Info("INfile[%d]: [%d] %s %s",
-			i, len(pCty.PathProps.Raw),
-			pCty.MarkupType(), pCty.AbsFP())
-		if pCty.MarkupType() == "UNK" {
-		   	s := fmt.Sprintf("INfile[%d]: [%d] %s %s",
-                        i, len(pCty.PathProps.Raw),
-                        pCty.MarkupType(), pCty.AbsFP())
-			panic("UNK MarkupType in ExecuteStages; \n" + s)
-		}
-		InputCtysSlice = append(InputCtysSlice, pCty)
-	}
 	// ================================
 	// 2b. FOR EVERY CLI INPUT DIR
 	//     Expand it into files, which
 	//     also makes new Contentities
 	// ================================
 	for _, pED := range env.Inexpandirs {
-		InputCtysSlice = append(InputCtysSlice, pED.CtFS.AsSlice()...)
+		InputContentities = append(InputContentities, pED.CtFS.AsSlice()...)
 	}
 
 	// Now we have all the inputs.
@@ -188,7 +207,7 @@ func (env *XmlAppEnv) Exec() error {
 	//  3. FOR EVERY CONTENTITY
 	//     Prepare outputs
 	// =========================
-	for ii, cty := range InputCtysSlice {
+	for ii, cty := range InputContentities {
 		// L.L.Info("LOOPING on IN-Cty %d", ii)
 		if cty.IsDir() {
 			// println("Skip dir: " + cty.AbsFP())
@@ -215,7 +234,7 @@ func (env *XmlAppEnv) Exec() error {
 
 		if env.cfg.b.TotalTextal {
 			fn := cty.AbsFP()
-			if len(InputCtysSlice) == 1 {
+			if len(InputContentities) == 1 {
 				fn = "./debug"
 			}
 			// To name output files, append
@@ -249,9 +268,9 @@ func (env *XmlAppEnv) Exec() error {
 	L.L.Okay(SU.Rfg(SU.Ybg("===                           ===")))
 	L.L.Okay(" ")
 
-	L.L.Info("Input contentities: total %d", len(InputCtysSlice))
+	L.L.Info("Input contentities: total %d", len(InputContentities))
 
-	for ii, cty := range InputCtysSlice {
+	for ii, cty := range InputContentities {
 		if cty.IsDir() {
 			continue
 		}
@@ -266,7 +285,7 @@ func (env *XmlAppEnv) Exec() error {
 	}
 
 	L.L.Info("Accumulated errors:")
-	for _, p := range InputCtysSlice {
+	for _, p := range InputContentities {
 		if p.HasError() {
 			L.L.Error("file[%s: %s", p.LogPrefix("]"), p.Error())
 		}
@@ -403,6 +422,13 @@ func (env *XmlAppEnv) Exec() error {
 
 	var usingDB bool = (env.SimpleRepo != nil)
 	var batchIndex int
+	var pSR *DRS.SqliteRepo
+	var ok bool
+	pSR, ok = env.SimpleRepo.(*DRS.SqliteRepo)
+	if !ok {
+		panic("Exec: repo is not SimpleSqliteRepo")
+	}
+	
 	// if usingDB && env.cfg.b.DBdoImport {
 	if env.cfg.b.DBdoImport {
 	   	if !usingDB {
@@ -422,18 +448,14 @@ func (env *XmlAppEnv) Exec() error {
 		} else {
 			inTx = true
 		}
-		pSR, ok := env.SimpleRepo.(*DRS.SqliteRepo)
-		if !ok {
-			panic("Exec: repo is not SimpleSqliteRepo")
-		}
 		var timeNow = time.Now().UTC().Format(time.RFC3339)
-		for _, pMCF := range InputCtysSlice {
+		for _, pMCF := range InputContentities {
 			// Prepare a DB record for the File
 			pMCF.T_Imp = timeNow
 			L.L.Info("exec.L429: Trying new INSERT Generic")
 			var stmt string
 			// stmt, e = pSR.NewInsertStmt(&pMCF.ContentityRow) 
-			stmt, e = DRS.NewInsertStmtGeneric(pSR, &pMCF.ContentityRow) 
+			stmt, e = DRS.NewInsertStmtGnrcFunc(pSR, &pMCF.ContentityRow) 
 			if e != nil {
 				return mcfile.WrapAsContentityError(e, 
 				  "new insert contentity stmt (cli.exec)", pMCF)
@@ -448,8 +470,8 @@ func (env *XmlAppEnv) Exec() error {
 			L.L.Info("Added file to import batch, ID: %d", insertedID)
 		}
 		
-		pIB := new(RM.InbatchRow)
-		pIB.FilCt = len(InputCtysSlice)
+		pIB := new(DRM.InbatchRow)
+		pIB.FilCt = len(InputContentities)
 		pIB.Descr = "CLI import"
 		// pIB.RelFP =
 		// pIB.AnsFP =
@@ -478,6 +500,16 @@ func (env *XmlAppEnv) Exec() error {
 		// pp := pCA.SimpleRepo.GetFileAll()
 		// fmt.Printf("    DD:Files len %d id[last] %d \n", len(pp), fileIndex)
 	}
+	println("TRYING SELECT BY ID")
+	stmtS, eS := pSR.NewSelectByIdStmt(&DRM.TableDetailsCNT, 1)
+	if eS != nil {
+                return fmt.Errorf("new select contentity by id=1 stmt (cli.exec): %w", eS)
+                }
+	result, e3 := DRS.ExecSelectOneStmt[*DRM.ContentityRow](pSR, stmtS)
+        if e3 != nil {
+                return fmt.Errorf("new select contentity by id=1 from DB (cli.exec): %w", e3)
+                }
+        fmt.Printf("exec.go: INSERT'd inbatch OK, ID:%d \n", result)
 	return nil
 }
 
