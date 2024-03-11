@@ -34,14 +34,14 @@ import (
 // .
 func (env *XmlAppEnv) Exec() error {
 
-     // =======================
-     //  1. INTRODUCTORY STUFF 
-     // =======================
+     // ======================
+     //  1. PRELIMINARY STUFF 
+     // ======================
      /* DBG
      // Dump out what a ContentityRow looks like in the DB
 	var cntro = new(DRM.ContentityRow)
 	var cptrs = DRM.ColumnPtrsFuncCNT(cntro, true)
-	fmt.Fprintf(os.Stderr, "ContentityRow TableDetails: \n")
+	fmt.Fprintf(os.Stderr, "ContentityRow datarepo/TableDetails: \n")
 	fmt.Fprintf(os.Stderr, "\t cntRow<%T> colPtrs <%T> \n",
 		cntro, cptrs) 
 	for iii, ppp := range cptrs {
@@ -89,11 +89,11 @@ func (env *XmlAppEnv) Exec() error {
 	//	   DirCt, FileCt, ItemCt  int
 	//     CtyFS *mcfile.ContentityFS  }
 
-	// ======================
-	//  EVERY CLI INPUT ITEM
-	// (BOTH FILES AND DIRS)
-	//    IS COLLECTED HERE 
-	// ======================
+	// ===========================================
+	//  EVERY CLI INPUT ITEM IS COLLECTED HERE
+	//  First all files named at the command line,
+	//  then (recursively) all directories named
+	// ===========================================
 	var InputContentities []*mcfile.Contentity
 
 	// DUMP env.Indirs, Inexpandirs
@@ -105,7 +105,6 @@ func (env *XmlAppEnv) Exec() error {
 	// 2a. FOR EVERY CLI INPUT FILE
 	//     Make a new Contentity
 	// =============================
-
 	var ee []error
 	InputContentities, ee = exec.LoadFilepathsContents(env.Infiles)
 	gotCtys := InputContentities != nil || len(InputContentities)	> 0
@@ -127,26 +126,31 @@ func (env *XmlAppEnv) Exec() error {
 		    L.L.Info("InfileErr[%02d] ERR :: %s", i, eC.Error())
 		}
 	}
-	// ==================================
-	//  FOR EVERY CLI INPUT DIRECTORY
-	//  Make a new Contentity filesystem
-	// ==================================
-	var pExpdDir *ExpanDir
+	// ======================================
+	//  2b. FOR EVERY CLI INPUT DIRECTORY 
+	//      Make a new Contentity filesystem
+	// ======================================
+	var pExpdDir *mcfile.ContentityFS // ExpanDir
 	for iDir, pDir := range env.Indirs {
 	    	var shortName = SU.Tildotted(pDir.AbsFP.S()) 
 		L.L.Info("InDir[%d]: %s", iDir, shortName)
+		/*
 		pExpdDir = new(ExpanDir)
 		pExpdDir.CtFS = mcfile.NewContentityFS(pDir.AbsFP.S(), nil)
 		pExpdDir.ItemCt = pExpdDir.CtFS.Size()
 		pExpdDir.FileCt = pExpdDir.CtFS.FileCount()
 		pExpdDir.DirCt = pExpdDir.CtFS.DirCount()
+		*/
+		pExpdDir = mcfile.NewContentityFS(pDir.AbsFP.S(), nil)
+		
 		L.L.Okay("Found %d item(s) total (%d dirs, %d files)",
-			pExpdDir.ItemCt, pExpdDir.DirCt, pExpdDir.FileCt)
+			pExpdDir.ItemCount(), pExpdDir.DirCount(),
+			pExpdDir.FileCount())
 		// Some old code about filtering in/out files by extension 
 		// InputFileSet.FilterInBySuffix(inputExts)
 		// fmt.Printf("==> Found %d input file(s) " +
 		//       "(after filtering) \n", nFiles)
-		if pExpdDir.FileCt == 0 {
+		if pExpdDir.FileCount() == 0 {
 			L.L.Info("No content inputs to process: " + shortName)
 			// L.L.Close()
 			// os.Exit(0)
@@ -168,7 +172,7 @@ func (env *XmlAppEnv) Exec() error {
 			// An error here does not need to be fatal
 			L.L.Error("Treefile " + treeFilename + ": " + e.Error())
 		} else {
-			pExpdDir.CtFS.RootContentity().PrintTree(treeFile)
+			pExpdDir.RootContentity().PrintTree(treeFile)
 			L.L.Okay("Wrote input tree file: " + treeFilename)
 		}
 		treeFile.Close()
@@ -183,8 +187,8 @@ func (env *XmlAppEnv) Exec() error {
 			// An error here does not need to be fatal
 			L.L.Error("CssTreefile " + treeFilename + ": " + e.Error())
 		} else {
-			pExpdDir.CtFS.RootContentity().PrintTree(treeFile)
-			pExpdDir.CtFS.RootContentity().PrintCssTree(treeFile)
+			pExpdDir.RootContentity().PrintTree(treeFile)
+			pExpdDir.RootContentity().PrintCssTree(treeFile)
 			L.L.Okay("Wrote css tree file: " + treeFilename)
 		}
 		treeFile.Close()
@@ -196,7 +200,7 @@ func (env *XmlAppEnv) Exec() error {
 	//     also makes new Contentities
 	// ================================
 	for _, pED := range env.Inexpandirs {
-		InputContentities = append(InputContentities, pED.CtFS.AsSlice()...)
+		InputContentities = append(InputContentities, pED.AsSlice()...)
 	}
 
 	// Now we have all the inputs.
@@ -421,12 +425,19 @@ func (env *XmlAppEnv) Exec() error {
 	// ===============================
 
 	var usingDB bool = (env.SimpleRepo != nil)
+	fmt.Printf("env.SimpleRepo: <%T> %#v \n",
+		env.SimpleRepo, env.SimpleRepo)
 	var batchIndex int
 	var pSR *DRS.SqliteRepo
 	var ok bool
-	pSR, ok = env.SimpleRepo.(*DRS.SqliteRepo)
+	// pSR = (*DRS.SqliteRepo)(env.SimpleRepo)
+	/* pSR, ok = env.SimpleRepo.(DRS.SqliteRepo)
 	if !ok {
 		panic("Exec: repo is not SimpleSqliteRepo")
+	} */
+	pSR, ok = env.SimpleRepo.(*DRS.SqliteRepo)
+	if !ok {
+		panic("Exec: repo is not *SimpleSqliteRepo")
 	}
 	
 	// if usingDB && env.cfg.b.DBdoImport {
@@ -452,7 +463,7 @@ func (env *XmlAppEnv) Exec() error {
 		for _, pMCF := range InputContentities {
 			// Prepare a DB record for the File
 			pMCF.T_Imp = timeNow
-			L.L.Info("exec.L429: Trying new INSERT Generic")
+			L.L.Info("exec.L466: Trying new INSERT Generic")
 			var stmt string
 			// stmt, e = pSR.NewInsertStmt(&pMCF.ContentityRow) 
 			stmt, e = DRS.NewInsertStmtGnrcFunc(pSR, &pMCF.ContentityRow) 

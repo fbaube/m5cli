@@ -16,18 +16,20 @@ import (
 	DRM "github.com/fbaube/datarepo/rowmodels"
 )
 
+/*
 type ExpanDir struct {
 	DirCt, FileCt,
 	ItemCt int
 	CtFS *mcfile.ContentityFS
 }
+*/
 
 type XmlAppEnv struct {
 	cfg *XmlAppCfg
 	DR.SimpleRepo
 	Infiles       []FU.PathProps
 	Indirs        []FU.PathProps
-	Inexpandirs   []ExpanDir
+	Inexpandirs   []mcfile.ContentityFS // was: []ExpanDir
 	Outdir, Dbdir FU.PathProps // NOT ptr! Barfs at startup.
 	Xmlcatfile    FU.PathProps // NOT ptr! Barfs at startup.
 	Xmlschemasdir FU.PathProps // NOT ptr! Barfs at startup.
@@ -38,7 +40,7 @@ type XmlAppEnv struct {
 	PrittOutput io.Writer
 }
 
-// ContentityProcessor (seee ContentityStage !!)
+// ContentityProcessor (see ContentityStage !!)
 // is most probably the best way to go.
 // It preserves order of processing of MCFile's (unlike
 // iterating thru a map of them), and the func signature

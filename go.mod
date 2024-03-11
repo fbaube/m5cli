@@ -3,7 +3,7 @@ module github.com/fbaube/m5cli
 go 1.21.6
 
 require (
-	github.com/fbaube/datarepo v0.0.0-20240203153603-3b3d2fa5f3b4
+	github.com/fbaube/datarepo v0.0.0-20240206084457-78cb74dd74f2
 	github.com/fbaube/dsmnd v0.0.0-20240130143636-adbc149a7741
 	github.com/fbaube/fileutils v0.0.0-20231218210156-f6a37eab1eae
 	github.com/fbaube/logutils v0.0.0-20240118190821-fba0e702dd07
@@ -34,7 +34,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	github.com/mgutz/str v1.2.0 // indirect
 	github.com/yuin/goldmark v1.7.0 // indirect
-	golang.org/x/exp v0.0.0-20240119083558-1b970713d09a // indirect
+	golang.org/x/exp v0.0.0-20240205201215-2c58cdc269a3 // indirect
 	golang.org/x/net v0.20.0 // indirect
 	golang.org/x/sys v0.16.0 // indirect
 	golang.org/x/tools v0.17.0 // indirect
