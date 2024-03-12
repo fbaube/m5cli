@@ -16,20 +16,12 @@ import (
 	DRM "github.com/fbaube/datarepo/rowmodels"
 )
 
-/*
-type ExpanDir struct {
-	DirCt, FileCt,
-	ItemCt int
-	CtFS *mcfile.ContentityFS
-}
-*/
-
 type XmlAppEnv struct {
 	cfg *XmlAppCfg
 	DR.SimpleRepo
 	Infiles       []FU.PathProps
 	Indirs        []FU.PathProps
-	Inexpandirs   []mcfile.ContentityFS // was: []ExpanDir
+	IndirFSs      []mcfile.ContentityFS // was: []ExpanDir
 	Outdir, Dbdir FU.PathProps // NOT ptr! Barfs at startup.
 	Xmlcatfile    FU.PathProps // NOT ptr! Barfs at startup.
 	Xmlschemasdir FU.PathProps // NOT ptr! Barfs at startup.
@@ -45,6 +37,9 @@ type XmlAppEnv struct {
 // It preserves order of processing of MCFile's (unlike
 // iterating thru a map of them), and the func signature
 // is most def in the Go style, and the style IS CHAINABLE.
+// Note that when a ContentityProcessor is declared, the
+// func signature is the RH side of this, NOT the LH side
+// ("ContentityProcessor").
 type ContentityProcessor func(
 	p *mcfile.Contentity, e error) (*mcfile.Contentity, error)
 

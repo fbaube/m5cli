@@ -78,23 +78,20 @@ func (env *XmlAppEnv) Exec() error {
 	// Indirs []FU.PathProps :: is all the directories
 	// that were specified individually on the CLI.
 	//
-	// Inexpandirs []Expandir (still empty at this point)
+	// IndirFSs []ContentityFS (still empty at this point)
 	// :: will be filled with all the entries (both files
-	// and directories) found in the directories listed in
-	// Indirs, which will be expanded into ContentityFS's
-	// and then flattened into slices.
-	//
-	// reference:
-	//   type ExpanDir struct {
-	//	   DirCt, FileCt, ItemCt  int
-	//     CtyFS *mcfile.ContentityFS  }
+	// and directories) found under the directories listed 
+	// in Indirs, as expanded into ContentityFS's, then to
+	// be flattened into slices.
 
 	// ===========================================
 	//  EVERY CLI INPUT ITEM IS COLLECTED HERE
 	//  First all files named at the command line,
 	//  then (recursively) all directories named
 	// ===========================================
-	var InputContentities []*mcfile.Contentity
+	var InputContentities  []*mcfile.Contentity
+	var InputContentityFSs []*mcfile.ContentityFS
+	var ee []error
 
 	// DUMP env.Indirs, Inexpandirs
 	fmt.Printf("==> env.Infiles: (%d): %#v \n", len(env.Infiles), env.Infiles)
@@ -105,7 +102,6 @@ func (env *XmlAppEnv) Exec() error {
 	// 2a. FOR EVERY CLI INPUT FILE
 	//     Make a new Contentity
 	// =============================
-	var ee []error
 	InputContentities, ee = exec.LoadFilepathsContents(env.Infiles)
 	gotCtys := InputContentities != nil || len(InputContentities)	> 0
 	gotErrs := ee != nil || len(ee) > 0
@@ -130,49 +126,22 @@ func (env *XmlAppEnv) Exec() error {
 	//  2b. FOR EVERY CLI INPUT DIRECTORY 
 	//      Make a new Contentity filesystem
 	// ======================================
-	var pExpdDir *mcfile.ContentityFS // ExpanDir
-	for iDir, pDir := range env.Indirs {
-	    	var shortName = SU.Tildotted(pDir.AbsFP.S()) 
-		L.L.Info("InDir[%d]: %s", iDir, shortName)
-		/*
-		pExpdDir = new(ExpanDir)
-		pExpdDir.CtFS = mcfile.NewContentityFS(pDir.AbsFP.S(), nil)
-		pExpdDir.ItemCt = pExpdDir.CtFS.Size()
-		pExpdDir.FileCt = pExpdDir.CtFS.FileCount()
-		pExpdDir.DirCt = pExpdDir.CtFS.DirCount()
-		*/
-		pExpdDir = mcfile.NewContentityFS(pDir.AbsFP.S(), nil)
-		
-		L.L.Okay("Found %d item(s) total (%d dirs, %d files)",
-			pExpdDir.ItemCount(), pExpdDir.DirCount(),
-			pExpdDir.FileCount())
-		// Some old code about filtering in/out files by extension 
-		// InputFileSet.FilterInBySuffix(inputExts)
-		// fmt.Printf("==> Found %d input file(s) " +
-		//       "(after filtering) \n", nFiles)
-		if pExpdDir.FileCount() == 0 {
-			L.L.Info("No content inputs to process: " + shortName)
-			// L.L.Close()
-			// os.Exit(0)
-			// return errors.New("No inputs to process")
-			continue
-		}
-		env.Inexpandirs = append(env.Inexpandirs, *pExpdDir)
-
+	InputContentityFSs = exec.LoadDirpathsContentFSs(env.Infiles)
+	for iFS, pFS := range InputContentityFSs {
 		// ==============================
 		// Write out a tree rep to a file 
 		// ==============================
-		// L.L.Warning("Skip'd wrtg out tree rep: [%d]", iDir)
+		// L.L.Warning("Skip'd wrtg out tree rep: [%d]", iFS)
 		var treeFile *os.File
 		var treeFilename string
 		// Now write out a tree representation
-		treeFilename = fmt.Sprintf("./input-tree-%d", iDir)
+		treeFilename = fmt.Sprintf("./input-tree-%d", iFS)
 		treeFile, e = os.Create(treeFilename)
 		if e != nil {
 			// An error here does not need to be fatal
 			L.L.Error("Treefile " + treeFilename + ": " + e.Error())
 		} else {
-			pExpdDir.RootContentity().PrintTree(treeFile)
+			pFS.RootContentity().PrintTree(treeFile)
 			L.L.Okay("Wrote input tree file: " + treeFilename)
 		}
 		treeFile.Close()
@@ -180,15 +149,14 @@ func (env *XmlAppEnv) Exec() error {
 		// =================================
 		// Write out a css-enabled html tree
 		// =================================
-		// L.L.Warning("SKIP'D: css-enabled tree for html, exec.go.L132")
-		treeFilename = fmt.Sprintf("./css-tree", iDir)
+		// L.L.Warning("SKIP'D: css-enabled tree for html, exec.go.L153")
+		treeFilename = fmt.Sprintf("./css-tree", iFS)
 		treeFile, e = os.Create(treeFilename)
 		if e != nil {
 			// An error here does not need to be fatal
 			L.L.Error("CssTreefile " + treeFilename + ": " + e.Error())
 		} else {
-			pExpdDir.RootContentity().PrintTree(treeFile)
-			pExpdDir.RootContentity().PrintCssTree(treeFile)
+			pFS.RootContentity().PrintCssTree(treeFile)
 			L.L.Okay("Wrote css tree file: " + treeFilename)
 		}
 		treeFile.Close()
@@ -199,7 +167,7 @@ func (env *XmlAppEnv) Exec() error {
 	//     Expand it into files, which
 	//     also makes new Contentities
 	// ================================
-	for _, pED := range env.Inexpandirs {
+	for _, pED := range InputContentityFSs {
 		InputContentities = append(InputContentities, pED.AsSlice()...)
 	}
 
@@ -224,8 +192,8 @@ func (env *XmlAppEnv) Exec() error {
 
 		// Now, files for capturing debugging output:
 		// func Create(name string) (*File, error) API docs:
-		// os.Create(s) creates or truncates the named file.
-		// If the file already exists, it is truncated.
+		// Create or truncate the named file. If the file
+		// already exists, it is truncated (i.e. emptied).
 		// If it does not exist, it is created with mode 0666
 		// (before umask). If successful, the returned File
 		// (IS OPEN, apparently, AND) can be used for I/O;
@@ -237,27 +205,27 @@ func (env *XmlAppEnv) Exec() error {
 		cty.GEchoWriter = io.Discard
 
 		if env.cfg.b.TotalTextal {
-			fn := cty.AbsFP()
+			fnm := cty.AbsFP()
 			if len(InputContentities) == 1 {
-				fn = "./debug"
+				fnm = "./debug"
 			}
 			// To name output files, append
 			// "_(echo,tkns,tree)" to the entire file name.
-			echoName := (fn + "_echo")
-			tknsName := (fn + "_tkns")
-			treeName := (fn + "_tree")
-			fd1, e1 := os.Create(echoName)
-			fd2, e2 := os.Create(tknsName)
-			fd3, e3 := os.Create(treeName)
+			echoName := (fnm + "_echo")
+			tknsName := (fnm + "_tkns")
+			treeName := (fnm + "_tree")
+			f1, e1 := os.Create(echoName)
+			f2, e2 := os.Create(tknsName)
+			f3, e3 := os.Create(treeName)
 			if e1 == nil && e2 == nil && e3 == nil {
 				L.L.Okay("created %s _echo,_tkns,_tree",
-					SU.ElideHomeDir(fn))
+					SU.ElideHomeDir(fnm))
 			} else {
 				L.L.Error("Cannot open a Total Textual file")
 			}
-			cty.GEchoWriter = fd1
-			cty.GTknsWriter = fd2
-			cty.GTreeWriter = fd3
+			cty.GEchoWriter = f1
+			cty.GTknsWriter = f2
+			cty.GTreeWriter = f3
 		}
 	}
 
