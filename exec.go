@@ -126,7 +126,7 @@ func (env *XmlAppEnv) Exec() error {
 	//  2b. FOR EVERY CLI INPUT DIRECTORY 
 	//      Make a new Contentity filesystem
 	// ======================================
-	InputContentityFSs = exec.LoadDirpathsContentFSs(env.Infiles)
+	InputContentityFSs = exec.LoadDirpathsContentFSs(env.Indirs)
 	for iFS, pFS := range InputContentityFSs {
 		// ==============================
 		// Write out a tree rep to a file 
@@ -407,7 +407,10 @@ func (env *XmlAppEnv) Exec() error {
 	if !ok {
 		panic("Exec: repo is not *SimpleSqliteRepo")
 	}
-	
+	if pSR == nil {
+		L.L.Error("Cannot proceed: SqliteRepo is not valid")
+		os.Exit(1)
+	}
 	// if usingDB && env.cfg.b.DBdoImport {
 	if env.cfg.b.DBdoImport {
 	   	if !usingDB {
@@ -489,6 +492,7 @@ func (env *XmlAppEnv) Exec() error {
                 return fmt.Errorf("new select contentity by id=1 from DB (cli.exec): %w", e3)
                 }
         fmt.Printf("exec.go: INSERT'd inbatch OK, ID:%d \n", result)
+	pSR.CloseLogWriter()
 	return nil
 }
 
