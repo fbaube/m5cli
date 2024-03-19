@@ -97,13 +97,21 @@ func (env *XmlAppEnv) Exec() error {
 	// DUMP env.Indirs, Inexpandirs
 	L.L.Progress("env.Infiles: [%d]: %#v \n", len(env.Infiles), env.Infiles)
 	L.L.Progress("env.Indirs:: [%d]: %#v \n", len(env.Indirs), env.Indirs)
-	// TODO ALSO DUMP AS JSON
-	out, err := json.MarshalIndent(env.Indirs[0], "indir: ", "  ")
-	if err != nil {
-		println(err)
-		panic(err)
+	// ALSO DUMP AS JSON
+	var jout []byte
+	var jerr error 
+	jout, jerr = json.MarshalIndent(env.Infiles[0], "infile: ", "  ")
+	if jerr != nil {
+		println(jerr)
+		panic(jerr)
 	}
-	L.L.Warning(string(out))
+	L.L.Info(string(jout))
+	jout, jerr = json.MarshalIndent(env.Indirs[0], "indirr: ", "  ")
+	if jerr != nil {
+		println(jerr)
+		panic(jerr)
+	}
+	L.L.Info(string(jout))
 	// fmt.Printf("==> env.Inexpandirs: %#v \n", env.Inexpandirs)
 
 	// =============================
