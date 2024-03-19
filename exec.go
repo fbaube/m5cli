@@ -110,7 +110,7 @@ func (env *XmlAppEnv) Exec() error {
 	   		len(env.Indirs), len(InputContentities), len(ee))
 		for i, pC := range InputContentities {
 		    L.L.Info("InFile[%02d] OK! [%d] %s :: %s", 
-			i, len(pC.PathProps.Raw), pC.MarkupType(),
+			i, len(pC.FSItem.Raw), pC.MarkupType(),
 			SU.ElideHomeDir(pC.AbsFP()))
 		/* if pCty.MarkupType() == "UNK" {
 		   	s := fmt.Sprintf("INfile[%d]: [%d] %s %s",
@@ -252,7 +252,7 @@ func (env *XmlAppEnv) Exec() error {
 
 		L.L.SetCategory(fmt.Sprintf("%02d", ii))
 		L.L.Info(SU.Gbg("[F%02d] === %s (%d) ==="), ii,
-			SU.ElideHomeDir(cty.AbsFP()), len(cty.PathProps.Raw))
+			SU.ElideHomeDir(cty.AbsFP()), len(cty.FSItem.Raw))
 		cty.ExecuteStages()
 	}
 

@@ -19,12 +19,12 @@ import (
 type XmlAppEnv struct {
 	cfg *XmlAppCfg
 	DR.SimpleRepo
-	Infiles       []FU.PathProps
-	Indirs        []FU.PathProps
+	Infiles       []FU.FSItem
+	Indirs        []FU.FSItem
 	IndirFSs      []mcfile.ContentityFS // was: []ExpanDir
-	Outdir, Dbdir FU.PathProps // NOT ptr! Barfs at startup.
-	Xmlcatfile    FU.PathProps // NOT ptr! Barfs at startup.
-	Xmlschemasdir FU.PathProps // NOT ptr! Barfs at startup.
+	Outdir, Dbdir FU.FSItem // NOT ptr! Barfs at startup.
+	Xmlcatfile    FU.FSItem // NOT ptr! Barfs at startup.
+	Xmlschemasdir FU.FSItem // NOT ptr! Barfs at startup.
 	// Result of processing CLI arg for input file(s)
 	IsSingleFile bool
 	// Result of processing CLI args -c & -s
@@ -47,8 +47,8 @@ type ContentityProcessor func(
 We want errors to propogate end-to-end, thru all
 call chains (and maybe all type conversions too).
 So, it would look something like
-func NewPathPropsFromRelFP (PP,err <= string,err) [dummy err]
-func NewMCEfromPathProps(MCE,err <= PP,err)
+func NewFSItemFromRelFP (PP,err <= string,err) [dummy err]
+func NewMCEfromFSItem(MCE,err <= PP,err)
 func MCEprocessor(MCE,err <= MCE,err) [CHAINABLE!]
 Then we plug these into samber.lo/Map(..)
 (or variations on it).
@@ -90,7 +90,7 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	//   PROCESS OUTPUT-FILES ARGUMENT
 	// =================================
 	// A relative filepath is OK
-	pOF, e := FU.NewPathProps(cfg.p.sOutdir) // CA.Out.RelFilePath)
+	pOF, e := FU.NewFSItem(cfg.p.sOutdir) // CA.Out.RelFilePath)
 	env.Outdir = *pOF
 	if e != nil {
 		return nil, errors.New("Could not process output file argument")
@@ -106,7 +106,7 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	//   about paths, existence, and types
 	// ====================================
 	// fmt.Printf("cfg.sInpaths: %+v \n", cfg.sInpaths)
-	var PP []*FU.PathProps
+	var PP []*FU.FSItem
 	var EE []error
 	// var errct int
 	// string = typeof  input arg+array,
@@ -120,21 +120,21 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 		// NOTE that type inference works OK
 		// here and we did not need to put this
 		// btwn MapAwerr and cfg.sInpaths:
-		// [string, *FU.PathProps]
-		func(s string) (*FU.PathProps, error) {
-			return FU.NewPathProps(s)
+		// [string, *FU.FSItem]
+		func(s string) (*FU.FSItem, error) {
+			return FU.NewFSItem(s)
 		})
 	if errct > 0 {
 		L.L.Error("CLI file/dir argument processing got %d error(s)", errct)
 	}
 	*/
 	for _, path := range cfg.p.sInpaths {
-		npp, err := FU.NewPathProps(path)
+		npp, err := FU.NewFSItem(path)
 		PP = append(PP, npp)
 		EE = append(EE, err)
 	}
 	for i, pp := range PP {
-		inp := SU.Tildotted(pp.AbsFP.S())
+		inp := SU.Tildotted(pp.FPs.AbsFP.S())
 		msg := fmt.Sprintf("[%d:%s] ", i, inp)
 		if EE[i] != nil {
 			L.L.Error(msg + "ERROR: " + EE[i].Error())
