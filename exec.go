@@ -94,8 +94,8 @@ func (env *XmlAppEnv) Exec() error {
 	var ee []error
 
 	// DUMP env.Indirs, Inexpandirs
-	fmt.Printf("==> env.Infiles: (%d): %#v \n", len(env.Infiles), env.Infiles)
-	fmt.Printf("==> env.Indirs:: (%d): %#v \n", len(env.Indirs), env.Indirs)
+	L.L.Progress("env.Infiles: [%d]: %#v \n", len(env.Infiles), env.Infiles)
+	L.L.Progress("env.Indirs:: [%d]: %#v \n", len(env.Indirs), env.Indirs)
 	// fmt.Printf("==> env.Inexpandirs: %#v \n", env.Inexpandirs)
 
 	// =============================
@@ -431,10 +431,13 @@ func (env *XmlAppEnv) Exec() error {
 			inTx = true
 		}
 		var timeNow = time.Now().UTC().Format(time.RFC3339)
+		// ============================
+		//  FOR EVERY Input Contentity
+		// ============================
 		for _, pMCF := range InputContentities {
 			// Prepare a DB record for the File
 			pMCF.T_Imp = timeNow
-			L.L.Info("exec.L466: Trying new INSERT Generic")
+			L.L.Info("exec.L440: Trying new INSERT Generic")
 			var stmt string
 			// stmt, e = pSR.NewInsertStmt(&pMCF.ContentityRow) 
 			stmt, e = DRS.NewInsertStmtGnrcFunc(pSR, &pMCF.ContentityRow) 
@@ -442,16 +445,14 @@ func (env *XmlAppEnv) Exec() error {
 				return mcfile.WrapAsContentityError(e, 
 				  "new insert contentity stmt (cli.exec)", pMCF)
 			}
-			var insertedID int
-			insertedID, e = pSR.ExecInsertStmt(stmt)
+			var insID int
+			insID, e = pSR.ExecInsertStmt(stmt)
 			if e != nil {
 				return mcfile.WrapAsContentityError(e, 
 				"insert contentity to DB (cli.exec)", pMCF)
 			} 
-			fmt.Printf("exec.go: INSERT'd OK, ID:%d \n", insertedID)
-			L.L.Info("Added file to import batch, ID: %d", insertedID)
-		}
-		
+			L.L.Info("Added file to import batch, ID: %d", insID)
+		}		
 		pIB := new(DRM.InbatchRow)
 		pIB.FilCt = len(InputContentities)
 		pIB.Descr = "CLI import"
@@ -463,12 +464,12 @@ func (env *XmlAppEnv) Exec() error {
                 if e != nil {
                         return fmt.Errorf("new insert inbatch stmt (cli.exec): %w", e)
                         }
-                var insertedID int
-                insertedID, e = pSR.ExecInsertStmt(stmt)
+                var insID int
+                insID, e = pSR.ExecInsertStmt(stmt)
                 if e != nil {
                         return fmt.Errorf("new insert inbatch to DB (cli.exec): %w", e)
                         }
-                fmt.Printf("exec.go: INSERT'd inbatch OK, ID:%d \n", insertedID)
+                L.L.Okay("cli/exec: INSERT'd inbatch OK, ID: %d", insID)
 
 		if inTx {
 			e = pTx.Commit()
