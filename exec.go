@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"time"
+	"encoding/json"
 
 	"database/sql"
 	"github.com/fbaube/mcfile"
@@ -96,6 +97,13 @@ func (env *XmlAppEnv) Exec() error {
 	// DUMP env.Indirs, Inexpandirs
 	L.L.Progress("env.Infiles: [%d]: %#v \n", len(env.Infiles), env.Infiles)
 	L.L.Progress("env.Indirs:: [%d]: %#v \n", len(env.Indirs), env.Indirs)
+	// TODO ALSO DUMP AS JSON
+	out, err := json.MarshalIndent(env.Indirs[0], "indir: ", "  ")
+	if err != nil {
+		println(err)
+		panic(err)
+	}
+	L.L.Warning(string(out))
 	// fmt.Printf("==> env.Inexpandirs: %#v \n", env.Inexpandirs)
 
 	// =============================
