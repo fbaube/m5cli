@@ -106,12 +106,14 @@ func (env *XmlAppEnv) Exec() error {
 		panic(jerr)
 	}
 	L.L.Info(string(jout))
+	println(string(jout))
 	jout, jerr = json.MarshalIndent(env.Indirs[0], "indirr: ", "  ")
 	if jerr != nil {
 		println(jerr)
 		panic(jerr)
 	}
 	L.L.Info(string(jout))
+	println(string(jout))
 	// fmt.Printf("==> env.Inexpandirs: %#v \n", env.Inexpandirs)
 
 	// =============================
