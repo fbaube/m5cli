@@ -105,8 +105,8 @@ func (env *XmlAppEnv) Exec() error {
 		println(jerr)
 		panic(jerr)
 	}
-	L.L.Info(string(jout))
-	println(string(jout))
+	L.L.Info("JSON! " + string(jout))
+	println("JSON! " + string(jout))
 	jout, jerr = json.MarshalIndent(env.Indirs[0], "indirr: ", "  ")
 	if jerr != nil {
 		println(jerr)
@@ -413,6 +413,16 @@ func (env *XmlAppEnv) Exec() error {
 	var usingDB bool = (env.SimpleRepo != nil)
 	fmt.Printf("env.SimpleRepo: <%T> %#v \n",
 		env.SimpleRepo, env.SimpleRepo)
+        var jout []byte
+        var jerr error
+	jout, jerr = json.MarshalIndent(env.SimopleRepo, "SimpleRepo: ", "  ")
+        if jerr != nil {
+		println(jerr)
+	        panic(jerr)
+        }
+        L.L.Info("JSON! " + string(jout))
+        println("JSON! " + string(jout))
+ 
 	var batchIndex int
 	var pSR *DRS.SqliteRepo
 	var ok bool
