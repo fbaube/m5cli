@@ -3,11 +3,14 @@ package exec
 import(
 	"fmt"
 	"errors"
+	"os"
 	"github.com/fbaube/mcfile"
 	FU "github.com/fbaube/fileutils"
 )
 
-func LoadFilepathsContents(ff []FU.FSItem) ([]*mcfile.Contentity, []error) {
+// LoadFilepathsContents can return a nil or empty second return value.
+// The items in the two arrays do mnot correspond. 
+func LoadFilepathsContents(ff []FU.FSItem) ([]*mcfile.Contentity, []*os.PathError) {
 
      if ff == nil || len(ff) == 0 {
      	return nil, nil

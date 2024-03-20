@@ -99,21 +99,23 @@ func (env *XmlAppEnv) Exec() error {
 	L.L.Progress("env.Indirs:: [%d]: %#v \n", len(env.Indirs), env.Indirs)
 	// ALSO DUMP AS JSON
 	var jout []byte
-	var jerr error 
-	jout, jerr = json.MarshalIndent(env.Infiles[0], "infile: ", "  ")
-	if jerr != nil {
+	var jerr error
+	if len(env.Infiles) > 0 {
+	   jout, jerr = json.MarshalIndent(env.Infiles[0], "infile: ", "  ")
+	   if jerr != nil {
 		println(jerr)
 		panic(jerr)
+		}
+	    L.L.Dbg("JSON! " + string(jout))
 	}
-	L.L.Info("JSON! " + string(jout))
-	println("JSON! " + string(jout))
-	jout, jerr = json.MarshalIndent(env.Indirs[0], "indirr: ", "  ")
-	if jerr != nil {
+	if len(env.Indirs) > 0	{
+	   jout, jerr = json.MarshalIndent(env.Indirs[0], "indirr: ", "  ")
+	    if jerr != nil {
 		println(jerr)
 		panic(jerr)
+	    }
+	    L.L.Dbg("JSON! " + string(jout))
 	}
-	L.L.Info(string(jout))
-	println(string(jout))
 	// fmt.Printf("==> env.Inexpandirs: %#v \n", env.Inexpandirs)
 
 	// =============================
@@ -121,7 +123,7 @@ func (env *XmlAppEnv) Exec() error {
 	//     Make a new Contentity
 	// =============================
 	InputContentities, ee = exec.LoadFilepathsContents(env.Infiles)
-	gotCtys := InputContentities != nil || len(InputContentities)	> 0
+	gotCtys := InputContentities != nil || len(InputContentities) > 0
 	gotErrs := ee != nil || len(ee) > 0
 	if gotCtys || gotErrs {
 	   	L.L.Info("RESULTS for %d infiles: %d OK, %d not OK \n",
@@ -129,7 +131,7 @@ func (env *XmlAppEnv) Exec() error {
 		for i, pC := range InputContentities {
 		    L.L.Info("InFile[%02d] OK! [%d] %s :: %s", 
 			i, len(pC.FSItem.Raw), pC.MarkupType(),
-			SU.ElideHomeDir(pC.AbsFP()))
+			pC.FSItem.FPs.ShortFP) 
 		/* if pCty.MarkupType() == "UNK" {
 		   	s := fmt.Sprintf("INfile[%d]: [%d] %s %s",
                         i, len(pCty.PathProps.Raw),

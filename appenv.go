@@ -90,12 +90,13 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	//   PROCESS OUTPUT-FILES ARGUMENT
 	// =================================
 	// A relative filepath is OK
-	pOF, e := FU.NewFSItem(cfg.p.sOutdir) // CA.Out.RelFilePath)
-	env.Outdir = *pOF
-	if e != nil {
+	if cfg.p.sOutdir != "" {
+	   pOF, e := FU.NewFSItem(cfg.p.sOutdir) // CA.Out.RelFilePath)
+	   env.Outdir = *pOF
+	   if e != nil {
 		return nil, errors.New("Could not process output file argument")
+		}
 	}
-
 	L.L.Okay(" ")
 	L.L.Okay(SU.Rfg(SU.Ybg("===                     ===")))
 	L.L.Okay(SU.Rfg(SU.Ybg("=== COLLECT INPUT PATHS ===")))
@@ -106,37 +107,28 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	//   about paths, existence, and types
 	// ====================================
 	// fmt.Printf("cfg.sInpaths: %+v \n", cfg.sInpaths)
-	var PP []*FU.FSItem
+	var FF []*FU.FSItem
 	var EE []error
 	// var errct int
 	// string = typeof  input arg+array,
-	// *FU.PP = typeof output arg+array,
+	// *FU.FF = typeof output arg+array,
 	// sInpaths = the input array
-	// NOTE that MapAwerr is written such that the
-	// func requires a ptr type, and as a side effect,
-	// R/W access is assured.
-	/* DROP THIS
-	PP, EE, errct = LOE.MapAwerr(cfg.p.sInpaths,
-		// NOTE that type inference works OK
-		// here and we did not need to put this
-		// btwn MapAwerr and cfg.sInpaths:
-		// [string, *FU.FSItem]
-		func(s string) (*FU.FSItem, error) {
-			return FU.NewFSItem(s)
-		})
-	if errct > 0 {
-		L.L.Error("CLI file/dir argument processing got %d error(s)", errct)
-	}
-	*/
 	for _, path := range cfg.p.sInpaths {
+	        L.L.Info("AppEnv: do path: " + path)
 		npp, err := FU.NewFSItem(path)
-		PP = append(PP, npp)
-		EE = append(EE, err)
+		FF = append(FF, npp)
+		// FIXME: BAD HACK - about doubly-nil interfaces 
+		if FF != nil {
+		   EE = append(EE, nil)
+		} else {
+		   EE = append(EE, err)
+		}
 	}
-	for i, pp := range PP {
+	for i, pp := range FF {
 		inp := SU.Tildotted(pp.FPs.AbsFP.S())
 		msg := fmt.Sprintf("[%d:%s] ", i, inp)
 		if EE[i] != nil {
+			L.L.Error("TRIGRD! EE[i] :: %T %#v", EE[i], EE[i])
 			L.L.Error(msg + "ERROR: " + EE[i].Error())
 			continue
 		}
