@@ -413,9 +413,9 @@ func (env *XmlAppEnv) Exec() error {
 	var usingDB bool = (env.SimpleRepo != nil)
 	fmt.Printf("env.SimpleRepo: <%T> %#v \n",
 		env.SimpleRepo, env.SimpleRepo)
-        var jout []byte
-        var jerr error
-	jout, jerr = json.MarshalIndent(env.SimopleRepo, "SimpleRepo: ", "  ")
+        // var jout []byte
+        // var jerr error
+	jout, jerr = json.MarshalIndent(env.SimpleRepo, "SimpleRepo: ", "  ")
         if jerr != nil {
 		println(jerr)
 	        panic(jerr)
