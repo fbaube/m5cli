@@ -92,7 +92,7 @@ func (env *XmlAppEnv) Exec() error {
 	// ===========================================
 	var InputContentities  []*mcfile.Contentity
 	var InputContentityFSs []*mcfile.ContentityFS
-	var ee []error
+	var ee []*os.PathError
 
 	// DUMP env.Indirs, Inexpandirs
 	L.L.Progress("env.Infiles: [%d]: %#v \n", len(env.Infiles), env.Infiles)
@@ -139,7 +139,7 @@ func (env *XmlAppEnv) Exec() error {
 			panic("UNK MarkupType in ExecuteStages; \n" + s) */
 		} 
 		for i, eC := range ee {
-		    L.L.Info("InfileErr[%02d] ERR :: %s", i, eC.Error())
+		    L.L.Info("InfileErr[%02d] ERR :: %T", i, eC) // .Error())
 		}
 	}
 	// ======================================

@@ -6,37 +6,40 @@ import(
 	"os"
 	"github.com/fbaube/mcfile"
 	FU "github.com/fbaube/fileutils"
+	SU "github.com/fbaube/stringutils"
+	L "github.com/fbaube/mlog"
 )
 
 // LoadFilepathsContents can return a nil or empty second return value.
-// The items in the two arrays do mnot correspond. 
-func LoadFilepathsContents(ff []FU.FSItem) ([]*mcfile.Contentity, []*os.PathError) {
+// The items in the two arrays do not correspond. The path sets are disjoint.
+func LoadFilepathsContents(inFSIs []FU.FSItem) ([]*mcfile.Contentity, []*os.PathError) {
 
-     if ff == nil || len(ff) == 0 {
+     if inFSIs == nil || len(inFSIs) == 0 {
      	return nil, nil
 	}
      var pCC []*mcfile.Contentity
      var pC    *mcfile.Contentity
-     var ee  []error
-     var e, eC error
+     var ee  []*os.PathError
+     var e, eC *os.PathError
      var path string 
 
      // For every input FSItem
-     for i, p := range ff {
+     for i, p := range inFSIs {
      	 path = p.FPs.AbsFP.S()
 	 pC, e = mcfile.NewContentity(path)
-	 if pC == nil || e != nil || pC.HasError() {
-		if e == nil {
-		   e = errors.New("placeholder error")
-		}
-		eC = fmt.Errorf("exec.loadFP: newcontentity<[%d]%s>: %w", i, path, e)
+	 // We know that [NewContentity] returns exactly one nil ptr, so...
+	 if pC == nil {
+		eC = &os.PathError{Op:"LoadFilepathsContents.NewContentity",
+		     Err:e,Path:fmt.Sprintf("[%d]:",i)+path} 
 		ee = append(ee, eC)
 		continue
 	 }
-	 if pC.MarkupType() == "UNK" {
-		eC = fmt.Errorf("exec.loadFP: " +
-		    "newcontentity<[%d:len%d]%s>: markupType<%s>",
-		     	i, len(p.Raw), path, pC.MarkupType())
+	 if pC.MarkupType() == SU.MU_type_DIRLIKE {
+	    L.L.Warning("LoadFilepathsContents: DIRLIKE: " + path)
+	 }
+	 if pC.MarkupType() == SU.MU_type_UNK {
+		eC = &os.PathError{Op:"exec.loadFPs",
+		    Err:errors.New("MarkupType is UNK"),Path:path}
 		ee = append(ee, eC)
                 continue
 	 }
