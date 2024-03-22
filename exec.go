@@ -92,7 +92,7 @@ func (env *XmlAppEnv) Exec() error {
 	// ===========================================
 	var InputContentities  []*mcfile.Contentity
 	var InputContentityFSs []*mcfile.ContentityFS
-	var ee []*os.PathError
+	var ee []error
 
 	// DUMP env.Indirs, Inexpandirs
 	L.L.Progress("env.Infiles: [%d]: %#v \n", len(env.Infiles), env.Infiles)
@@ -130,9 +130,9 @@ func (env *XmlAppEnv) Exec() error {
 	   		len(env.Indirs), len(InputContentities), len(ee))
 		for i, pC := range InputContentities {
 		    L.L.Info("InFile[%02d] OK! [%d] %s :: %s", 
-			i, len(pC.FSItem.Raw), pC.MarkupType(),
+			i, len(pC.FSItem.Raw), pC.MarkupTypeOfMType(),
 			pC.FSItem.FPs.ShortFP) 
-		/* if pCty.MarkupType() == "UNK" {
+		/* if pCty.MarkupTypeOfMType() == SU.MU_type_UNK {
 		   	s := fmt.Sprintf("INfile[%d]: [%d] %s %s",
                         i, len(pCty.PathProps.Raw),
                         pCty.MarkupType(), pCty.AbsFP())
@@ -266,7 +266,7 @@ func (env *XmlAppEnv) Exec() error {
 		if cty.IsDir() {
 			continue
 		}
-		if cty.MarkupType() == "UNK" {
+		if cty.MarkupTypeOfMType() == SU.MU_type_UNK {
 			panic("UNK MarkupType in ExecuteStages (2nd chance)")
 		}
 

@@ -12,15 +12,15 @@ import(
 
 // LoadFilepathsContents can return a nil or empty second return value.
 // The items in the two arrays do not correspond. The path sets are disjoint.
-func LoadFilepathsContents(inFSIs []FU.FSItem) ([]*mcfile.Contentity, []*os.PathError) {
+func LoadFilepathsContents(inFSIs []FU.FSItem) ([]*mcfile.Contentity, []error) {
 
      if inFSIs == nil || len(inFSIs) == 0 {
      	return nil, nil
 	}
      var pCC []*mcfile.Contentity
      var pC    *mcfile.Contentity
-     var ee  []*os.PathError
-     var e, eC *os.PathError
+     var ee  []error
+     var e, eC error
      var path string 
 
      // For every input FSItem
@@ -34,10 +34,10 @@ func LoadFilepathsContents(inFSIs []FU.FSItem) ([]*mcfile.Contentity, []*os.Path
 		ee = append(ee, eC)
 		continue
 	 }
-	 if pC.MarkupType() == SU.MU_type_DIRLIKE {
+	 if pC.MarkupTypeOfMType() == SU.MU_type_DIRLIKE {
 	    L.L.Warning("LoadFilepathsContents: DIRLIKE: " + path)
 	 }
-	 if pC.MarkupType() == SU.MU_type_UNK {
+	 if pC.MarkupTypeOfMType() == SU.MU_type_UNK {
 		eC = &os.PathError{Op:"exec.loadFPs",
 		    Err:errors.New("MarkupType is UNK"),Path:path}
 		ee = append(ee, eC)
