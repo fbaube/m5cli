@@ -16,7 +16,7 @@ func LoadDirpathsContentFSs(ff []FU.FSItem) ([]*mcfile.ContentityFS) {
 
      // For every input FSItem
      for iDir, pDir := range ff {
-     	 var shortName = SU.EnsureTrailingPathSep(
+     	 var shortName = FU.EnsureTrailingPathSep(
 	     SU.Tildotted(pDir.FPs.AbsFP.S()))
 	 L.L.Info("InDir[%d]: %s", iDir, shortName)
 	 pFS = mcfile.NewContentityFS(pDir.FPs.AbsFP.S(), nil)
