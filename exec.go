@@ -170,7 +170,7 @@ func (env *XmlAppEnv) Exec() error {
 		// Write out a css-enabled html tree
 		// =================================
 		// L.L.Warning("SKIP'D: css-enabled tree for html, exec.go.L153")
-		treeFilename = fmt.Sprintf("./css-tree", iFS)
+		treeFilename = fmt.Sprintf("./css-tree-%d", iFS)
 		treeFile, e = os.Create(treeFilename)
 		if e != nil {
 			// An error here does not need to be fatal

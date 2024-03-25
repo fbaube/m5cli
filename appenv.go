@@ -138,13 +138,13 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 		switch sType {
 		case "DIR":
 			env.Indirs = append(env.Indirs, *pp)
-			sNote = " (to process recursively)"
+			sNote = "(to process recursively)"
 			// L.L.Info("Directory, to be processed recursively")
 		case "FILE":
 			env.Infiles = append(env.Infiles, *pp)
 			// L.L.Info("File")
 		case "SYMLINK":
-			sNote = " (TODO: check CLI symlink flag)"
+			sNote = "(TODO: check CLI symlink flag)"
 			// L.L.Info("File")
 		case "UnknownType":
 			sNote = "Unknown type: not file, not dir, not symlink"
