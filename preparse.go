@@ -1,20 +1,9 @@
 package m5cli
 
 import (
-	/*
-		"errors"
-		"io/fs"
-		"os"
-	*/
-	S "strings"
-
 	// "runtime/pprof"
-	"time"
-
 	// "github.com/davecheney/profile"
-
 	FU "github.com/fbaube/fileutils"
-	// "github.com/fbaube/mcfile"
 	L "github.com/fbaube/mlog" // Brings in global var L log.Logger
 	SU "github.com/fbaube/stringutils"
 )
@@ -24,10 +13,9 @@ import (
 func PreParse() {
 
 	// What time it is
-	var tStartup time.Time = time.Now()
-	var sStartup = SU.PrettifyISO(tStartup.Local().Format(time.RFC3339))
-	L.L.Info("Run @ %s (YMDHm: %s)", sStartup, SU.NowAsYMDHM())
-	L.L.Progress("Zulu: %s", S.Replace(tStartup.UTC().Format(time.RFC3339), "T", "_", 1))
+	L.L.Info("Run @ %s (YMDHm: %s)", SU.NowPlus(), SU.NowAsYMDHM())
+	// L.L.Progress("Zulu: %s", S.Replace(time.Now().UTC().
+	// 	Format(time.RFC3339), "T", "_", 1))
 
 	/*
 		f, err := os.Create("cpuprofile")
