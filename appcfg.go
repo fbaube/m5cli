@@ -33,7 +33,7 @@ func newXmlAppCfg(args []string) (*XmlAppCfg, error) {
 	var cfg *XmlAppCfg
 	var e error
 
-	fmt.Printf("DBG ARGS :: %+v \n", os.Args)
+	fmt.Printf("ARGS: %+v  \n", os.Args)
 
 	if args != nil && len(args) > 0 {
 		println("Arguments provided internally are overriding os.Args")

@@ -66,7 +66,7 @@ func main() {
 	// NOTE: For TESTING purposes, you may modify
 	// [os.Args] right here at this point in the code,
 	// and then verify it with this next Printf statement.
-	fmt.Printf("%s: %s  (os.Args)\n", os.Args[0], os.Args[1:])
+	fmt.Printf("%s: os.Args: %s \n", os.Args[0], os.Args[1:])
 
 	// S3.X() // DBSimpleTest()
 
