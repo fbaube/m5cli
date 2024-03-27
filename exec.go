@@ -271,8 +271,8 @@ func (env *XmlAppEnv) Exec() error {
 		}
 
 		L.L.SetCategory(fmt.Sprintf("%02d", ii))
-		L.L.Info(SU.Gbg("[F%02d] === %s (%d) ==="), ii,
-			SU.ElideHomeDir(cty.AbsFP()), len(cty.FSItem.Raw))
+		L.L.Info(SU.Gbg("[F%02d] %s (%d) (%s) ==="), ii,
+			SU.Tildotted(cty.AbsFP()), len(cty.FSItem.Raw), cty.MType)
 		cty.ExecuteStages()
 	}
 
