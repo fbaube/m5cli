@@ -238,8 +238,8 @@ func (env *XmlAppEnv) Exec() error {
 			f2, e2 := os.Create(tknsName)
 			f3, e3 := os.Create(treeName)
 			if e1 == nil && e2 == nil && e3 == nil {
-				L.L.Okay("created %s _echo,_tkns,_tree",
-					SU.ElideHomeDir(fnm))
+				L.L.Info("created %s _echo,_tkns,_tree",
+					SU.Tildotted(fnm))
 			} else {
 				L.L.Error("Cannot open a Total Textual file")
 			}
@@ -513,7 +513,7 @@ func (env *XmlAppEnv) Exec() error {
 		// pp := pCA.SimpleRepo.GetFileAll()
 		// fmt.Printf("    DD:Files len %d id[last] %d \n", len(pp), fileIndex)
 	}
-	println("TRYING SELECT BY ID")
+	L.L.Info("TRYING SELECT BY ID")
 	stmtS, eS := pSR.NewSelectByIdStmt(&DRM.TableDetailsCNT, 1)
 	if eS != nil {
                 return fmt.Errorf("new select contentity by id=1 stmt (cli.exec): %w", eS)
@@ -522,7 +522,7 @@ func (env *XmlAppEnv) Exec() error {
         if e3 != nil {
                 return fmt.Errorf("new select contentity by id=1 from DB (cli.exec): %w", e3)
                 }
-        fmt.Printf("exec.go: INSERT'd inbatch OK, ID:%d \n", result)
+        L.L.Warning("exec.go: INSERT'd inbatch OK, ID:%d", result)
 	pSR.CloseLogWriter()
 	return nil
 }
