@@ -112,7 +112,7 @@ func CLI() error {
 		L.L.Progress("Cannot Exec():", e.Error())
 		return e
 	}
-	L.L.Progress("OK to Exec()...")
+	L.L.Okay("OK to Exec()...")
 	// (6)
 	e = env.Exec()
 	if e != nil {

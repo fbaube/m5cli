@@ -87,5 +87,5 @@ func init() {
 	flag.IntVarP(&af.webPort, "web-port", "w", 0, usageCatalog["w"])
 
 	EnableAllFlags()
-	println("Initialised flargs OK")
+	println("flargs init OK")
 }

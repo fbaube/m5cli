@@ -114,7 +114,7 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	// *FU.FF = typeof output arg+array,
 	// sInpaths = the input array
 	for _, path := range cfg.p.sInpaths {
-	        L.L.Info("AppEnv: do path: " + path)
+	        L.L.Progress("AppEnv: do path: " + path)
 		npp, err := FU.NewFSItem(path)
 		FF = append(FF, npp)
 		// FIXME: BAD HACK - about doubly-nil interfaces 
@@ -126,9 +126,9 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	}
 	for i, pp := range FF {
 		inp := SU.Tildotted(pp.FPs.AbsFP.S())
-		msg := fmt.Sprintf("[%d:%s] ", i, inp)
+		msg := fmt.Sprintf("[%d:%s] is ", i, inp)
 		if EE[i] != nil {
-			L.L.Error("TRIGRD! EE[i] :: %T %#v", EE[i], EE[i])
+			L.L.Error("TRIGR'D! EE[i] :: %T %#v", EE[i], EE[i])
 			L.L.Error(msg + "ERROR: " + EE[i].Error())
 			continue
 		}
@@ -138,7 +138,7 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 		switch sType {
 		case "DIR":
 			env.Indirs = append(env.Indirs, *pp)
-			sNote = "(to process recursively)"
+			sNote = "to process recursively"
 			// L.L.Info("Directory, to be processed recursively")
 		case "FILE":
 			env.Infiles = append(env.Infiles, *pp)
@@ -155,8 +155,7 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 			L.L.Error(msg + sNote)
 			return env, errors.New(sNote + "Bad input")
 		}
-		// L.L.Okay(msg+"%s%s \n      \\\\ %+v", sType, sNote, *pp)
-		L.L.Okay(msg+"%s: %s", sType, sNote)
+		L.L.Progress(msg+"%s: %s", sType, sNote)
 	}
 	if len(env.Infiles) == 1 && len(env.Indirs) == 0 {
 		env.IsSingleFile = true

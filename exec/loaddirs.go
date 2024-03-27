@@ -18,12 +18,13 @@ func LoadDirpathsContentFSs(ff []FU.FSItem) ([]*mcfile.ContentityFS) {
      for iDir, pDir := range ff {
      	 var shortName = FU.EnsureTrailingPathSep(
 	     SU.Tildotted(pDir.FPs.AbsFP.S()))
-	 L.L.Info("InDir[%d]: %s", iDir, shortName)
+	 L.L.Progress("InDir[%d]: %s", iDir, shortName)
 	 pFS = mcfile.NewContentityFS(pDir.FPs.AbsFP.S(), nil)
 	 L.L.Okay("Found %d item(s) total (%d dirs, %d files)",
 	 	pFS.ItemCount(), pFS.DirCount(), pFS.FileCount())
 	 if pFS.FileCount() == 0 {
-	    	L.L.Info("No content inputs to process: " + shortName)
+	    	L.L.Warning("Found no content inputs to " +
+			"process in dir: " + shortName)
 		continue
 	 }
 	 pFSs = append(pFSs, pFS) 
