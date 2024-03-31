@@ -2,25 +2,27 @@ package m5cli
 
 import (
 	// "errors"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"time"
-	"encoding/json"
 
 	"database/sql"
+
+	DRS "github.com/fbaube/datarepo/sqlite"
+	"github.com/fbaube/m5cli/exec"
 	"github.com/fbaube/mcfile"
 	L "github.com/fbaube/mlog" // Brings in global var L
-	DRS "github.com/fbaube/datarepo/sqlite"
 	SU "github.com/fbaube/stringutils"
-	"github.com/fbaube/m5cli/exec"
+
 	// mime "github.com/fbaube/fileutils/contentmime"
 	// "github.com/fbaube/tags"
 
 	DRM "github.com/fbaube/datarepo/rowmodels"
 )
 
-// The general approach (semi-OBS): 
+// The general approach (semi-OBS):
 // 1. Filename via cmd line (can be Rel.FP)
 // 2. Filename absolute path  (i.e. Abs.FP)
 // 3. PathProps
@@ -35,19 +37,19 @@ import (
 // .
 func (env *XmlAppEnv) Exec() error {
 
-     // ======================
-     //  1. PRELIMINARY STUFF 
-     // ======================
-     /* DBG
-     // Dump out what a ContentityRow looks like in the DB
-	var cntro = new(DRM.ContentityRow)
-	var cptrs = DRM.ColumnPtrsFuncCNT(cntro, true)
-	fmt.Fprintf(os.Stderr, "ContentityRow datarepo/TableDetails: \n")
-	fmt.Fprintf(os.Stderr, "\t cntRow<%T> colPtrs <%T> \n",
-		cntro, cptrs) 
-	for iii, ppp := range cptrs {
-	    fmt.Fprintf(os.Stderr, "[%d] <%T> \n", iii, ppp)
-	    }
+	// ======================
+	//  1. PRELIMINARY STUFF
+	// ======================
+	/* DBG
+	     // Dump out what a ContentityRow looks like in the DB
+		var cntro = new(DRM.ContentityRow)
+		var cptrs = DRM.ColumnPtrsFuncCNT(cntro, true)
+		fmt.Fprintf(os.Stderr, "ContentityRow datarepo/TableDetails: \n")
+		fmt.Fprintf(os.Stderr, "\t cntRow<%T> colPtrs <%T> \n",
+			cntro, cptrs)
+		for iii, ppp := range cptrs {
+		    fmt.Fprintf(os.Stderr, "[%d] <%T> \n", iii, ppp)
+		    }
 	*/
 	var e error
 	// Timing: // tt := MU.Into("Input file processing")
@@ -81,7 +83,7 @@ func (env *XmlAppEnv) Exec() error {
 	//
 	// IndirFSs []ContentityFS (still empty at this point)
 	// :: will be filled with all the entries (both files
-	// and directories) found under the directories listed 
+	// and directories) found under the directories listed
 	// in Indirs, as expanded into ContentityFS's, then to
 	// be flattened into slices.
 
@@ -90,7 +92,7 @@ func (env *XmlAppEnv) Exec() error {
 	//  First all files named at the command line,
 	//  then (recursively) all directories named
 	// ===========================================
-	var InputContentities  []*mcfile.Contentity
+	var InputContentities []*mcfile.Contentity
 	var InputContentityFSs []*mcfile.ContentityFS
 	var ee []error
 
@@ -101,20 +103,20 @@ func (env *XmlAppEnv) Exec() error {
 	var jout []byte
 	var jerr error
 	if len(env.Infiles) > 0 {
-	   jout, jerr = json.MarshalIndent(env.Infiles[0], "infile: ", "  ")
-	   if jerr != nil {
-		println(jerr)
-		panic(jerr)
+		jout, jerr = json.MarshalIndent(env.Infiles[0], "infile: ", "  ")
+		if jerr != nil {
+			println(jerr)
+			panic(jerr)
 		}
-	    L.L.Dbg("JSON! " + string(jout))
+		L.L.Dbg("JSON! " + string(jout))
 	}
-	if len(env.Indirs) > 0	{
-	   jout, jerr = json.MarshalIndent(env.Indirs[0], "indirr: ", "  ")
-	    if jerr != nil {
-		println(jerr)
-		panic(jerr)
-	    }
-	    L.L.Dbg("JSON! " + string(jout))
+	if len(env.Indirs) > 0 {
+		jout, jerr = json.MarshalIndent(env.Indirs[0], "indirr: ", "  ")
+		if jerr != nil {
+			println(jerr)
+			panic(jerr)
+		}
+		L.L.Dbg("JSON! " + string(jout))
 	}
 	// fmt.Printf("==> env.Inexpandirs: %#v \n", env.Inexpandirs)
 
@@ -126,30 +128,30 @@ func (env *XmlAppEnv) Exec() error {
 	gotCtys := InputContentities != nil || len(InputContentities) > 0
 	gotErrs := ee != nil || len(ee) > 0
 	if gotCtys || gotErrs {
-	   	L.L.Info("RESULTS for %d infiles: %d OK, %d not OK \n",
-	   		len(env.Indirs), len(InputContentities), len(ee))
+		L.L.Info("RESULTS for %d infiles: %d OK, %d not OK \n",
+			len(env.Indirs), len(InputContentities), len(ee))
 		for i, pC := range InputContentities {
-		    L.L.Info("InFile[%02d] OK! [%d] %s :: %s", 
-			i, len(pC.FSItem.Raw), pC.MarkupTypeOfMType(),
-			pC.FSItem.FPs.ShortFP) 
-		/* if pCty.MarkupTypeOfMType() == SU.MU_type_UNK {
-		   	s := fmt.Sprintf("INfile[%d]: [%d] %s %s",
-                        i, len(pCty.PathProps.Raw),
-                        pCty.MarkupType(), pCty.AbsFP())
-			panic("UNK MarkupType in ExecuteStages; \n" + s) */
-		} 
+			L.L.Info("InFile[%02d] OK! [%d] %s :: %s",
+				i, len(pC.FSItem.Raw), pC.MarkupTypeOfMType(),
+				pC.FSItem.FPs.ShortFP)
+			/* if pCty.MarkupTypeOfMType() == SU.MU_type_UNK {
+					   	s := fmt.Sprintf("INfile[%d]: [%d] %s %s",
+			                        i, len(pCty.PathProps.Raw),
+			                        pCty.MarkupType(), pCty.AbsFP())
+						panic("UNK MarkupType in ExecuteStages; \n" + s) */
+		}
 		for i, eC := range ee {
-		    L.L.Info("InfileErr[%02d] ERR :: %T", i, eC) // .Error())
+			L.L.Info("InfileErr[%02d] ERR :: %T", i, eC) // .Error())
 		}
 	}
 	// ======================================
-	//  2b. FOR EVERY CLI INPUT DIRECTORY 
+	//  2b. FOR EVERY CLI INPUT DIRECTORY
 	//      Make a new Contentity filesystem
 	// ======================================
 	InputContentityFSs = exec.LoadDirpathsContentFSs(env.Indirs)
 	for iFS, pFS := range InputContentityFSs {
 		// ==============================
-		// Write out a tree rep to a file 
+		// Write out a tree rep to a file
 		// ==============================
 		// L.L.Warning("Skip'd wrtg out tree rep: [%d]", iFS)
 		var treeFile *os.File
@@ -415,16 +417,16 @@ func (env *XmlAppEnv) Exec() error {
 	var usingDB bool = (env.SimpleRepo != nil)
 	fmt.Printf("env.SimpleRepo: <%T> %#v \n",
 		env.SimpleRepo, env.SimpleRepo)
-        // var jout []byte
-        // var jerr error
+	// var jout []byte
+	// var jerr error
 	jout, jerr = json.MarshalIndent(env.SimpleRepo, "SimpleRepo: ", "  ")
-        if jerr != nil {
+	if jerr != nil {
 		println(jerr)
-	        panic(jerr)
-        }
-        L.L.Info("JSON! " + string(jout))
-        println("JSON! " + string(jout))
- 
+		panic(jerr)
+	}
+	L.L.Info("JSON! " + string(jout))
+	println("JSON! " + string(jout))
+
 	var batchIndex int
 	var pSR *DRS.SqliteRepo
 	var ok bool
@@ -443,8 +445,8 @@ func (env *XmlAppEnv) Exec() error {
 	}
 	// if usingDB && env.cfg.b.DBdoImport {
 	if env.cfg.b.DBdoImport {
-	   	if !usingDB {
-		   panic("Exec: doImport but not usingDB")
+		if !usingDB {
+			panic("Exec: doImport but not usingDB")
 		}
 		var err error
 		var inTx bool
@@ -467,39 +469,49 @@ func (env *XmlAppEnv) Exec() error {
 		for _, pMCF := range InputContentities {
 			// Prepare a DB record for the File
 			pMCF.T_Imp = timeNow
-			L.L.Info("exec.L440: Trying new INSERT Generic")
-			var stmt string
-			// stmt, e = pSR.NewInsertStmt(&pMCF.ContentityRow) 
-			stmt, e = DRS.NewInsertStmtGnrcFunc(pSR, &pMCF.ContentityRow) 
-			if e != nil {
-				return mcfile.WrapAsContentityError(e, 
-				  "new insert contentity stmt (cli.exec)", pMCF)
-			}
+			// L.L.Info("exec.L470: Trying new INSERT Generic")
+			/*
+				var stmt string
+				// OBS stmt, e = pSR.NewInsertStmt(&pMCF.ContentityRow)
+				stmt, e = DRS.NewInsertStmtGnrcFunc(
+				      pSR, &pMCF.ContentityRow)
+				if e != nil {
+					return mcfile.WrapAsContentityError(e,
+					  "new insert contentity stmt (cli.exec)", pMCF)
+				}
+				var insID int
+				insID, e = pSR.ExecInsertStmt(stmt)
+			*/
 			var insID int
-			insID, e = pSR.ExecInsertStmt(stmt)
+			insID, e = DRS.DoInsertGeneric(pSR, &pMCF.ContentityRow)
 			if e != nil {
-				return mcfile.WrapAsContentityError(e, 
-				"insert contentity to DB (cli.exec)", pMCF)
-			} 
+				return mcfile.WrapAsContentityError(e,
+					"insert contentity to DB (cli.exec)", pMCF)
+			}
 			L.L.Info("Added file to import batch, ID: %d", insID)
-		}		
+		}
 		pIB := new(DRM.InbatchRow)
 		pIB.FilCt = len(InputContentities)
 		pIB.Descr = "CLI import"
 		// pIB.RelFP =
 		// pIB.AnsFP =
 		pIB.T_Cre, pIB.T_Imp = timeNow, timeNow
-		var stmt string
-                stmt, e = pSR.NewInsertStmt(pIB)
-                if e != nil {
-                        return fmt.Errorf("new insert inbatch stmt (cli.exec): %w", e)
-                        }
-                var insID int
-                insID, e = pSR.ExecInsertStmt(stmt)
-                if e != nil {
-                        return fmt.Errorf("new insert inbatch to DB (cli.exec): %w", e)
-                        }
-                L.L.Okay("cli/exec: INSERT'd inbatch OK, ID: %d", insID)
+		/*
+			var stmt string
+			stmt, e = pSR.NewInsertStmt(pIB)
+			if e != nil {
+				return fmt.Errorf("new insert inbatch stmt (cli.exec): %w", e)
+			}
+			var insID int
+			insID, e = pSR.ExecInsertStmt(stmt)
+		*/
+		var insID int
+		insID, e = DRS.DoInsertGeneric(pSR, pIB)
+
+		if e != nil {
+			return fmt.Errorf("new insert inbatch to DB (cli.exec): %w", e)
+		}
+		L.L.Okay("cli/exec: INSERT'd inbatch OK, ID: %d", insID)
 
 		if inTx {
 			e = pTx.Commit()
@@ -516,18 +528,20 @@ func (env *XmlAppEnv) Exec() error {
 	L.L.Info("TRYING SELECT BY ID")
 	stmtS, eS := pSR.NewSelectByIdStmt(&DRM.TableDetailsCNT, 1)
 	if eS != nil {
-                return fmt.Errorf("new select contentity by id=1 stmt (cli.exec): %w", eS)
-                }
+		return fmt.Errorf("new select contentity by id=1 stmt (cli.exec): %w", eS)
+	}
 	result, e3 := DRS.ExecSelectOneStmt[*DRM.ContentityRow](pSR, stmtS)
-        if e3 != nil {
-                return fmt.Errorf("new select contentity by id=1 from DB (cli.exec): %w", e3)
-                }
-        L.L.Warning("exec.go: INSERT'd inbatch OK, ID:%d", result)
+	if e3 != nil {
+		return fmt.Errorf("new select contentity by id=1 from DB (cli.exec): %w", e3)
+	}
+	L.L.Warning("exec.go: INSERT'd inbatch OK, ID:%d", result)
 	pSR.CloseLogWriter()
 	return nil
 }
 
 func prerr(e error) string {
-     if e == nil { return "-" }
-     return e.Error()
+	if e == nil {
+		return "-"
+	}
+	return e.Error()
 }
