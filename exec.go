@@ -8,8 +8,6 @@ import (
 	"os"
 	"time"
 
-	"database/sql"
-
 	DRS "github.com/fbaube/datarepo/sqlite"
 	"github.com/fbaube/m5cli/exec"
 	"github.com/fbaube/mcfile"
@@ -36,7 +34,7 @@ import (
 // prep has already been done by other funcs.
 // .
 func (env *XmlAppEnv) Exec() error {
-
+	var e error
 	// ======================
 	//  1. PRELIMINARY STUFF
 	// ======================
@@ -51,7 +49,6 @@ func (env *XmlAppEnv) Exec() error {
 		    fmt.Fprintf(os.Stderr, "[%d] <%T> \n", iii, ppp)
 		    }
 	*/
-	var e error
 	// Timing: // tt := MU.Into("Input file processing")
 	defer func() {
 		L.L.Flush()
@@ -414,9 +411,8 @@ func (env *XmlAppEnv) Exec() error {
 	//      See also above
 	// ===============================
 
-	var usingDB bool = (env.SimpleRepo != nil)
-	fmt.Printf("env.SimpleRepo: <%T> %#v \n",
-		env.SimpleRepo, env.SimpleRepo)
+	var haveDB bool = (env.SimpleRepo != nil)
+	L.L.Dbg("env.SimpleRepo: <%T> %#v", env.SimpleRepo, env.SimpleRepo)
 	// var jout []byte
 	// var jerr error
 	jout, jerr = json.MarshalIndent(env.SimpleRepo, "SimpleRepo: ", "  ")
@@ -427,14 +423,8 @@ func (env *XmlAppEnv) Exec() error {
 	L.L.Info("JSON! " + string(jout))
 	println("JSON! " + string(jout))
 
-	var batchIndex int
 	var pSR *DRS.SqliteRepo
 	var ok bool
-	// pSR = (*DRS.SqliteRepo)(env.SimpleRepo)
-	/* pSR, ok = env.SimpleRepo.(DRS.SqliteRepo)
-	if !ok {
-		panic("Exec: repo is not SimpleSqliteRepo")
-	} */
 	pSR, ok = env.SimpleRepo.(*DRS.SqliteRepo)
 	if !ok {
 		panic("Exec: repo is not *SimpleSqliteRepo")
@@ -443,25 +433,24 @@ func (env *XmlAppEnv) Exec() error {
 		L.L.Error("Cannot proceed: SqliteRepo is not valid")
 		os.Exit(1)
 	}
-	// if usingDB && env.cfg.b.DBdoImport {
+	// if haveDB && env.cfg.b.DBdoImport {
 	if env.cfg.b.DBdoImport {
-		if !usingDB {
-			panic("Exec: doImport but not usingDB")
+	   	var batchIndex int
+		if !haveDB {
+			panic("Exec: doImport but not haveDB")
 		}
 		var err error
-		var inTx bool
-		L.L.Progress("Loading content for import batch, ID:%d",
+		L.L.Progress("Will loadicontent for import batch, ID:%d",
 			batchIndex)
-		var pTx *sql.Tx
-		// pTx = env.SimpleRepo.Handle().MustBegin()
-		pTx, err = env.SimpleRepo.Handle().Begin()
+		// var pTx *sql.Tx
+		// =====================
+		//  START A TRANSACTION
+		// =====================
+		err = env.SimpleRepo.Begin()
 		if err != nil {
-			// panic(err)
-			fmt.Println("cli.exec.beginTx: %s", err.Error())
-			L.L.Error("cli.exec.beginTx: %s", err.Error())
-		} else {
-			inTx = true
+			L.L.Error("cli.exec.BeginTx: %w", err)
 		}
+		L.L.Info("TRANSACTION IS STARTED")
 		var timeNow = time.Now().UTC().Format(time.RFC3339)
 		// ============================
 		//  FOR EVERY Input Contentity
@@ -469,7 +458,7 @@ func (env *XmlAppEnv) Exec() error {
 		for _, pMCF := range InputContentities {
 			// Prepare a DB record for the File
 			pMCF.T_Imp = timeNow
-			// L.L.Info("exec.L470: Trying new INSERT Generic")
+			// L.L.Info("exec.L463: Trying new INSERT Generic")
 			/*
 				var stmt string
 				// OBS stmt, e = pSR.NewInsertStmt(&pMCF.ContentityRow)
@@ -513,14 +502,12 @@ func (env *XmlAppEnv) Exec() error {
 		}
 		L.L.Okay("cli/exec: INSERT'd inbatch OK, ID: %d", insID)
 
-		if inTx {
-			e = pTx.Commit()
-			if e != nil {
-				return mcfile.WrapAsContentityError(e,
-					"commit txn to DB failed (cli.exec)", nil)
-			}
-			L.L.Okay("Batch imported OK: TRANSACTION SUCCEEDED")
+		e = pSR.Commit()
+		if e != nil {
+			return mcfile.WrapAsContentityError(e,
+				"commit txn to DB failed (cli.exec)", nil)
 		}
+		L.L.Okay("Batch imported OK: TRANSACTION SUCCEEDED")
 		// env.SimpleRepo.Tx = nil
 		// pp := pCA.SimpleRepo.GetFileAll()
 		// fmt.Printf("    DD:Files len %d id[last] %d \n", len(pp), fileIndex)
