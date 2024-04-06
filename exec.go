@@ -413,10 +413,11 @@ func (env *XmlAppEnv) Exec() error {
 		   L.L.Error("Cannot proceed: SqliteRepo is not valid")
 		   os.Exit(1)
 		}
-		// ========================
-		//  Verify the type of the
-		//   repo (future-proofing)
-		// ========================
+		// ================================
+		//   Verify the type of the repo
+		//  (future-proofing) and then do 
+		//  type conversion (lame hackery) 
+		// ===============================
 		var pSR *DRS.SqliteRepo
 		var ok bool
 		pSR, ok = env.SimpleRepo.(*DRS.SqliteRepo)
@@ -441,7 +442,8 @@ func (env *XmlAppEnv) Exec() error {
 		//    TO PROCEED
 		//  WITH THE IMPORT
 		// =================
-		importError := exec.ImportBatchIntoDB(env, InputContentities)
+		importError := exec.ImportBatchIntoDB(
+			pSR /* env.SimpleRepo */ , InputContentities)
 		if importError != nil {
 		   L.L.Error("exec.ImportBatchIntoDB failed: %w", importError)
 		}

@@ -27,6 +27,8 @@ github.com/fbaube/datarepo v0.0.0-20240401065913-d3bcf322594b h1:4eWCmUFhzNVRObh
 github.com/fbaube/datarepo v0.0.0-20240401065913-d3bcf322594b/go.mod h1:nQ2frN1LRsW/FFBLtJhyUY6leS4zyf86O3Fy5kcKVp8=
 github.com/fbaube/datarepo v0.0.0-20240405095351-74d388b4168b h1:KOxLP2c/nDIIGNaZau8WCbo7F+P1wie5OBbiZDyJlBQ=
 github.com/fbaube/datarepo v0.0.0-20240405095351-74d388b4168b/go.mod h1:us7eNgXfd6VyB41SNCu7Wjix0NWY6somSOZGsoFBue8=
+github.com/fbaube/datarepo v0.0.0-20240405204928-ef7dd959436a h1:J9fSsB/k+eGSeTCMj1bkPhdiy/lNiUmmMa1XSknXHQU=
+github.com/fbaube/datarepo v0.0.0-20240405204928-ef7dd959436a/go.mod h1:us7eNgXfd6VyB41SNCu7Wjix0NWY6somSOZGsoFBue8=
 github.com/fbaube/dsmnd v0.0.0-20240130143636-adbc149a7741 h1:1qmauz9VF6WcTp4umXA40TQ65UftqHE80pgx4wQSpWo=
 github.com/fbaube/dsmnd v0.0.0-20240130143636-adbc149a7741/go.mod h1:7FFQTZsr7f2vA243fKLohCwszP3Xrzi/xbFkOyPF+YQ=
 github.com/fbaube/fileutils v0.0.0-20210215145923-7216a545e6b4/go.mod h1:Q3NOQ00NULN3Un/dxrzYDaFacMnjW9vG1Ffe3cHRdro=

@@ -5,7 +5,7 @@ go 1.22
 toolchain go1.22.1
 
 require (
-	github.com/fbaube/datarepo v0.0.0-20240405095351-74d388b4168b
+	github.com/fbaube/datarepo v0.0.0-20240405204928-ef7dd959436a
 	github.com/fbaube/dsmnd v0.0.0-20240130143636-adbc149a7741
 	github.com/fbaube/fileutils v0.0.0-20240326135138-a85c3bc4c0ed
 	github.com/fbaube/logutils v0.0.0-20240118190821-fba0e702dd07
