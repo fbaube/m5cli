@@ -6,7 +6,7 @@ import (
 	DRS "github.com/fbaube/datarepo/sqlite"
 	"github.com/fbaube/mcfile"
 	L "github.com/fbaube/mlog" // Brings in global var L
-	DRM "github.com/fbaube/datarepo/rowmodels"
+	"github.com/fbaube/m5db"
 )
 
 // SimpleRepo is in env.
@@ -28,7 +28,7 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 	//   So the batch number can be
 	//  plugged into the Contentities 
 	// ===============================
-	pIB := new(DRM.InbatchRow)
+	pIB := new(m5db.InbatchRow)
 	pIB.FilCt = len(InputContentities)
 	pIB.Descr = "CLI import"
 	// pIB.RelFP =
@@ -66,11 +66,11 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 	// fmt.Printf("    DD:Files len %d id[last] %d \n", len(pp), fileIndex)
 
 	L.L.Info("TRYING SELECT BY ID")
-	stmtS, eS := pSR.NewSelectByIdStmt(&DRM.TableDetailsCNT, 1)
+	stmtS, eS := pSR.NewSelectByIdStmt(&m5db.TableDetailsCNT, 1)
 	if eS != nil {
 		return fmt.Errorf("new select contentity by id=1 stmt (cli.exec): %w", eS)
 	}
-	result, e3 := DRS.ExecSelectOneStmt[*DRM.ContentityRow](pSR, stmtS)
+	result, e3 := DRS.ExecSelectOneStmt[*m5db.ContentityRow](pSR, stmtS)
 	if e3 != nil {
 		return fmt.Errorf("new select contentity by id=1 from DB (cli.exec): %w", e3)
 	}

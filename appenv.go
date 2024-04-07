@@ -6,14 +6,13 @@ import (
 	"io"
 
 	D "github.com/fbaube/dsmnd"
-	// DI "github.com/fbaube/dbinit"
 	FU "github.com/fbaube/fileutils"
 	"github.com/fbaube/mcfile"
 	L "github.com/fbaube/mlog"
 	DR "github.com/fbaube/datarepo"
 	SU "github.com/fbaube/stringutils"
 	XU "github.com/fbaube/xmlutils"
-	DRM "github.com/fbaube/datarepo/rowmodels"
+	"github.com/fbaube/m5db"
 )
 
 type XmlAppEnv struct {
@@ -72,7 +71,7 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	dbargs.DoImport = env.cfg.b.DBdoImport
 	dbargs.DoZeroOut = env.cfg.b.DBdoZeroOut
 	dbargs.DoBackup = true 
-	dbargs.TableDetailz = DRM.M5_TableDetails
+	dbargs.TableDetailz = m5db.M5_TableDetails
 	env.SimpleRepo, e = dbargs.ProcessInit9nArgs()
 
 	if e != nil {
