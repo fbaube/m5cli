@@ -448,6 +448,7 @@ func (env *XmlAppEnv) Exec() error {
 		   L.L.Error("exec.ImportBatchIntoDB failed: %w", importError)
 		}
 		pSR.CloseLogWriter()
+		pSR.Flush()
 	}
 	return nil
 }
