@@ -47,33 +47,46 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 		// Prepare a DB record for the File
 		pMCF.T_Imp = timeNow
 		pMCF.Idx_Inbatch = newInbatchID
-		// L.L.Info("doImport.L57: Trying new INSERT Generic")
+		// L.L.Info("Exec.DoImport.L50: Trying new INSERT Generic")
 		var newCtyID int
 		newCtyID, e = DRS.DoInsertGeneric(pSR, &pMCF.ContentityRow)
 		if e != nil {
 			return mcfile.WrapAsContentityError(e,
-				"insert contentity to DB (cli.exec)", pMCF)
+				"Exec.DoImport.InsCty", pMCF)
 		}
 		L.L.Info("Added file to import batch, ID: %d", newCtyID)
 	}
+	// =====================
+	//  END THE TRANSACTION
+	// =====================
 	e = pSR.Commit()
+	
 	if e != nil {
 		return mcfile.WrapAsContentityError(e,
 			"commit txn to DB failed (cli.exec)", nil)
 	}
 	L.L.Okay("Batch imported OK: TRANSACTION SUCCEEDED")
+	L.L.Okay("Exec.DoImport: insert'ed inbatch OK, ID:%d", newInbatchID)
+
+	var wasFound bool
+	wasFound, e = DRS.DoSelectByIdGeneric(
+		  pSR, newInbatchID, new(m5db.InbatchRow))
+	L.L.Info("Found the new Inbatch: %t", wasFound)
+	
+
 	// pp := pCA.SimpleRepo.GetFileAll()
 	// fmt.Printf("    DD:Files len %d id[last] %d \n", len(pp), fileIndex)
-
-	L.L.Info("TRYING SELECT BY ID")
-	stmtS, eS := pSR.NewSelectByIdStmt(&m5db.TableDetailsCNT, 1)
+/*
+	// L.L.Info("TRYING SELECT BY ID")
+	stmtS, eS := pSR.NewSelectByIdStmt(&m5db.TableDetailsCNT, newInbatchID)
 	if eS != nil {
-		return fmt.Errorf("new select contentity by id=1 stmt (cli.exec): %w", eS)
+		return fmt.Errorf("new select contentity by id=%d stmt (cli.exec): %w", newInbatchID, eS)
 	}
 	result, e3 := DRS.ExecSelectOneStmt[*m5db.ContentityRow](pSR, stmtS)
 	if e3 != nil {
-		return fmt.Errorf("new select contentity by id=1 from DB (cli.exec): %w", e3)
+		return fmt.Errorf("new select contentity by id=%d from DB (cli.exec): %w", newInbatchID, e3)
 	}
-	L.L.Warning("exec.go: INSERT'd inbatch OK, ID:%d", result)
+*/
+
 	return nil
 }

@@ -8,6 +8,7 @@ import (
 
 	DRS "github.com/fbaube/datarepo/sqlite"
 	"github.com/fbaube/m5cli/exec"
+	"github.com/fbaube/m5db"
 	"github.com/fbaube/mcfile"
 	L "github.com/fbaube/mlog" // Brings in global var L
 	SU "github.com/fbaube/stringutils"
@@ -34,28 +35,27 @@ func (env *XmlAppEnv) Exec() error {
 	// ======================
 	//  1. PRELIMINARY STUFF
 	// ======================
-	/* DBG
+	if false { 
 	     // Dump out what a ContentityRow looks like in the DB
-		var cntro = new(DRM.ContentityRow)
-		var cptrs = DRM.ColumnPtrsFuncCNT(cntro, true)
-		fmt.Fprintf(os.Stderr, "ContentityRow datarepo/TableDetails: \n")
-		fmt.Fprintf(os.Stderr, "\t cntRow<%T> colPtrs <%T> \n",
-			cntro, cptrs)
+		var cntro = new(m5db.ContentityRow)
+		var cptrs = m5db.ColumnPtrsFuncCNT(cntro, true)
+		L.L.Info("ContentityRow datarepo/TableDetails:")
+		// L.L.Info("\t cntRow<%T> colPtrs <%T>", cntro, cptrs)
 		for iii, ppp := range cptrs {
-		    fmt.Fprintf(os.Stderr, "[%d] <%T> \n", iii, ppp)
+		    L.L.Info("\t [%d] <%T>", iii, ppp)
 		    }
-	*/
-	// Timing: // tt := MU.Into("Input file processing")
+	}
+	// Timing:
+	// tt := MU.Into("Input file processing")
 	defer func() {
 		L.L.Flush()
-		/* ; fmt.Printf("%s: done.", os.Args[0]) */
+		// fmt.Printf("%s: done.", os.Args[0]) 
 	}()
 
 	// ======================
 	//  2. INTRO to: PROCESS
 	//       ALL INPUT ITEMS
 	// ======================
-
 	L.SetMaxLevel(LOG_LEVEL_FILE_READING)
 	L.L.Okay(" ")
 	L.L.Okay(SU.Rfg(SU.Ybg("===                     ===")))
@@ -128,13 +128,13 @@ func (env *XmlAppEnv) Exec() error {
 				i, len(pC.FSItem.Raw), pC.MarkupTypeOfMType(),
 				pC.FSItem.FPs.ShortFP)
 			/* if pCty.MarkupTypeOfMType() == SU.MU_type_UNK {
-					   	s := fmt.Sprintf("INfile[%d]: [%d] %s %s",
-			                        i, len(pCty.PathProps.Raw),
-			                        pCty.MarkupType(), pCty.AbsFP())
-						panic("UNK MarkupType in ExecuteStages; \n" + s) */
+				s := fmt.Sprintf("INfile[%d]: [%d] %s %s",
+			             i, len(pCty.PathProps.Raw),
+			             pCty.MarkupType(), pCty.AbsFP())
+			panic("UNK MarkupType in ExecuteStages; \n" + s) */
 		}
 		for i, eC := range ee {
-			L.L.Info("InfileErr[%02d] ERR :: %T", i, eC) // .Error())
+			L.L.Error("InfileErr[%02d] ERR :: <%T> %s", i, eC, eC)
 		}
 	}
 	// ======================================
@@ -266,8 +266,9 @@ func (env *XmlAppEnv) Exec() error {
 		}
 
 		L.L.SetCategory(fmt.Sprintf("%02d", ii))
-		L.L.Info(SU.Gbg("[F%02d] %s (%d) (%s) ==="), ii,
-			SU.Tildotted(cty.AbsFP()), len(cty.FSItem.Raw), cty.MType)
+		L.L.Info(SU.Gbg("[F%02d] %s,%d,%s"), 
+			ii, SU.Tildotted(cty.AbsFP()),
+			len(cty.FSItem.Raw), cty.MType)
 		cty.ExecuteStages()
 	}
 
