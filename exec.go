@@ -31,6 +31,7 @@ import (
 // prep has already been done by other funcs.
 // .
 func (env *XmlAppEnv) Exec() error {
+	L.SetMaxLevel(LOG_LEVEL_FILE_INTRO)
 	var e error
 	// ======================
 	//  1. PRELIMINARY STUFF

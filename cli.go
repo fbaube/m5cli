@@ -80,6 +80,8 @@ func CLI() error {
 	var env *XmlAppEnv
 	var e error
 
+	L.SetMaxLevel(LOG_LEVEL_FILE_INTRO)
+
 	// ===(1)===
 	if len(os.Args) < 2 && !WU.IsBrowser() {
 		myUsage()

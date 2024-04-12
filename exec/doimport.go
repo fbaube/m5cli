@@ -73,20 +73,5 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 		  pSR, newInbatchID, new(m5db.InbatchRow))
 	L.L.Info("Found the new Inbatch: %t", wasFound)
 	
-
-	// pp := pCA.SimpleRepo.GetFileAll()
-	// fmt.Printf("    DD:Files len %d id[last] %d \n", len(pp), fileIndex)
-/*
-	// L.L.Info("TRYING SELECT BY ID")
-	stmtS, eS := pSR.NewSelectByIdStmt(&m5db.TableDetailsCNT, newInbatchID)
-	if eS != nil {
-		return fmt.Errorf("new select contentity by id=%d stmt (cli.exec): %w", newInbatchID, eS)
-	}
-	result, e3 := DRS.ExecSelectOneStmt[*m5db.ContentityRow](pSR, stmtS)
-	if e3 != nil {
-		return fmt.Errorf("new select contentity by id=%d from DB (cli.exec): %w", newInbatchID, e3)
-	}
-*/
-
 	return nil
 }
