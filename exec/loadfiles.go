@@ -44,6 +44,8 @@ func LoadFilepathsContents(inFSIs []FU.FSItem) ([]*mcfile.Contentity, []error) {
                 continue
 	 }
 	 pCC = append(pCC, pC)
+	 L.L.Okay("Item OK: MType<%s> MarkupType<%s>",
+	 	pC.MType, pC.MarkupTypeOfMType())
 	}
 	return pCC, ee 
 }
