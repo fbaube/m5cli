@@ -119,15 +119,18 @@ func (env *XmlAppEnv) Exec() error {
 	//     Make a new Contentity
 	// =============================
 	InputContentities, ee = exec.LoadFilepathsContents(env.Infiles)
-	gotCtys := InputContentities != nil || len(InputContentities) > 0
-	gotErrs := ee != nil || len(ee) > 0
-	if gotCtys || gotErrs {
-		L.L.Info("RESULTS for %d infiles: %d OK, %d not OK \n",
+	// gotCtys := InputContentities != nil && len(InputContentities) > 0
+	// gotErrs := ee != nil && len(ee) > 0
+	if true { // gotCtys || gotErrs {
+		L.L.Okay("RESULTS for %d infiles: %d OK, %d not OK \n",
 			len(env.Indirs), len(InputContentities), len(ee))
 		for i, pC := range InputContentities {
-			L.L.Info("InFile[%02d] OK! [%d] %s :: %s",
+			/* L.L.Info("InFile[%02d] OK! [%d] %s :: %s",
 				i, len(pC.FSItem.Raw), pC.MarkupTypeOfMType(),
-				pC.FSItem.FPs.ShortFP)
+				pC.FSItem.FPs.ShortFP) */
+			L.L.Okay("exec.L131: InFile[%02d] len:%d MuTp:%s : %s",
+				i, len(pC.FSItem.Raw), pC.MarkupTypeOfMType(),
+				pC.FSItem.FPs.ShortFP) 
 			/* if pCty.MarkupTypeOfMType() == SU.MU_type_UNK {
 				s := fmt.Sprintf("INfile[%d]: [%d] %s %s",
 			             i, len(pCty.PathProps.Raw),
