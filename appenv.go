@@ -62,11 +62,11 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	// =======================================
 	//   PROCESS DATABASE DIRECTORY ARGUMENT
 	// =======================================
-	// A relative filepath is OK
-	// e = env.ProcessDatabaseArgs()
+	L.L.Warning(SU.Rfg(SU.Ybg("=== CLI DATABASE ===")))
 	dbargs := *new(DR.Init9nArgs)
 	dbargs.DB_type = D.DB_SQLite
 	dbargs.BaseFilename = "m5" // DR.DEFAULT_FILENAME // if omitted, still default! 
+	// A relative filepath is OK
 	dbargs.Dir = env.cfg.p.sDbdir
 	dbargs.DoImport = env.cfg.b.DBdoImport
 	dbargs.DoZeroOut = env.cfg.b.DBdoZeroOut
@@ -96,34 +96,30 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 		return nil, errors.New("Could not process output file argument")
 		}
 	}
-	L.L.Okay(" ")
-	L.L.Okay(SU.Rfg(SU.Ybg("===                     ===")))
-	L.L.Okay(SU.Rfg(SU.Ybg("=== COLLECT INPUT PATHS ===")))
-	L.L.Okay(SU.Rfg(SU.Ybg("===                     ===")))
-	L.L.Okay(" ")
 	// ====================================
 	//   PROCESS INPUT PATHS, to get info
 	//   about paths, existence, and types
 	// ====================================
-	// fmt.Printf("cfg.sInpaths: %+v \n", cfg.sInpaths)
-	var FF []*FU.FSItem
+	L.L.Warning(SU.Rfg(SU.Ybg("=== CLI PATH(S) ===")))
+	L.L.Dbg("AppCfg.sInpaths: %+v", cfg.p.sInpaths)
+	var InputFSItems []*FU.FSItem
 	var EE []error
-	// var errct int
-	// string = typeof  input arg+array,
-	// *FU.FF = typeof output arg+array,
-	// sInpaths = the input array
 	for _, path := range cfg.p.sInpaths {
-	        L.L.Progress("AppEnv: do path: " + path)
+	        L.L.Progress("AppEnv: do input path: " + path)
 		npp, err := FU.NewFSItem(path)
-		FF = append(FF, npp)
+		InputFSItems = append(InputFSItems, npp)
 		// FIXME: BAD HACK - about doubly-nil interfaces 
-		if FF != nil {
+		if InputFSItems != nil {
 		   EE = append(EE, nil)
 		} else {
 		   EE = append(EE, err)
 		}
 	}
-	for i, pp := range FF {
+	L.L.Info("%d input path(s) yielded %d F/S item(s)",
+		len(cfg.p.sInpaths), len(InputFSItems))
+	
+	L.L.Warning(SU.Rfg(SU.Ybg("=== CLI F/S ITEM(S) ===")))
+	for i, pp := range InputFSItems {
 		inp := SU.Tildotted(pp.FPs.AbsFP.S())
 		msg := fmt.Sprintf("[%d:%s] is ", i, inp)
 		if EE[i] != nil {
@@ -159,7 +155,7 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	if len(env.Infiles) == 1 && len(env.Indirs) == 0 {
 		env.IsSingleFile = true
 	}
-	L.L.Info("CLI args (unexpanded): %d files, %d directories",
+	L.L.Info("CLI arguments (unexpanded): %d file(s), %d folder(s)",
 		len(env.Infiles), len(env.Indirs))
 	return env, nil
 }

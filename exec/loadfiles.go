@@ -15,6 +15,7 @@ import(
 func LoadFilepathsContents(inFSIs []FU.FSItem) ([]*mcfile.Contentity, []error) {
 
      if inFSIs == nil || len(inFSIs) == 0 {
+     	L.L.Info("No filepaths to load")
      	return nil, nil
 	}
      var pCC []*mcfile.Contentity
@@ -32,6 +33,7 @@ func LoadFilepathsContents(inFSIs []FU.FSItem) ([]*mcfile.Contentity, []error) {
 		eC = &os.PathError{Op:"LoadFilepathsContents.NewContentity",
 		     Err:e,Path:fmt.Sprintf("[%d]:",i)+path} 
 		ee = append(ee, eC)
+		L.L.Error("LoadFileOops, nil Cty, %s", path)
 		continue
 	 }
 	 if pC.MarkupTypeOfMType() == SU.MU_type_DIRLIKE {
@@ -41,6 +43,7 @@ func LoadFilepathsContents(inFSIs []FU.FSItem) ([]*mcfile.Contentity, []error) {
 		eC = &os.PathError{Op:"exec.loadFPs",
 		    Err:errors.New("MarkupType is UNK"),Path:path}
 		ee = append(ee, eC)
+		L.L.Error("LoadFileOops, unk MuTp, %s", path)
                 continue
 	 }
 	 pCC = append(pCC, pC)
