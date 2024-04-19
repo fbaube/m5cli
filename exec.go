@@ -257,13 +257,13 @@ func (env *XmlAppEnv) Exec() error {
 	// =======================
 	for ii, cty := range InfileContentities {
 	    if cty == nil {
-	       L.L.Info("[%02d]  nil", ii)
+	       L.L.Okay("[%02d]  nil", ii)
 	    } else if cty.IsDir() {
-	       L.L.Info("[%02d]  DIR", ii)
+	       L.L.Okay("[%02d]  DIR", ii)
 	    } else {
 	       mt := cty.MType
 	       if mt == "" { mt = "(nil MType)" } 
-	       L.L.Info("[%02d]  %s \t%s", ii, mt, cty.FSItem.FPs.ShortFP)
+	       L.L.Okay("[%02d]  %s \t%s", ii, mt, cty.FSItem.FPs.ShortFP)
 	    }
 	}
 
@@ -285,9 +285,10 @@ func (env *XmlAppEnv) Exec() error {
 		}
 
 		L.L.SetCategory(fmt.Sprintf("%02d", ii))
-		L.L.Info(SU.Gbg("[F%02d] %s,%d,%s"), 
-			ii, SU.Tildotted(cty.AbsFP()),
-			len(cty.FSItem.Raw), cty.MType)
+		sss := fmt.Sprintf("[F%02d] %s [%d] %s",
+                        ii, cty.MType, len(cty.FSItem.Raw), 
+			SU.Tildotted(cty.AbsFP()))
+		L.L.Info(SU.Cyanbg(SU.Wfg(sss)))
 		cty.ExecuteStages()
 	}
 
