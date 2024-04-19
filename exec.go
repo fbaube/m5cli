@@ -250,11 +250,27 @@ func (env *XmlAppEnv) Exec() error {
 			cty.GTreeWriter = f3
 		}
 	}
+	// =======================
+	//  SUMMARIZE TO THE USER 
+	//  ALL CONTENTITIES THAT
+	//  ARE LOADED & READY
+	// =======================
+	for ii, cty := range InfileContentities {
+	    if cty == nil {
+	       L.L.Info("[%02d]  nil", ii)
+	    } else if cty.IsDir() {
+	       L.L.Info("[%02d]  DIR", ii)
+	    } else {
+	       mt := cty.MType
+	       if mt == "" { mt = "(nil MType)" } 
+	       L.L.Info("[%02d]  %s \t%s", ii, mt, cty.FSItem.FPs.ShortFP)
+	    }
+	}
 
-	// =========================
-	//  4. FOR EVERY CONTENTITY
-	//     Execute all stages
-	// =========================
+	// ======================
+	//  FOR EVERY CONTENTITY
+	//  Execute all stages
+	// ======================
 	L.SetMaxLevel(LOG_LEVEL_EXEC_STAGES)
 	L.L.Okay(SU.Rfg(SU.Ybg("=== DO CONTENTITY STAGES ===")))
 
