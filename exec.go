@@ -115,9 +115,9 @@ func (env *XmlAppEnv) Exec() error {
 
 	L.L.Warning(SU.Rfg(SU.Ybg("=== LOAD CLI FILE(S) ===")))
 	InfileContentities, ee = exec.LoadFilepathsContents(env.Infiles)
-	// gotCtys := InfileContentities != nil && len(InfileContentities) > 0
-	// gotErrs := ee != nil && len(ee) > 0
-	// if gotCtys || gotErrs {
+	gotCtys := InfileContentities != nil && len(InfileContentities) > 0
+	gotErrs := ee != nil && len(ee) > 0
+	if gotCtys || gotErrs {
 		L.L.Okay("Results for %d infiles: %d OK, %d not OK \n",
 			len(env.Infiles), len(InfileContentities), len(ee))
 		for i, pC := range InfileContentities {
@@ -136,7 +136,7 @@ func (env *XmlAppEnv) Exec() error {
 		for i, eC := range ee {
 			L.L.Error("InfileErr[%02d] ERR :: <%T> %s", i, eC, eC)
 		}
-	// }
+	}
 	L.L.Info("Loaded %d file contentity/ies", len(InfileContentities))
 	// ==================================
 	//  FOR EVERY CLI INPUT DIRECTORY
