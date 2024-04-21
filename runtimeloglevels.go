@@ -17,8 +17,8 @@ const (
         LevelDbg            // misspelled cos 8 != RFC5424 "7"
 */
 
-var LOG_LEVEL_FILE_INTRO = LU.LevelInfo // Okay // 5
-var LOG_LEVEL_FILE_READING = LU.LevelInfo // Okay // 5
+var LOG_LEVEL_FILE_INTRO = LU.LevelInfo // 6
+var LOG_LEVEL_FILE_READING = LU.LevelOkay // 5
 var LOG_LEVEL_EXEC_STAGES = LU.LevelDbg
 var LOG_LEVEL_REF_LINKING = LU.LevelInfo // 6 
 var LOG_LEVEL_WEB = LU.LevelDbg

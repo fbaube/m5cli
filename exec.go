@@ -259,7 +259,7 @@ func (env *XmlAppEnv) Exec() error {
 	    if cty == nil {
 	       L.L.Okay("[%02d]  nil", ii)
 	    } else if cty.IsDir() {
-	       L.L.Okay("[%02d]  DIR", ii)
+	       L.L.Okay("[%02d]  DIR \t\t%s", ii, cty.FPs.ShortFP)
 	    } else {
 	       mt := cty.MType
 	       if mt == "" { mt = "(nil MType)" } 
@@ -277,18 +277,25 @@ func (env *XmlAppEnv) Exec() error {
 	L.L.Info("Input contentities: total %d", len(InfileContentities))
 
 	for ii, cty := range InfileContentities {
+	    	// Skip directories entirely 
 		if cty.IsDir() {
 			continue
 		}
+		// Complain loudly if the contentity is unidentified 
 		if cty.MarkupTypeOfMType() == SU.MU_type_UNK {
-			panic("UNK MarkupType in ExecuteStages (2nd chance)")
+			L.L.Error("UNK MarkupType in ExecuteStages (2nd chance)")
 		}
-
+		var dsp string 
 		L.L.SetCategory(fmt.Sprintf("%02d", ii))
-		sss := fmt.Sprintf("[F%02d] %s [%d] %s",
-                        ii, cty.MType, len(cty.FSItem.Raw), 
-			SU.Tildotted(cty.AbsFP()))
-		L.L.Info(SU.Cyanbg(SU.Wfg(sss)))
+		dsp = fmt.Sprintf("[F%02d] %s", ii, SU.Tildotted(cty.AbsFP()))
+		L.L.Info(SU.Cyanbg(SU.Wfg(dsp)))
+		mtp := cty.MType
+		mmt := cty.MimeType
+		if mtp == "" { mtp = "(nil-MType)" }
+		if mmt == "" { mmt = "(nil-Mime)" }
+		dsp = fmt.Sprintf(" %4d  %s  %s",
+		      len(cty.FSItem.Raw), mtp, mmt) 
+		L.L.Info(SU.Cyanbg(SU.Wfg(dsp)))
 		cty.ExecuteStages()
 	}
 
