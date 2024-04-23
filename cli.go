@@ -80,6 +80,9 @@ func CLI() error {
 	var env *XmlAppEnv
 	var e error
 
+	// For technical reasons, this func does not exist.
+	// defer L.L.FLush()
+
 	L.SetMaxLevel(LOG_LEVEL_FILE_INTRO)
 
 	// ===(1)===
@@ -122,8 +125,9 @@ func CLI() error {
 		println("GACK! Exec() returned an error:", e.Error())
 		// return e
 	}
-	L.L.Flush()
-	// Give messages a chance to get visible.
+	// For technical reasons, this func does not exist. 
+	// L.L.Flush()
+	// So, give messages a chance to get visible.
 	time.Sleep(500 * time.Millisecond)
 
 	if cfg.AllFlargs.webPort != 0 {

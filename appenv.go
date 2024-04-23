@@ -36,9 +36,11 @@ type XmlAppEnv struct {
 // It preserves order of processing of MCFile's (unlike
 // iterating thru a map of them), and the func signature
 // is most def in the Go style, and the style IS CHAINABLE.
-// Note that when a ContentityProcessor is declared, the
-// func signature is the RH side of this, NOT the LH side
-// ("ContentityProcessor").
+// 
+// Note that to declare a func that is a ContentityProcessor,
+// the func's signature is the RH side of this, NOT the LH side:
+// don't try to declare a "ContentityProcessor" named as such.
+// . 
 type ContentityProcessor func(
 	p *mcfile.Contentity, e error) (*mcfile.Contentity, error)
 

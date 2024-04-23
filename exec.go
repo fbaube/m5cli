@@ -122,12 +122,12 @@ func (env *XmlAppEnv) Exec() error {
 			len(env.Infiles), len(InfileContentities), len(ee))
 		for i, pC := range InfileContentities {
 			/* L.L.Info("InFile[%02d] OK! [%d] %s :: %s",
-				i, len(pC.FSItem.Raw), pC.MarkupTypeOfMType(),
+				i, len(pC.FSItem.Raw), pC.MarkupType(),
 				pC.FSItem.FPs.ShortFP) */
 			L.L.Okay("InFile[%02d] len:%d MuTp:%s : %s",
-				i, len(pC.FSItem.Raw), pC.MarkupTypeOfMType(),
+				i, len(pC.FSItem.Raw), pC.MarkupType(),
 				pC.FSItem.FPs.ShortFP) 
-			/* if pCty.MarkupTypeOfMType() == SU.MU_type_UNK {
+			/* if pCty.MarkupType() == SU.MU_type_UNK {
 				s := fmt.Sprintf("INfile[%d]: [%d] %s %s",
 			             i, len(pCty.PathProps.Raw),
 			             pCty.MarkupType(), pCty.AbsFP())
@@ -282,7 +282,7 @@ func (env *XmlAppEnv) Exec() error {
 			continue
 		}
 		// Complain loudly if the contentity is unidentified 
-		if cty.MarkupTypeOfMType() == SU.MU_type_UNK {
+		if cty.MarkupType() == SU.MU_type_UNK {
 			L.L.Error("UNK MarkupType in ExecuteStages (2nd chance)")
 		}
 		var dsp string 
@@ -293,8 +293,8 @@ func (env *XmlAppEnv) Exec() error {
 		mmt := cty.MimeType
 		if mtp == "" { mtp = "(nil-MType)" }
 		if mmt == "" { mmt = "(nil-Mime)" }
-		dsp = fmt.Sprintf(" %4d  %s  %s",
-		      len(cty.FSItem.Raw), mtp, mmt) 
+		dsp = fmt.Sprintf(" %4d  %s  %s  %s",
+		      len(cty.FSItem.Raw), cty.MarkupType(), mtp, mmt) 
 		L.L.Info(SU.Cyanbg(SU.Wfg(dsp)))
 		cty.ExecuteStages()
 	}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	flag "github.com/spf13/pflag"
 	"os"
+	"github.com/fbaube/m5cli/flargs"
 )
 
 // myUsage displays (1) the app name (or "(wasm)"), plus (2) a usage
@@ -86,6 +87,6 @@ func init() {
 	flag.IntVarP(&af.restPort, "rest-port", "r", 0, usageCatalog["r"])
 	flag.IntVarP(&af.webPort, "web-port", "w", 0, usageCatalog["w"])
 
-	EnableAllFlags()
+	flargs.EnableAllFlags()
 	println("flargs init OK")
 }
