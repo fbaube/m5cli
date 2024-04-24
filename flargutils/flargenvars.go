@@ -1,4 +1,4 @@
-package flargs
+package flargutils
 
 import (
 	"flag"

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"cmp"
 
 	DRS "github.com/fbaube/datarepo/sqlite"
 	"github.com/fbaube/m5cli/exec"
@@ -289,13 +290,14 @@ func (env *XmlAppEnv) Exec() error {
 		L.L.SetCategory(fmt.Sprintf("%02d", ii))
 		dsp = fmt.Sprintf("[F%02d] %s", ii, SU.Tildotted(cty.AbsFP()))
 		L.L.Info(SU.Cyanbg(SU.Wfg(dsp)))
-		mtp := cty.MType
-		mmt := cty.MimeType
-		if mtp == "" { mtp = "(nil-MType)" }
-		if mmt == "" { mmt = "(nil-Mime)" }
 		dsp = fmt.Sprintf(" %4d  %s  %s  %s",
-		      len(cty.FSItem.Raw), cty.MarkupType(), mtp, mmt) 
+		      len(cty.FSItem.Raw), cty.MarkupType(),
+		      cmp.Or(cty.MType, "(nil-MType)"),
+		      cmp.Or(cty.MimeType, "(nil-Mime)")) 
 		L.L.Info(SU.Cyanbg(SU.Wfg(dsp)))
+		// ==================
+		//  AND NOW, EXECUTE
+		// ==================
 		cty.ExecuteStages()
 	}
 

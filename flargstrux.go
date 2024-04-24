@@ -20,17 +20,18 @@ func (p pathFlargs) String() string {
 }
 
 type boolFlargs struct {
-	FollowSymLinks, DoArchive, DBdoImport, Help, Debug,
+	FollowSymLinks, DBdoImport, Debug, // DoArchive, Help, 
 	// Pritt, GroupGenerated, GTokens, GTree,
-	TotalTextal, Validate, DBdoZeroOut bool
+	Samples, TotalTextal, Validate, DBdoZeroOut bool
 }
 
 func (b boolFlargs) String() string {
-	return fmt.Sprintf("debug:%s ttlTxtl:%s help:%s import:%s "+
-		"validate:%s zeroOutDB:%s",
+	return fmt.Sprintf("debug:%s ttlTxtl:%s import:%s "+
+		"samples:%s validate:%s zeroOutDB:%s",
 		SU.Yn(b.Debug), SU.Yn(b.TotalTextal),
-		SU.Yn(b.Help), SU.Yn(b.DBdoImport),
+		SU.Yn(b.DBdoImport), SU.Yn(b.Samples), 
 		SU.Yn(b.Validate), SU.Yn(b.DBdoZeroOut))
+		// help:%s SU.Yn(b.Help) 
 }
 
 type AllFlargs struct {

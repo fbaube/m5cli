@@ -4,13 +4,13 @@ import (
 	// "runtime/pprof"
 	// "github.com/davecheney/profile"
 	FU "github.com/fbaube/fileutils"
-	L "github.com/fbaube/mlog" // Brings in global var L log.Logger
+	L "github.com/fbaube/mlog" 
 	SU "github.com/fbaube/stringutils"
 )
 
-// PreParse does demo type stuff and can be
+// DoSamples does demo type stuff and can be
 // skipped; it does use (and demo) mlog's L.L
-func PreParse() {
+func DoSamples() {
 
 	// What time it is
 	L.L.Info("Run @ %s (YMDHm: %s)", SU.NowPlus(), SU.NowAsYMDHM())
@@ -20,11 +20,13 @@ func PreParse() {
 	/*
 		f, err := os.Create("cpuprofile")
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "could not create CPU profile: %v\n", err)
+			fmt.Fprintf(os.Stderr,
+				"could not create CPU profile: %v\n", err)
 			os.Exit(1)
 		}
 		if err := pprof.StartCPUProfile(f); err != nil {
-			fmt.Fprintf(os.Stderr, "could not start CPU profile: %v\n", err)
+			fmt.Fprintf(os.Stderr,
+				"could not start CPU profile: %v\n", err)
 			os.Exit(1)
 		}
 		defer pprof.StopCPUProfile()

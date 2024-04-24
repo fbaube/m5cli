@@ -93,7 +93,8 @@ func CLI() error {
 	// ===(2)===
 	InitLogging(os.Args[0])
 	// ===(3)===
-	PreParse()
+	// This should be triggered by the bool flarg "Samples"
+	DoSamples()
 
 	L.L.Dbg("=============================================")
 
