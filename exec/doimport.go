@@ -13,7 +13,7 @@ import (
 func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contentity) error {
 
 	var err, e error
-	L.L.Progress("Starting import batch...")
+	L.L.Info("Starting import batch...")
 	// =====================
 	//  START A TRANSACTION
 	// =====================

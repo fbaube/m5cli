@@ -96,7 +96,7 @@ func CLI() error {
 	// This should be triggered by the bool flarg "Samples"
 	DoSamples()
 
-	L.L.Dbg("=============================================")
+	L.L.Debug("=============================================")
 
 	// ===(4)===
 	// There is no need to pass os.Args cos they are the default
@@ -115,7 +115,7 @@ func CLI() error {
 	env, e = cfg.newXmlAppEnv()
 	if e != nil {
 		L.L.Flush()
-		L.L.Progress("Cannot Exec():", e.Error())
+		L.L.Error("Cannot Exec():", e.Error())
 		return e
 	}
 	// L.L.Okay("OK to Exec()...")

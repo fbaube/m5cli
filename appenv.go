@@ -103,11 +103,11 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	//   about paths, existence, and types
 	// ====================================
 	L.L.Warning(SU.Rfg(SU.Ybg("=== CLI PATH(S) ===")))
-	L.L.Dbg("AppCfg.sInpaths: %+v", cfg.p.sInpaths)
+	L.L.Debug("AppCfg.sInpaths: %+v", cfg.p.sInpaths)
 	var InputFSItems []*FU.FSItem
 	var EE []error
 	for _, path := range cfg.p.sInpaths {
-	        L.L.Progress("AppEnv: do input path: " + path)
+	        L.L.Info("AppEnv: do input path: " + path)
 		npp, err := FU.NewFSItem(path)
 		InputFSItems = append(InputFSItems, npp)
 		// FIXME: BAD HACK - about doubly-nil interfaces 
@@ -152,7 +152,7 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 			L.L.Error(msg + sNote)
 			return env, errors.New(sNote + "Bad input")
 		}
-		L.L.Progress(msg+"%s: %s", sType, sNote)
+		L.L.Info(msg+"%s: %s", sType, sNote)
 	}
 	if len(env.Infiles) == 1 && len(env.Indirs) == 0 {
 		env.IsSingleFile = true

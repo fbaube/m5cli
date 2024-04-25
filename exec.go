@@ -12,25 +12,32 @@ import (
 	"github.com/fbaube/m5db"
 	"github.com/fbaube/mcfile"
 	L "github.com/fbaube/mlog" // Brings in global var L
-	// LU "github.com/fbaube/logutils" 
 	SU "github.com/fbaube/stringutils"
 
 	// mime "github.com/fbaube/fileutils/contentmime"
 	// "github.com/fbaube/tags"
 )
 
-// The general approach (semi-OBS):
-// 1. Filename via cmd line (can be Rel.FP)
-// 2. Filename absolute path  (i.e. Abs.FP)
-// 3. PathProps
-// 4. ContentityRecord
-// 5. Contentity
-// 5.5 GTokens
+// The general approach:
+//  1) os.Args
+//  2) AppCfg
+//  3) AppEnv
+//  4) Run()!
+//
+// How refs to files (and directories) enter the system:
+//  1) Filename via cmd line (can be Rel.FP)
+//  2) Filename absolute path  (i.e. Abs.FP)
+//  3) FSItem
+//  4) Loading & parsing: GTokens
+//  5) PathAnalysis
+//  6) ContentityRow
+//  7) Contentity 
 // 6. GTree
-// 7. ForesTree
+// 7. ContentiTree
 
-// Exec does all execution, altho only after all
-// prep has already been done by other funcs.
+// Exec does all execution of all stages for all
+// Contentities, altho only after all prep has
+// already been done by other funcs.
 // .
 func (env *XmlAppEnv) Exec() error {
 	L.SetMaxLevel(LOG_LEVEL_FILE_INTRO)
@@ -38,6 +45,7 @@ func (env *XmlAppEnv) Exec() error {
 	// ===================
 	//  PRELIMINARY STUFF
 	// ===================
+	// TODO: if bool CLI flag Samples 
 	if false { 
 	     // Dump out what a ContentityRow looks like in the DB
 		var cntro = new(m5db.ContentityRow)
@@ -79,10 +87,8 @@ func (env *XmlAppEnv) Exec() error {
 	//  line, then all directories named 
 	// ========================================
 	// DUMP env.Indirs, Inexpandirs
-	L.L.Progress("AppEnv.Infiles: [%d]: %+v \n",
-		len(env.Infiles), env.Infiles)
-	L.L.Progress("AppEnv.Indirs:: [%d]: %+v \n",
-		len(env.Indirs), env.Indirs)
+	L.L.Info("AppEnv.Infiles: [%d]: %+v \n", len(env.Infiles), env.Infiles)
+	L.L.Info("AppEnv.Indirs:: [%d]: %+v \n", len(env.Indirs), env.Indirs)
 	// ALSO DUMP AS JSON
 	var jout []byte
 	var jerr error
@@ -93,7 +99,7 @@ func (env *XmlAppEnv) Exec() error {
 			println(jerr)
 			panic(jerr)
 		}
-		L.L.Dbg("JSON! " + string(jout))
+		L.L.Debug("JSON! " + string(jout))
 	}
 	if len(env.Indirs) > 0 {
 		jout, jerr = json.MarshalIndent(env.Indirs[0], "indirr: ", "  ")
@@ -101,7 +107,7 @@ func (env *XmlAppEnv) Exec() error {
 			println(jerr)
 			panic(jerr)
 		}
-		L.L.Dbg("JSON! " + string(jout))
+		L.L.Debug("JSON! " + string(jout))
 	}
 	*/
 	// fmt.Printf("==> env.Inexpandirs: %#v \n", env.Inexpandirs)
@@ -458,7 +464,7 @@ func (env *XmlAppEnv) Exec() error {
 		//  Output some
 		//   debug info 
 		// =============
-		L.L.Dbg("env.SimpleRepo: %#v", pSR)
+		L.L.Debug("env.SimpleRepo: %#v", pSR)
 		jout, jerr = json.MarshalIndent(
 			env.SimpleRepo, "env.SimpleRepo: ", "  ")
 		if jerr != nil {

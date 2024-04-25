@@ -61,10 +61,10 @@ func newXmlAppCfg(args []string) (*XmlAppCfg, error) {
 	} */
 	cfg.CmdTail = flag.Args()
 	cfg.p.sInpaths = flag.Args()
-	L.L.Dbg("CLI bool flargs: " + cfg.b.String())
-	L.L.Dbg("CLI path flargs: %s", cfg.p.String())
-	L.L.Dbg("Cmd tail: %+v  (flag.Args)", cfg.CmdTail)
-	L.L.Dbg("In_paths: %+v  (flag.Args)", cfg.p.sInpaths)
+	L.L.Debug("CLI bool flargs: " + cfg.b.String())
+	L.L.Debug("CLI path flargs: %s", cfg.p.String())
+	L.L.Debug("Cmd tail: %+v  (flag.Args)", cfg.CmdTail)
+	L.L.Debug("In_paths: %+v  (flag.Args)", cfg.p.sInpaths)
 
 	// Handle case where XML comes from standard input i.e. os.Stdin
 	if flag.Args() != nil && len(flag.Args()) > 0 &&
