@@ -33,24 +33,29 @@ func newXmlAppCfg(args []string) (*XmlAppCfg, error) {
 	var cfg *XmlAppCfg
 	var e error
 
-	fmt.Printf("CLI: %+v  \n", os.Args)
-
-	if args != nil && len(args) > 0 {
-		println("Arguments provided internally are overriding os.Args")
-		os.Args = args
+	if args == nil || len(args) == 0 {
+		println("os.Args is being used")
+		args = os.Args 
 	}
+
+	// ==================
+	//  PARSE ALL FLARGS
+	// ==================
+	var pFlargs *AllFlargs
+	if pFlargs, e = parseFlargs(args); e != nil {
+		return nil, e
+	}
+	fmt.Printf("newXmlAppCfg IN:  %+v \n", args)
+	fmt.Printf("newXmlAppCfg OUT: %+v \n", *pFlargs)
+	
 	cfg = new(XmlAppCfg)
+	cfg.AllFlargs = *pFlargs
 	// This if-test should be unnecessary, cos we should have
 	// already caught a no-args invocation, issued a usage
 	// message, and exited. But, well, it is future-proofing.
-	if os.Args != nil && len(os.Args) > 0 {
+	if os.Args != nil && len(os.Args) > 0 && cfg.AppName == "" {
 		cfg.AppName = os.Args[0]
 	}
-	var pFlargs *AllFlargs
-	if pFlargs, e = parseFlargs(); e != nil {
-		return nil, e
-	}
-	cfg.AllFlargs = *pFlargs
 
 	// At this point, package [pflag] has parsed the command
 	// line and loaded its singletons, including flag.CommandLine.

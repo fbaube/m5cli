@@ -8,33 +8,31 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-// parseFlargs parses the CLI flag arguments in [os.Args]
+// parseFlargs parses the flargs ("flag arguments") passed in 
 // (using [pflag.Parse]) and returns an error if the caller
 // should abort execution (i.e. if no inputfile(s) specified).
+//
+// NOTE: Include the app's invocation name in args[0]. 
 //
 // The func is not exported cos it requires set-up performed
 // by NewXmlAppConfig(), and so parseFlargs should be called
 // by that func only.
 //
-// NOTE that [pflags] has been initialised to write to this
+// NOTE: [pflags] has been initialised to write to this
 // package's variable [allFlargs], gettable from func [getAllFlargs]
 //
 // Both spf13/pflag and the stdib package "flags" parse os.Args .
-// To specify a different set of arguments, for testing purposes
-// or maybe to configure a WASM execution environment, assign to
-// os.Args (it is writable!) before calling this func. This can
-// also be done by (for example) passing the desired set of CLI
-// arguments to NewXmlAppConfig().
-//
-// Therefore we do not bother to pass in arguments,
-// and the func simply accesses os.Args .
-func parseFlargs() (*AllFlargs, error) {
+// But here they are passed in explicitly, which can be helpful
+// for testing purposes or maybe to configure a WASM execution
+// environment. 
+// .
+func parseFlargs(args []string) (*AllFlargs, error) {
 	// Disable this check, because we want to be able
 	// to (hackily) use os.Args in the browser too.
 	// if isBrowser() {
 	//	return nil
 	// }
-	if len(os.Args) < 2 {
+	if len(args) < 2 {
 		println("parseFlags is calling myUsage...")
 		myUsage()
 		return nil, errors.New("No arguments. Nothing to do.")
@@ -44,6 +42,9 @@ func parseFlargs() (*AllFlargs, error) {
 	// func Parse(): API docs: Parse parses the command-line flags
 	// from os.Args[1:]. Must be called after all flags are defined
 	// and before flags are accessed by the program.
+	if args != nil && len(args) > 1 {
+	   os.Args = args
+	}
 	flag.Parse()
 	// fmt.Printf("parseFlags: flag.Args(): %+v \n", flag.Args())
 

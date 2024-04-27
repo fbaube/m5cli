@@ -24,7 +24,8 @@ import (
 //  3) AppEnv
 //  4) Run()!
 //
-// How refs to files (and directories) enter the system:
+// How refs to files (and directories) enter the
+// system )altho levels might be intermixed here):
 //  1) Filename via cmd line (can be Rel.FP)
 //  2) Filename absolute path  (i.e. Abs.FP)
 //  3) FSItem
@@ -32,46 +33,46 @@ import (
 //  5) PathAnalysis
 //  6) ContentityRow
 //  7) Contentity 
-// 6. GTree
-// 7. ContentiTree
+//  8) GTree
+//  9) ContentiTree
 
-// Exec does all execution of all stages for all
-// Contentities, altho only after all prep has
-// already been done by other funcs.
+// Exec does all execution of all stages for
+// every [mcfile.Contentity], altho only after
+// all prep has already been done by other funcs.
+// The key input is an [*XmlAppEnv].
 // .
 func (env *XmlAppEnv) Exec() error {
+
 	L.SetMaxLevel(LOG_LEVEL_FILE_INTRO)
 	var e error
+	defer func() { L.L.Flush() }()
+	// Timing:
+	// tt := MU.Into("Input file processing")
+	
 	// ===================
 	//  PRELIMINARY STUFF
 	// ===================
 	// TODO: if bool CLI flag Samples 
-	if false { 
+	if env.cfg.b.Samples { 
 	     // Dump out what a ContentityRow looks like in the DB
 		var cntro = new(m5db.ContentityRow)
 		var cptrs = m5db.ColumnPtrsFuncCNT(cntro, true)
 		L.L.Info("ContentityRow datarepo/TableDetails:")
-		// L.L.Info("\t cntRow<%T> colPtrs <%T>", cntro, cptrs)
+		L.L.Info("\t instance: cntRow<%T> colPtrs <%T>", cntro, cptrs)
 		for iii, ppp := range cptrs {
-		    L.L.Info("\t [%d] <%T>", iii, ppp)
-		    }
+		    L.L.Info("\t col[%d] <%T>", iii, ppp)
+		}
 	}
-	// Timing:
-	// tt := MU.Into("Input file processing")
-	defer func() {
-		L.L.Flush()
-		// fmt.Printf("%s: done.", os.Args[0]) 
-	}()
 
 	// At this point, "env" has three slices
 	// of variables related  to input files:
 	//
-	// Infiles []FU.PathProps :: is all the files
+	// Infiles []FU.FSItem :: is all the files 
 	// that were specified individually on the CLI.
 	// Note that if a wildcard was used, all files
 	// in the expansion appear individually here.
 	//
-	// Indirs []FU.PathProps :: is all the directories
+	// Indirs []FU.FSItem :: is all the directories
 	// that were specified individually on the CLI.
 	//
 	// IndirFSs []ContentityFS (still empty at this point)
@@ -89,27 +90,30 @@ func (env *XmlAppEnv) Exec() error {
 	// DUMP env.Indirs, Inexpandirs
 	L.L.Info("AppEnv.Infiles: [%d]: %+v \n", len(env.Infiles), env.Infiles)
 	L.L.Info("AppEnv.Indirs:: [%d]: %+v \n", len(env.Indirs), env.Indirs)
-	// ALSO DUMP AS JSON
-	var jout []byte
-	var jerr error
-	/*
-	if len(env.Infiles) > 0 {
-		jout, jerr = json.MarshalIndent(env.Infiles[0], "infile: ", "  ")
-		if jerr != nil {
+	if env.cfg.b.Samples {
+	   	// ALSO DUMP AS JSON
+		var jout []byte
+		var jerr error
+		if len(env.Infiles) > 0 {
+		   jout, jerr = json.MarshalIndent(
+		   	 env.Infiles[0], "infile: ", "  ")
+		   if jerr != nil {
 			println(jerr)
 			panic(jerr)
-		}
+		   }
 		L.L.Debug("JSON! " + string(jout))
-	}
-	if len(env.Indirs) > 0 {
-		jout, jerr = json.MarshalIndent(env.Indirs[0], "indirr: ", "  ")
-		if jerr != nil {
+		}
+		if len(env.Indirs) > 0 {
+		   jout, jerr = json.MarshalIndent(
+		   	 env.Indirs[0], "indirr: ", "  ")
+		   if jerr != nil {
 			println(jerr)
 			panic(jerr)
-		}
+		   }
 		L.L.Debug("JSON! " + string(jout))
+		}
 	}
-	*/
+
 	// fmt.Printf("==> env.Inexpandirs: %#v \n", env.Inexpandirs)
 
 	// ==========================
@@ -460,19 +464,6 @@ func (env *XmlAppEnv) Exec() error {
 		if !ok {
 		   panic("Exec: repo is not *SimpleSqliteRepo")
 		}
-		// =============
-		//  Output some
-		//   debug info 
-		// =============
-		L.L.Debug("env.SimpleRepo: %#v", pSR)
-		jout, jerr = json.MarshalIndent(
-			env.SimpleRepo, "env.SimpleRepo: ", "  ")
-		if jerr != nil {
-		   println(jerr)
-		   panic(jerr)
-		}
-		L.L.Info("JSON! " + string(jout))
-		println("JSON! " + string(jout))
 		// =================
 		//   NOW IT'S OKAY
 		//    TO PROCEED

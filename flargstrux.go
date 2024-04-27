@@ -42,6 +42,6 @@ type AllFlargs struct {
 }
 
 func (a AllFlargs) String() string {
-	return fmt.Sprintf("[PATHS]<%s> [BOOLS]<%s> WEB-port<%d> REST-port<%d>",
+	return fmt.Sprintf("[PATHS]|%s| [BOOLS]|%s| WEB-port<%d> REST-port<%d>",
 		a.p.String(), a.b.String(), a.webPort, a.restPort)
 }
