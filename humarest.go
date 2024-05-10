@@ -6,9 +6,18 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
+	"context"
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/danielgtaylor/huma/v2/adapters/humago"
 )
 
 var sRestPortNr string
+
+type Options struct {
+	// Debug bool   `doc:"Enable debug logging"`
+	// Host  string `doc:"Hostname to listen on."`
+	Port  int    `doc:"Port to listen on." short:"p" default:"8888"`
+}
 
 // Does not launch a goroutine.
 // Call with env.RestPort .
@@ -26,12 +35,28 @@ func RunRest(portNr int) error {
 		return nil
 	}
 	sRestPortNr = strconv.Itoa(portNr)
-	println("==> Running REST server on port:", sRestPortNr)
-	r := mux.NewRouter()
+	println("==> Running Huma-REST server on port:", sRestPortNr)
+	var pOpts *Options
+	pOpts = new(Options)
+	pOpts.Port = portNr
 
-	// mux docs say:
-	// Routes are tested in the order they were added to
-	// the router. If two routes match, the first one wins.
+	mux := http.NewServeMux()
+	api := humago.New(mux, huma.DefaultConfig("My API", "1.0.0"))
+		
+	huma.Register(api, huma.Operation{
+		OperationID: "hello",
+		Method:      http.MethodGet,
+		Path:        "/hello",
+	}, func(ctx context.Context, input *struct{}) (*struct{}, error) {
+		   // TODO: implement handler
+		   return nil, nil
+	})
+	// Start the server!
+	http.ListenAndServe("127.0.0.1:8888", mux)
+	return nil
+}
+
+/*
 
 	// ADMIN
 	r.HandleFunc("/stc", hdlStcRoot)
@@ -65,6 +90,8 @@ func RunRest(portNr int) error {
 	}
 	return nil
 }
+
+*/
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
