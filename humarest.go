@@ -2,57 +2,96 @@ package m5cli
 
 import (
 	"fmt"
-	L "github.com/fbaube/mlog"
-	"github.com/gorilla/mux"
+	// L "github.com/fbaube/mlog"
+	// "github.com/gorilla/mux"
 	"net/http"
 	"strconv"
-	"context"
+	CTX "context"
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humago"
 )
 
 var sRestPortNr string
 
-type Options struct {
-	// Debug bool   `doc:"Enable debug logging"`
-	// Host  string `doc:"Hostname to listen on."`
-	Port  int    `doc:"Port to listen on." short:"p" default:"8888"`
+type HelloReq struct {
+     Name string `path:"name" maxLength:"30" example:"world" doc:"Name to greet"`
 }
 
-// Does not launch a goroutine.
-// Call with env.RestPort .
-// Uses Gorilla mux, mainly cos now it's in archive mode.
-// Instructions for usage are found
-// [here](https://github.com/gorilla/mux#examples)
-// or in alternate format [github.com/gorilla/mux]
-// or in alternate format [mux]
-// or in alternate format "[muxdox]"
-//
-// [muxdox]: https://github.com/gorilla/mux#examples
-// .
+type HelloRsp struct {
+	  Body struct {
+	Message string `json:"message" example:"Hello, world!" doc:"Hello msg"`
+	}
+}
+
+type StaticReq struct {
+     Name string `path:"name" maxLength:"30" example:"world" doc:"Name to greet"`
+}
+
+type HtmlRsp struct {
+	  Body struct {
+	Message string `json:"message" example:"Hello, world!" doc:"Hello msg"`
+	}
+}
+
+type HumaHandler[I,O any] func(CTX.Context, *I) (*O, error)
+
+func DoHello/*[HelloReq, HelloRsp]*/(ctx CTX.Context, pReq *HelloReq) (pRsp *HelloRsp, e error) {
+     println("GET!-DoHello")
+     pRsp = new(HelloRsp)
+     pRsp.Body.Message = fmt.Sprintf("Hello, %s!", pReq.Name)
+     return pRsp, nil
+}
+
+type HumaOpSpec[I,O any] struct {
+     HttpVerb string
+     UrlPatrn string
+     InStruct *I
+     OutStruct *O
+     // HH HumaHandler
+}
+
+/*
+var OpSpecs = []HumaOpSpec {
+    /*HumaOpSpec[HelloReq, HelloRsp]* / {
+    	"GET", "/hello/{name}", *HelloReq, *HelloRsp, DoHello },
+}
+*/
+
 func RunRest(portNr int) error {
 	if portNr == 0 { // env.RestPort
 		return nil
 	}
 	sRestPortNr = strconv.Itoa(portNr)
 	println("==> Running Huma-REST server on port:", sRestPortNr)
-	var pOpts *Options
-	pOpts = new(Options)
-	pOpts.Port = portNr
 
 	mux := http.NewServeMux()
-	api := humago.New(mux, huma.DefaultConfig("My API", "1.0.0"))
-		
-	huma.Register(api, huma.Operation{
-		OperationID: "hello",
-		Method:      http.MethodGet,
-		Path:        "/hello",
-	}, func(ctx context.Context, input *struct{}) (*struct{}, error) {
-		   // TODO: implement handler
-		   return nil, nil
+	api := humago.New(mux, huma.DefaultConfig("Derf API", "0.0.1"))
+
+	// VERB + URL-PATTERN + IN-STRUCT + OUT+STRUCT + FUNC
+	huma.Get(api, "/hello/{name}",
+		func(ctx CTX.Context, I *HelloReq) (*HelloRsp, error) {
+		println("GET!")
+		pRsp := new(HelloRsp)
+		pRsp.Body.Message = fmt.Sprintf("Hello, %s!", I.Name)
+		return pRsp, nil
 	})
+	// OR just load this "ABOUT" into the mux as a normal HTTP Handler ???
+	huma.Get(api, "/about",
+		func(ctx CTX.Context, I *StaticReq) (*HtmlRsp, error) {
+		println("GET-STATIC")
+		pRsp := new(HtmlRsp)
+		pRsp.Body.Message = 
+			"<!DOCTYPE html>\n<html>\n<body>\nABOUT!\n" +
+			"</body></html>"
+		// pRsp
+		return pRsp, nil
+	})
+
+	// fmt.Printf("API: %+v \n", api)
+
 	// Start the server!
-	http.ListenAndServe("127.0.0.1:8888", mux)
+	// http.ListenAndServe("127.0.0.1:8888", mux)
+	http.ListenAndServe("localhost:8888", mux)
 	return nil
 }
 
@@ -91,7 +130,7 @@ func RunRest(portNr int) error {
 	return nil
 }
 
-*/
+* /
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -102,7 +141,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		println(s)
 		ssnLog.Println(s)
 		fmt.Fprintf(w, s)
-	*/
+	* /
 	L.L.Info(s)
 }
 
@@ -116,7 +155,7 @@ func TopicRootHdlr(w http.ResponseWriter, r *http.Request) {
 		ssnLog.Println(s)'
 
 		fmt.Fprintf(w, s)
-	*/
+	* /
 	L.L.Info(s)
 }
 func MapRootHdlr(w http.ResponseWriter, r *http.Request) {
@@ -128,7 +167,7 @@ func MapRootHdlr(w http.ResponseWriter, r *http.Request) {
 		println(s)
 		ssnLog.Println(s)
 		fmt.Fprintf(w, s)
-	*/
+	* /
 	L.L.Info(s)
 }
 
@@ -141,9 +180,12 @@ func StcRootHdlr(w http.ResponseWriter, r *http.Request) {
 		println(s)
 		ssnLog.Println(s)
 		fmt.Fprintf(w, s)
-	*/
+	* /
 	L.L.Info(s)
 
 	// This will serve files under http://localhost:8000/static/<filename>
 	// r.PathPrefix("/s/").Handler(http.StripPrefix("/s/", http.FileServer(http.Dir(dir))))
 }
+
+*/
+
