@@ -13,8 +13,53 @@ import (
 
 var sRestPortNr string
 
+/*
+https://huma.rocks/features/request-inputs/
+Requests can have parameters and/or a body as input to the handler function.
+Inputs use standard Go structs with special fields and/or tags.
+Here are the available tags:
+
+Tag	Description	Example
+path	Name of the path parameter	path:"thing-id"
+query	Name of the query string parm	query:"q"
+header	Name of the header parameter	header:"Authorization"
+cookie	Name of the cookie parameter	cookie:"session"
+required Mark query/hdr parm as req'd	required:"true"
+
+Request Body
+The special struct field Body will be treated as the input request
+body and can refer to any other type or you can embed a struct or
+slice inline. If the body is a pointer, then it is optional. All
+doc & validation tags are allowed on the body plus these tags:
+
+Tag	Description	Example
+contentType Override the content type	contentType:"application/my-type+json"
+required    Mark the body as required	required:"true"
+
+Response Headers
+Headers are set by fields on the response struct. Available tags:
+
+Tag     	Description	Example
+header     Name of response header header:"Authorization"
+timeFormat Format of time.Time     timeFormat:"Mon, 02 Jan 2006 15:04:05 GMT"
+
+Resoonse Body
+The special struct field Body will be treated as the response body and
+can refer to any other type or you can embed a struct or slice inline.
+A default Content-Type header will be set if none is present, selected
+via client-driven content negotiation with the server based on the
+registered serialization types.
+
+*/
+
 type HelloReq struct {
      Name string `path:"name" maxLength:"30" example:"world" doc:"Name to greet"`
+     	/* // ADDED STUFF
+	ID      string `path:"id"`
+	Detail  bool   `query:"detail" doc:"Show full details"`
+	Auth    string `header:"Authorization"`
+	Body    MyBody
+	RawBody []byte */
 }
 
 type HelloRsp struct {
@@ -24,13 +69,14 @@ type HelloRsp struct {
 }
 
 type StaticReq struct {
-     Name string `path:"name" maxLength:"30" example:"world" doc:"Name to greet"`
+     // Name string `path:"name" maxLength:"30" example:"world" doc:"Name to greet"`
 }
 
 type HtmlRsp struct {
-	  Body struct {
-	Message string `json:"message" example:"Hello, world!" doc:"Hello msg"`
-	}
+	ContentType  string    `header:"Content-Type"`
+	// LastModified time.Time `header:"Last-Modified"`
+	// MyHeader     int       `header:"My-Header"`
+	Body []byte 
 }
 
 type HumaHandler[I,O any] func(CTX.Context, *I) (*O, error)
@@ -62,7 +108,6 @@ func RunRest(portNr int) error {
 		return nil
 	}
 	sRestPortNr = strconv.Itoa(portNr)
-	println("==> Running Huma-REST server on port:", sRestPortNr)
 
 	mux := http.NewServeMux()
 	api := humago.New(mux, huma.DefaultConfig("Derf API", "0.0.1"))
@@ -77,21 +122,22 @@ func RunRest(portNr int) error {
 	})
 	// OR just load this "ABOUT" into the mux as a normal HTTP Handler ???
 	huma.Get(api, "/about",
-		func(ctx CTX.Context, I *StaticReq) (*HtmlRsp, error) {
+		func(ctx CTX.Context, Z *struct{}) (*HtmlRsp, error) {
 		println("GET-STATIC")
 		pRsp := new(HtmlRsp)
-		pRsp.Body.Message = 
+		pRsp.ContentType = "text/html" 
+		pRsp.Body = []byte(
 			"<!DOCTYPE html>\n<html>\n<body>\nABOUT!\n" +
-			"</body></html>"
-		// pRsp
+			"</body></html>")
 		return pRsp, nil
 	})
 
 	// fmt.Printf("API: %+v \n", api)
 
 	// Start the server!
-	// http.ListenAndServe("127.0.0.1:8888", mux)
-	http.ListenAndServe("localhost:8888", mux)
+	http.ListenAndServe("127.0.0.1:8888", mux)
+	// http.ListenAndServe("localhost:8888", mux)
+	println("==> Running Huma-REST server on port:", sRestPortNr)
 	return nil
 }
 
