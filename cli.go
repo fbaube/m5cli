@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os/signal" 
 	L "github.com/fbaube/mlog"
+	"github.com/fbaube/rest"
 	WU "github.com/fbaube/wasmutils"
 	"context" 
 
@@ -148,7 +149,7 @@ func CLI(args []string) error {
 	if cfg.AllFlargs.webPort != 0 {
 		RunWeb(cfg.AllFlargs.webPort)
 	} else if cfg.AllFlargs.restPort != 0 {
-		RunRest(cfg.AllFlargs.restPort)
+		rest.RunRest(cfg.AllFlargs.restPort)
 	}
 	return e
 }
