@@ -122,28 +122,33 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	
 	L.L.Warning(SU.Rfg(SU.Ybg("=== CLI F/S ITEM(S) ===")))
 	for i, pp := range InputFSItems {
-		inp := SU.Tildotted(pp.FPs.AbsFP.S())
+		inp := SU.Tildotted(pp.FPs.AbsFP)
 		msg := fmt.Sprintf("[%d:%s] is ", i, inp)
 		if EE[i] != nil {
 			L.L.Error("TRIGR'D! EE[i] :: %T %#v", EE[i], EE[i])
 			L.L.Error(msg + "ERROR: " + EE[i].Error())
 			continue
 		}
-		var sType = pp.IsWhat()
+		var sType string
+		// sType = pp.Code4L()
+		if pp.IsDir()  { sType = "DIRR" } else
+		if pp.IsFile() { sType = "FILE" } else
+		if pp.IsSymlink() { sType = "SYML" } else
+		{ sType = "OTHR" }
 		// println(">>>", msg, sType)
 		var sNote string
 		switch sType {
-		case "DIR":
+		case "DIRR":
 			env.Indirs = append(env.Indirs, *pp)
 			sNote = "to process recursively"
 			// L.L.Info("Directory, to be processed recursively")
 		case "FILE":
 			env.Infiles = append(env.Infiles, *pp)
 			// L.L.Info("File")
-		case "SYMLINK":
+		case "SYML":
 			sNote = "(TODO: check CLI symlink flag)"
 			// L.L.Info("File")
-		case "UnknownType":
+		case "OTHR":
 			sNote = "Unknown type: not file, not dir, not symlink"
 			L.L.Error(msg + sNote)
 			return env, errors.New(sNote + "Bad input")

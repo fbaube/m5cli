@@ -26,7 +26,7 @@ func LoadFilepathsContents(inFSIs []FU.FSItem) ([]*mcfile.Contentity, []error) {
 
      // For every input FSItem
      for i, p := range inFSIs {
-     	 path = p.FPs.AbsFP.S()
+     	 path = p.FPs.AbsFP
 	 pC, e = mcfile.NewContentity(path)
 	 // We know that [NewContentity] returns exactly one nil ptr, so...
 	 if pC == nil {

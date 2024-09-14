@@ -1,5 +1,11 @@
 package exec
 
+// NEED TO USE
+// path.Clean (rmvs trlg slashes) 
+// fs.ValidPath
+// FP.IsLocal (implies ValidPath, so do VP first)
+
+
 import(
 	"github.com/fbaube/mcfile"
 	FU "github.com/fbaube/fileutils"
@@ -17,9 +23,9 @@ func LoadDirpathsContentFSs(ff []FU.FSItem) ([]*mcfile.ContentityFS) {
      // For every input FSItem
      for iDir, pDir := range ff {
      	 var shortName = FU.EnsureTrailingPathSep(
-	     SU.Tildotted(pDir.FPs.AbsFP.S()))
+	     SU.Tildotted(pDir.FPs.AbsFP))
 	 L.L.Info("InDir[%d]: %s", iDir, shortName)
-	 pFS = mcfile.NewContentityFS(pDir.FPs.AbsFP.S(), nil)
+	 pFS = mcfile.NewContentityFS(pDir.FPs.AbsFP, nil)
 	 L.L.Okay("Found %d item(s) total (%d dirs, %d files)",
 	 	pFS.ItemCount(), pFS.DirCount(), pFS.FileCount())
 	 if pFS.FileCount() == 0 {
