@@ -109,19 +109,24 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	for _, path := range cfg.p.sInpaths {
 	        L.L.Info("AppEnv: do input path: " + path)
 		npp, err := FU.NewFSItem(path)
-		InputFSItems = append(InputFSItems, npp)
-		// FIXME: BAD HACK - about doubly-nil interfaces 
-		if InputFSItems != nil {
-		   EE = append(EE, nil)
-		} else {
-		   EE = append(EE, err)
-		}
+		if err != nil {
+		   fmt.Printf("AppEnv: GOT ERROR")
+		 } else {
+		   InputFSItems = append(InputFSItems, npp)
+		   // FIXME: BAD HACK - about doubly-nil interfaces 
+		   if InputFSItems != nil {
+		      EE = append(EE, nil)
+		   } else {
+		     EE = append(EE, err)
+		   }
+		 }
 	}
 	L.L.Info("%d input path(s) yielded %d F/S item(s)",
 		len(cfg.p.sInpaths), len(InputFSItems))
 	
 	L.L.Warning(SU.Rfg(SU.Ybg("=== CLI F/S ITEM(S) ===")))
 	for i, pp := range InputFSItems {
+	        if pp == nil || pp.HasError() { panic("NIL or GOT ERROR") }
 		inp := SU.Tildotted(pp.FPs.AbsFP)
 		msg := fmt.Sprintf("[%d:%s] is ", i, inp)
 		if EE[i] != nil {
@@ -129,6 +134,9 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 			L.L.Error(msg + "ERROR: " + EE[i].Error())
 			continue
 		}
+		// TRUE?! It's a problem here because we need to check 
+		// the file type without yet having a FileInfo 
+		// to work with. So we do it the hard way.
 		var sType string
 		// sType = pp.Code4L()
 		if pp.IsDir()  { sType = "DIRR" } else

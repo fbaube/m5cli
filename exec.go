@@ -133,16 +133,16 @@ func (env *XmlAppEnv) Exec() error {
 			len(env.Infiles), len(InfileContentities), len(ee))
 		for i, pC := range InfileContentities {
 			/* L.L.Info("InFile[%02d] OK! [%d] %s :: %s",
-				i, len(pC.FSItem.Raw), pC.MarkupType(),
+				i, len(pC.FSItem.Raw), pC.RawType(),
 				pC.FSItem.FPs.ShortFP) */
 			L.L.Okay("InFile[%02d] len:%d MuTp:%s : %s",
-				i, len(pC.FSItem.Raw), pC.MarkupType(),
+				i, len(pC.FSItem.Raw), pC.RawType(),
 				pC.FSItem.FPs.ShortFP) 
-			/* if pCty.MarkupType() == SU.MU_type_UNK {
+			/* if pCty.RawType() == SU.Raw_type_UNK {
 				s := fmt.Sprintf("INfile[%d]: [%d] %s %s",
 			             i, len(pCty.PathProps.Raw),
-			             pCty.MarkupType(), pCty.AbsFP())
-			panic("UNK MarkupType in ExecuteStages; \n" + s) */
+			             pCty.RawType(), pCty.AbsFP())
+			panic("UNK RawType in ExecuteStages; \n" + s) */
 		}
 		for i, eC := range ee {
 			L.L.Error("InfileErr[%02d] ERR :: <%T> %s", i, eC, eC)
@@ -293,15 +293,15 @@ func (env *XmlAppEnv) Exec() error {
 			continue
 		}
 		// Complain loudly if the contentity is unidentified 
-		if cty.MarkupType() == SU.MU_type_UNK {
-			L.L.Error("UNK MarkupType in ExecuteStages (2nd chance)")
+		if cty.RawType() == "" { // or SU.Raw_type_UNK {
+			L.L.Error("UNK RawType in ExecuteStages (2nd chance)")
 		}
 		var dsp string 
 		L.L.SetCategory(fmt.Sprintf("%02d", ii))
 		dsp = fmt.Sprintf("[F%02d] %s", ii, SU.Tildotted(cty.AbsFP()))
 		L.L.Info(SU.Cyanbg(SU.Wfg(dsp)))
 		dsp = fmt.Sprintf(" %4d  %s  %s  %s",
-		      len(cty.FSItem.Raw), cty.MarkupType(),
+		      len(cty.FSItem.Raw), cty.RawType(),
 		      cmp.Or(cty.MType, "(nil-MType)"),
 		      cmp.Or(cty.MimeType, "(nil-Mime)")) 
 		L.L.Info(SU.Cyanbg(SU.Wfg(dsp)))

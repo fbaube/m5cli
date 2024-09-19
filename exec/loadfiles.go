@@ -36,19 +36,18 @@ func LoadFilepathsContents(inFSIs []FU.FSItem) ([]*mcfile.Contentity, []error) {
 		L.L.Error("LoadFileOops, nil Cty, %s", path)
 		continue
 	 }
-	 if pC.MarkupType() == SU.MU_type_DIRLIKE {
+	 if pC.RawType() == SU.Raw_type_DIRLIKE {
 	    L.L.Warning("LoadFilepathsContents: DIRLIKE: " + path)
 	 }
-	 if pC.MarkupType() == SU.MU_type_UNK {
+	 if pC.RawType() == "" { // or SU.MU_type_UNK {
 		eC = &os.PathError{Op:"exec.loadFPs",
-		    Err:errors.New("MarkupType is UNK"),Path:path}
+		    Err:errors.New("RawType is UNK"),Path:path}
 		ee = append(ee, eC)
-		L.L.Error("LoadFileOops, unk MarkupType, %s", path)
+		L.L.Error("LoadFileOops, unk RawType, %s", path)
                 continue
 	 }
 	 pCC = append(pCC, pC)
-	 L.L.Okay("Item OK: MType<%s> MarkupType<%s>",
-	 	pC.MType, pC.MarkupType())
+	 L.L.Okay("Item OK: MType<%s> RawType<%s>", pC.MType, pC.RawType())
 	}
 	return pCC, ee 
 }
