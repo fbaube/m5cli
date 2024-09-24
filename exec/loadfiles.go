@@ -26,11 +26,14 @@ func LoadFilepathsContents(inFSIs []FU.FSItem) ([]*mcfile.Contentity, []error) {
 
      // For every input FSItem
      for i, p := range inFSIs {
-     	 path = p.FPs.AbsFP
+     	 // Use Rel.FP here, not Abs.FP, cos of
+	 // use of std lib when checking path 
+     	 path = p.FPs.RelFP // AbsFP
+	 // println("LoadFiles: mcfile.NewContentity:", path)
 	 pC, e = mcfile.NewContentity(path)
 	 // We know that [NewContentity] returns exactly one nil ptr, so...
 	 if pC == nil {
-		eC = &os.PathError{Op:"LoadFilepathsContents.NewContentity",
+		eC = &fs.PathError{Op:"LoadFilepathsContents.NewContentity",
 		     Err:e,Path:fmt.Sprintf("[%d]:",i)+path} 
 		ee = append(ee, eC)
 		L.L.Error("LoadFileOops, nil Cty, %s", path)
@@ -40,7 +43,7 @@ func LoadFilepathsContents(inFSIs []FU.FSItem) ([]*mcfile.Contentity, []error) {
 	    L.L.Warning("LoadFilepathsContents: DIRLIKE: " + path)
 	 }
 	 if pC.RawType() == "" { // or SU.MU_type_UNK {
-		eC = &os.PathError{Op:"exec.loadFPs",
+		eC = &fs.PathError{Op:"exec.loadFPs",
 		    Err:errors.New("RawType is UNK"),Path:path}
 		ee = append(ee, eC)
 		L.L.Error("LoadFileOops, unk RawType, %s", path)

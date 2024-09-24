@@ -125,6 +125,9 @@ func (env *XmlAppEnv) Exec() error {
 	var ee []error
 
 	L.L.Warning(SU.Rfg(SU.Ybg("=== LOAD CLI FILE(S) ===")))
+	// fmt.Fprintf(os.Stderr, "exec: env.Infiles: %#v \n", env.Infiles)
+	// fmt.Fprintf(os.Stderr, "exec: env.Infiles[0]: %#v \n",
+	// 	*env.Infiles[0].FPs)
 	InfileContentities, ee = exec.LoadFilepathsContents(env.Infiles)
 	gotCtys := InfileContentities != nil && len(InfileContentities) > 0
 	gotErrs := ee != nil && len(ee) > 0
