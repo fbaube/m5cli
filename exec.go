@@ -303,8 +303,10 @@ func (env *XmlAppEnv) Exec() error {
 		L.L.SetCategory(fmt.Sprintf("%02d", ii))
 		dsp = fmt.Sprintf("[F%02d] %s", ii, SU.Tildotted(cty.AbsFP()))
 		L.L.Info(SU.Cyanbg(SU.Wfg(dsp)))
+		var rawlen int
+		if cty.FSItem.TypedRaw != nil { rawlen = len(cty.FSItem.Raw) }
 		dsp = fmt.Sprintf(" %4d  %s  %s  %s",
-		      len(cty.FSItem.Raw), cty.RawType(),
+		      rawlen, cty.RawType(),
 		      cmp.Or(cty.MType, "(nil-MType)"),
 		      cmp.Or(cty.MimeType, "(nil-Mime)")) 
 		L.L.Info(SU.Cyanbg(SU.Wfg(dsp)))
