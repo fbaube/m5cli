@@ -3,7 +3,7 @@ package exec
 import(
 	"fmt"
 	"errors"
-	"os"
+	"io/fs"
 	"github.com/fbaube/mcfile"
 	FU "github.com/fbaube/fileutils"
 	SU "github.com/fbaube/stringutils"
