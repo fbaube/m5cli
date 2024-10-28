@@ -25,12 +25,12 @@ import (
 //  4) Run()!
 //
 // How refs to files (and directories) enter the
-// system )altho levels might be intermixed here):
+// system (altho levels might be intermixed here):
 //  1) Filename via cmd line (can be Rel.FP)
 //  2) Filename absolute path  (i.e. Abs.FP)
 //  3) FSItem
 //  4) Loading & parsing: GTokens
-//  5) PathAnalysis
+//  5) PathAnalysis (i.e. content analysis) 
 //  6) ContentityRow
 //  7) Contentity 
 //  8) GTree
@@ -76,10 +76,8 @@ func (env *XmlAppEnv) Exec() error {
 	// that were specified individually on the CLI.
 	//
 	// IndirFSs []ContentityFS (still empty at this point)
-	// :: will be filled with all the entries (both files
-	// and directories) found under the directories listed
-	// in Indirs, as expanded into ContentityFS's, then to
-	// be flattened into slices.
+	// :: maps to Indirs, making a ContentityFS for each, 
+	// then each is flattened into a slice.
 
 	L.SetMaxLevel(LOG_LEVEL_FILE_READING)
 	// ========================================
@@ -120,8 +118,8 @@ func (env *XmlAppEnv) Exec() error {
 	//  FOR EVERY CLI INPUT FILE
 	//  Make a new Contentity
 	// ==========================
-	var InfileContentities []*mcfile.Contentity
-	var IndirContentityFSs []*mcfile.ContentityFS
+	var InfileContentities []*mcfile.Contentity // directories 
+	var IndirContentityFSs []*mcfile.ContentityFS // trees 
 	var ee []error
 
 	L.L.Warning(SU.Rfg(SU.Ybg("=== LOAD CLI FILE(S) ===")))
@@ -138,7 +136,7 @@ func (env *XmlAppEnv) Exec() error {
 			/* L.L.Info("InFile[%02d] OK! [%d] %s :: %s",
 				i, len(pC.FSItem.Raw), pC.RawType(),
 				pC.FSItem.FPs.ShortFP) */
-			L.L.Okay("InFile[%02d] len:%d MuTp:%s : %s",
+			L.L.Okay("InFile[%02d] len:%d RawTp:%s : %s",
 				i, len(pC.FSItem.Raw), pC.RawType(),
 				pC.FSItem.FPs.ShortFP) 
 			/* if pCty.RawType() == SU.Raw_type_UNK {
@@ -153,7 +151,7 @@ func (env *XmlAppEnv) Exec() error {
 	}
 	L.L.Info("Loaded %d file contentity/ies", len(InfileContentities))
 	// ==================================
-	//  FOR EVERY CLI INPUT DIRECTORY
+	//   FOR EVERY CLI INPUT DIRECTORY
 	//  Make a new Contentity filesystem
 	// ==================================
 	L.L.Warning(SU.Rfg(SU.Ybg("=== EXPAND CLI DIR(S) ===")))
@@ -180,7 +178,7 @@ func (env *XmlAppEnv) Exec() error {
 		// =================================
 		// Write out a css-enabled html tree
 		// =================================
-		// L.L.Warning("SKIP'D: css-enabled tree for html, exec.go.L153")
+		// L.L.Warning("SKIP'D: css-enabled tree for html, exec.go.L181")
 		treeFilename = fmt.Sprintf("./css-tree-%d", iFS)
 		treeFile, e = os.Create(treeFilename)
 		if e != nil {
@@ -295,7 +293,7 @@ func (env *XmlAppEnv) Exec() error {
 		if cty.IsDir() {
 			continue
 		}
-		// Complain loudly if the contentity is unidentified 
+		// Complain loudly if the contentity type is unidentified 
 		if cty.RawType() == "" { // or SU.Raw_type_UNK {
 			L.L.Error("UNK RawType in ExecuteStages (2nd chance)")
 		}
@@ -310,6 +308,22 @@ func (env *XmlAppEnv) Exec() error {
 		      cmp.Or(cty.MType, "(nil-MType)"),
 		      cmp.Or(cty.MimeType, "(nil-Mime)")) 
 		L.L.Info(SU.Cyanbg(SU.Wfg(dsp)))
+		
+		// Now try dumping it as JSON !
+		// func MarshalIndent(v any, prefix,
+		//    indent string) ([]byte, error)
+		var jsonOut []byte 
+		jsonOut, e = json.MarshalIndent(cty, "J>", "  ")
+		/*
+		L.L.Info("================\n" +
+			 "%s \n" +
+			 "================", string(jsonOut))
+		*/
+		jsonOutFilename := cty.FPs.AbsFP + ".json"
+		errr := os.WriteFile(jsonOutFilename, jsonOut, 0644)
+		if errr != nil { panic("os.WriteFile json: " + jsonOutFilename) }
+		L.L.Info("Wrote JSON to: " + jsonOutFilename)
+		// defer jsonOutFile.Close()
 		// ==================
 		//  AND NOW, EXECUTE
 		// ==================

@@ -36,14 +36,17 @@ func (f *FlagSet) SetOutput(output io.Writer) {
 
 var multipleXmlCatalogFiles []*XU.XmlCatalogFile
 
-// inputExts more than covers the file types associated with the LwDITA spec.
-// Of course, when we check for them we do so case-insensitively.
+// inputExts is a whitelist that more than covers the 
+// file types associated with the LwDITA spec. Of course, 
+// when we check for them we do so case-insensitively.
 var inputExts = []string{
 	".dita", ".map", ".ditamap", ".xml",
 	".md", ".markdown", ".mdown", ".mkdn",
 	".html", ".htm", ".xhtml", ".png", ".gif", ".jpg"}
 
-// AllGLinks gathers all GLinks in the current run's input set.
+// AllGLinks gathers all [mcfile.GLinks] in the current
+// run's input set. This should actually be re-entrant,
+// like `mcfile.ContentityEngine`.
 var AllGLinks mcfile.GLinks
 
 /*

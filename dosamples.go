@@ -35,13 +35,13 @@ func DoSamples() {
 	/*
 		// DEMO: Let's try ERRORS
 		var ERR = errors.New("My ERR text")
-		var OPE os.PathError
+		var OPE fs.PathError
 		var PPE FU.PathPropsError
 		var CTE mcfile.ContentityError
 
 		OPE = fs.PathError{
 			Op: "myPEop", Path: "my/PE/path", Err: ERR}
-		L.L.Error("Demo of (os.PathError:%T).Error(): \n\t => %s",
+		L.L.Error("Demo of (fs.PathError:%T).Error(): \n\t => %s",
 			OPE, OPE.Error())
 
 		p1, p1e := FU.NewPathProps("/zorkle")     // ERROR
