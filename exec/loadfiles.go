@@ -10,10 +10,14 @@ import(
 	L "github.com/fbaube/mlog"
 )
 
-// LoadFilepathsContents can return a nil or empty second return value.
-// The items in the two arrays do not correspond. The path sets are disjoint.
-func LoadFilepathsContents(inFSIs []FU.FSItem) ([]*mcfile.Contentity, []error) {
-
+// LoadFilepathsContentities turns a slice of [FSItem] into
+// a slice of [Contentity]. If no errors are encountered,
+// the second return value may be nil or empty.
+// 
+// The items in the two arrays do not correspond:
+// the path sets are disjoint.
+// . 
+func LoadFilepathsContentities(inFSIs []FU.FSItem) ([]*mcfile.Contentity, []error) {
      if inFSIs == nil || len(inFSIs) == 0 {
      	L.L.Info("No filepaths to load")
      	return nil, nil

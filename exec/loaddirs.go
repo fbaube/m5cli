@@ -13,6 +13,9 @@ import(
 	L "github.com/fbaube/mlog"
 )
 
+// LoadDirpathsContentFSs turns a slice of [FSItem] into
+// a slice of [ContentityFS]. Any error is returned as 
+// an interface [Errer] of a ContentityFS. 
 func LoadDirpathsContentFSs(ff []FU.FSItem) ([]*mcfile.ContentityFS) {
      if ff == nil || len(ff) == 0 {
      	return nil
