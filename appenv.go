@@ -15,16 +15,18 @@ import (
 	"github.com/fbaube/m5db"
 )
 
+// XmlAppEnv should be usable in other scenarios.
 type XmlAppEnv struct {
 	cfg *XmlAppCfg
 	DR.SimpleRepo
 	Infiles       []FU.FSItem
 	Indirs        []FU.FSItem
-	IndirFSs      []mcfile.ContentityFS // was: []ExpanDir
+	IndirFSs      []mcfile.ContentityFS 
 	Outdir, Dbdir FU.FSItem // NOT ptr! Barfs at startup.
 	Xmlcatfile    FU.FSItem // NOT ptr! Barfs at startup.
 	Xmlschemasdir FU.FSItem // NOT ptr! Barfs at startup.
-	// Result of processing CLI arg for input file(s)
+	// IsSingleFile is a convenience flag, and a
+	// result of processing CLI arg for input file(s)
 	IsSingleFile bool
 	// Result of processing CLI args -c & -s
 	*XU.XmlCatalogFile
@@ -40,6 +42,9 @@ type XmlAppEnv struct {
 // Note that to declare a func that is a ContentityProcessor,
 // the func's signature is the RH side of this, NOT the LH side:
 // don't try to declare a "ContentityProcessor" named as such.
+//
+// Note also that interface [fileutils.Errer] kind of makes 
+// this type unnecessary. 
 // . 
 type ContentityProcessor func(
 	p *mcfile.Contentity, e error) (*mcfile.Contentity, error)
@@ -47,12 +52,12 @@ type ContentityProcessor func(
 /*
 We want errors to propogate end-to-end, thru all
 call chains (and maybe all type conversions too).
-So, it would look something like
+So, if we're not using interface Errer, it would
+look something like
 func NewFSItemFromRelFP (PP,err <= string,err) [dummy err]
 func NewMCEfromFSItem(MCE,err <= PP,err)
 func MCEprocessor(MCE,err <= MCE,err) [CHAINABLE!]
-Then we plug these into samber.lo/Map(..)
-(or variations on it).
+Then we plug these into an Iterator.
 */
 
 func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {

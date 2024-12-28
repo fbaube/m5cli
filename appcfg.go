@@ -14,7 +14,8 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-// XmlAppCfg can probably be used with various 3rd-party utilities.
+// XmlAppCfg can probably be used in other scenarios,
+// and with various 3rd-party utilities.
 type XmlAppCfg struct {
 	AppName     string
 	CmdTail     []string
@@ -37,7 +38,6 @@ func newXmlAppCfg(args []string) (*XmlAppCfg, error) {
 		println("os.Args is being used")
 		args = os.Args 
 	}
-
 	// ==================
 	//  PARSE ALL FLARGS
 	// ==================
@@ -60,7 +60,7 @@ func newXmlAppCfg(args []string) (*XmlAppCfg, error) {
 	// At this point, package [pflag] has parsed the command
 	// line and loaded its singletons, including flag.CommandLine.
 
-	// Comment this out, cos if we only use "-r" there are no files.
+	// Comment this out, cos if we use "-r" there might be no files.
 	/* if len(flag.Args()) == 0 {
 		panic("OOPS")
 	} */
