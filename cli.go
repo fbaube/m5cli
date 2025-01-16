@@ -149,7 +149,7 @@ func CLI(args []string) error {
 	if cfg.AllFlargs.webPort != 0 {
 		RunWeb(cfg.AllFlargs.webPort)
 	} else if cfg.AllFlargs.restPort != 0 {
-		rest.RunRest(cfg.AllFlargs.restPort)
+		rest.RunRest(cfg.AllFlargs.restPort, env.SimpleRepo)
 	}
 	return e
 }
