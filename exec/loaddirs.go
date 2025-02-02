@@ -31,7 +31,9 @@ func LoadDirpathsContentFSs(ff []FU.FSItem) ([]*mcfile.ContentityFS) {
 	 var e error
 	 pFS, e = mcfile.NewContentityFS(pDir.FPs.AbsFP, nil)
 	 if e != nil {
-	      	 panic("Failed: mcfile.NewContentityFS: " + pDir.FPs.AbsFP)
+	      	 L.L.Error("InDir[%d]: %s: error: %s", iDir, shortName, e.Error())
+	      	 // panic("Failed: mcfile.NewContentityFS: " + pDir.FPs.AbsFP)
+		 continue
 	 }
 	 L.L.Okay("Found %d item(s) total (%d dirs, %d files)",
 	 	pFS.ItemCount(), pFS.DirCount(), pFS.FileCount())
