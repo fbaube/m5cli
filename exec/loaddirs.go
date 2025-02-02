@@ -28,7 +28,11 @@ func LoadDirpathsContentFSs(ff []FU.FSItem) ([]*mcfile.ContentityFS) {
      	 var shortName = FU.EnsureTrailingPathSep(
 	     SU.Tildotted(pDir.FPs.AbsFP))
 	 L.L.Info("InDir[%d]: %s", iDir, shortName)
-	 pFS = mcfile.NewContentityFS(pDir.FPs.AbsFP, nil)
+	 var e error
+	 pFS, e = mcfile.NewContentityFS(pDir.FPs.AbsFP, nil)
+	 if e != nil {
+	      	 panic("Failed: mcfile.NewContentityFS: " + pDir.FPs.AbsFP)
+	 }
 	 L.L.Okay("Found %d item(s) total (%d dirs, %d files)",
 	 	pFS.ItemCount(), pFS.DirCount(), pFS.FileCount())
 	 if pFS.FileCount() == 0 {
