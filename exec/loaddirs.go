@@ -7,6 +7,7 @@ package exec
 
 
 import(
+	"fmt"
 	"github.com/fbaube/mcfile"
 	FU "github.com/fbaube/fileutils"
 	SU "github.com/fbaube/stringutils"
@@ -29,8 +30,10 @@ func LoadDirpathsContentFSs(ff []FU.FSItem) ([]*mcfile.ContentityFS) {
 	     SU.Tildotted(pDir.FPs.AbsFP))
 	 L.L.Info("InDir[%d]: %s", iDir, shortName)
 	 var e error
+	 // nil is []string of OK file extensions 
 	 pFS, e = mcfile.NewContentityFS(pDir.FPs.AbsFP, nil)
 	 if e != nil {
+	      	 fmt.Printf("InDir[%d]: %s: error: %s", iDir, shortName, e.Error())
 	      	 L.L.Error("InDir[%d]: %s: error: %s", iDir, shortName, e.Error())
 	      	 // panic("Failed: mcfile.NewContentityFS: " + pDir.FPs.AbsFP)
 		 continue
