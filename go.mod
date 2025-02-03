@@ -4,14 +4,14 @@ go 1.23
 
 require (
 	github.com/fbaube/datarepo v0.0.0-20250202180039-362029aceb3c
-	github.com/fbaube/dsmnd v0.0.0-20250111125333-2b80f885bfc2
-	github.com/fbaube/fileutils v0.0.0-20250131051553-89d93af3c09f
+	github.com/fbaube/dsmnd v0.0.0-20250203130738-5e11c27a4664
+	github.com/fbaube/fileutils v0.0.0-20250203130830-629d4e4bc31b
 	github.com/fbaube/logutils v0.0.0-20240425064504-eb572963f0fc
 	github.com/fbaube/m5db v0.0.0-20240509180501-84aae2bef357
-	github.com/fbaube/mcfile v0.0.0-20250202180219-7516d431509c
+	github.com/fbaube/mcfile v0.0.0-20250203131001-dc4e98bc2db5
 	github.com/fbaube/mlog v0.0.0-20240425064535-3b89e3b28a76
 	github.com/fbaube/rest v0.0.0-20241228090820-81e0cc812c6e
-	github.com/fbaube/stringutils v0.0.0-20250120124849-e15d0abeb13c
+	github.com/fbaube/stringutils v0.0.0-20250203130909-339670f598f3
 	github.com/fbaube/wasmutils v0.0.0-20231209183154-e25018375bc2
 	github.com/fbaube/xmlutils v0.0.0-20250202175952-00276e6317c7
 	github.com/gorilla/mux v1.8.1

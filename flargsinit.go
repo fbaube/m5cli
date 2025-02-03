@@ -59,7 +59,7 @@ var usageCatalog = map[string]string{
 	// "o": "`output_dir_path` (possibly ignored, depending on command)",
 	"r": "Run REST server on `rest_port`",
 	"s": "DTD schema file(s) `dir_path` (.dtd, .mod)",
-	"w": "Run WEB server on `web_port`",
+	"w": "Run WEB server on `web_port` (else run REST on 8000)",
 }
 
 var allFlargs *AllFlargs

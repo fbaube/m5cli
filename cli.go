@@ -146,6 +146,8 @@ func CLI(args []string) error {
 	// Give messages a chance to get visible.
 	time.Sleep(300 * time.Millisecond)
 
+	cfg.AllFlargs.restPort = 8000 // HACK!
+
 	if cfg.AllFlargs.webPort != 0 {
 		RunWeb(cfg.AllFlargs.webPort)
 	} else if cfg.AllFlargs.restPort != 0 {
