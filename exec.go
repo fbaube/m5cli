@@ -313,13 +313,13 @@ func (env *XmlAppEnv) Exec() error {
 		// func MarshalIndent(v any, prefix,
 		//    indent string) ([]byte, error)
 		var jsonOut []byte 
-		jsonOut, e = json.MarshalIndent(cty, "J>", "  ")
+		jsonOut, e = json.MarshalIndent(cty, "", "  ")
 		/*
 		L.L.Info("================\n" +
 			 "%s \n" +
 			 "================", string(jsonOut))
 		*/
-		jsonOutFilename := cty.FPs.AbsFP + ".json"
+		jsonOutFilename := cty.FPs.AbsFP + ".tmp.json"
 		errr := os.WriteFile(jsonOutFilename, jsonOut, 0644)
 		if errr != nil { panic("os.WriteFile json: " + jsonOutFilename) }
 		L.L.Info("Wrote JSON to: " + jsonOutFilename)
