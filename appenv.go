@@ -9,7 +9,7 @@ import (
 	FU "github.com/fbaube/fileutils"
 	"github.com/fbaube/mcfile"
 	L "github.com/fbaube/mlog"
-	DR "github.com/fbaube/datarepo"
+	DRP "github.com/fbaube/datarepo"
 	SU "github.com/fbaube/stringutils"
 	XU "github.com/fbaube/xmlutils"
 	"github.com/fbaube/m5db"
@@ -18,7 +18,7 @@ import (
 // XmlAppEnv should be usable in other scenarios.
 type XmlAppEnv struct {
 	cfg *XmlAppCfg
-	DR.SimpleRepo
+	DRP.SimpleRepo
 	Infiles       []FU.FSItem
 	Indirs        []FU.FSItem
 	IndirFSs      []mcfile.ContentityFS 
@@ -70,9 +70,9 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	//   PROCESS DATABASE DIRECTORY ARGUMENT
 	// =======================================
 	L.L.Warning(SU.Rfg(SU.Ybg("=== CLI DATABASE ===")))
-	dbargs := *new(DR.Init9nArgs)
+	dbargs := *new(DRP.Init9nArgs)
 	dbargs.DB_type = D.DB_SQLite
-	dbargs.BaseFilename = "m5" // DR.DEFAULT_FILENAME // if omitted, still default! 
+	dbargs.BaseFilename = "m5" // DRP.DEFAULT_FILENAME // if omitted, still default! 
 	// A relative filepath is OK
 	dbargs.Dir = env.cfg.p.sDbdir
 	dbargs.DoImport = env.cfg.b.DBdoImport
