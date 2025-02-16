@@ -3,13 +3,14 @@ package exec
 import (
 	"fmt"
 	"time"
+	"database/sql"
 	DRS "github.com/fbaube/datarepo/sqlite"
 	"github.com/fbaube/mcfile"
 	L "github.com/fbaube/mlog" // Brings in global var L
 	"github.com/fbaube/m5db"
 )
 
-// SimpleRepo is in env.
+// SimpleRepo is stored in struct [appenv].
 func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contentity) error {
 
 	var err, e error
@@ -17,9 +18,10 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 	// =====================
 	//  START A TRANSACTION
 	// =====================
-	err = pSR.Begin()
+	var Tx *sql.Tx
+	Tx, err = pSR.Begin()
 	if err != nil {
-		L.L.Error("Exec.BeginTx failed: %w", err)
+		L.L.Error("Exec.Begin.Tx failed: %w", err)
 	}
 	L.L.Info("TRANSACTION IS STARTED")
 	var timeNow = time.Now().UTC().Format(time.RFC3339)
@@ -28,14 +30,14 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 	//   So the batch number can be
 	//  plugged into the Contentities 
 	// ===============================
-	pIB := new(m5db.InbatchRow)
-	pIB.FilCt = len(InputContentities)
-	pIB.Descr = "CLI import"
-	// pIB.RelFP =
-	// pIB.AnsFP =
-	pIB.T_Cre, pIB.T_Imp = timeNow, timeNow
+	pINB := new(m5db.InbatchRow)
+	pINB.FilCt = len(InputContentities)
+	pINB.Descr = "CLI import"
+	// pINB.RelFP =
+	// pINB.AnsFP =
+	pINB.T_Cre, pINB.T_Imp = timeNow, timeNow
 	var newInbatchID int
-	newInbatchID, e = DRS.DoInsertGeneric(pSR, pIB)
+	newInbatchID, e = DRS.DoInsertGeneric(pSR, pINB)
 	if e != nil {
 		return fmt.Errorf("Exec.DoImport.inbatch failed: %w", e)
 	}
@@ -59,7 +61,7 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 	// =====================
 	//  END THE TRANSACTION
 	// =====================
-	e = pSR.Commit()
+	e = Tx.Commit() // pSR.Commit()
 	
 	if e != nil {
 		return mcfile.WrapAsContentityError(e,
@@ -71,7 +73,7 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 	var wasFound bool
 	wasFound, e = DRS.DoSelectByIdGeneric(
 		  pSR, newInbatchID, new(m5db.InbatchRow))
-	L.L.Info("Found the new Inbatch: %t", wasFound)
+	L.L.Info("Found the just-added new Inbatch?: %t", wasFound)
 	
 	return nil
 }

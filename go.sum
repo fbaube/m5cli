@@ -27,12 +27,16 @@ github.com/fbaube/datarepo v0.0.0-20250203183823-959ec19c1893 h1:7aBaWIEDZ/gvQ7F
 github.com/fbaube/datarepo v0.0.0-20250203183823-959ec19c1893/go.mod h1:oq6GpJwy94G3y83tNdH94AALog31byTlrJwpUUMAZlU=
 github.com/fbaube/datarepo v0.0.0-20250213120338-f3055dba645d h1:cQLKblCin0C1a5en+VR7RrOe1Sfe+KTHfX4wJuw6OmE=
 github.com/fbaube/datarepo v0.0.0-20250213120338-f3055dba645d/go.mod h1:WFIZPbkCMDg25ErnHP6RriruOkJDegZv7Nr/SZEksWE=
+github.com/fbaube/datarepo v0.0.0-20250213154107-c6aac73aa321 h1:SzAYXZxv3LI22tOo7udUJTfFybFpWH0ggaL33YoHNsM=
+github.com/fbaube/datarepo v0.0.0-20250213154107-c6aac73aa321/go.mod h1:WFIZPbkCMDg25ErnHP6RriruOkJDegZv7Nr/SZEksWE=
 github.com/fbaube/dsmnd v0.0.0-20241113194348-8bcb3be2decd h1:UQ+HjDNZF2TZF4u2rh6uTr0sp0L6v9tw2uipcluNNe0=
 github.com/fbaube/dsmnd v0.0.0-20241113194348-8bcb3be2decd/go.mod h1:YVvG9X9nrUoOtk9DEkyyk6/0vdfNcDYHNWgBwGHbcUE=
 github.com/fbaube/dsmnd v0.0.0-20250111125333-2b80f885bfc2 h1:MP/O0PUVCGgNmKvKmM6dLi/r0PbUl/1bVCr8zuJLzkw=
 github.com/fbaube/dsmnd v0.0.0-20250111125333-2b80f885bfc2/go.mod h1:YVvG9X9nrUoOtk9DEkyyk6/0vdfNcDYHNWgBwGHbcUE=
 github.com/fbaube/dsmnd v0.0.0-20250203130738-5e11c27a4664 h1:44T9O6kHv4LUA09z+T6sMIZUQtE9axq9+RHTOjRsF9M=
 github.com/fbaube/dsmnd v0.0.0-20250203130738-5e11c27a4664/go.mod h1:YVvG9X9nrUoOtk9DEkyyk6/0vdfNcDYHNWgBwGHbcUE=
+github.com/fbaube/dsmnd v0.0.0-20250213154432-24143011da5a h1:uKJYjHHFHyHlQ81rjO0ubNJJThsM1jm3UikNUSp+pGw=
+github.com/fbaube/dsmnd v0.0.0-20250213154432-24143011da5a/go.mod h1:YVvG9X9nrUoOtk9DEkyyk6/0vdfNcDYHNWgBwGHbcUE=
 github.com/fbaube/fileutils v0.0.0-20210215145923-7216a545e6b4/go.mod h1:Q3NOQ00NULN3Un/dxrzYDaFacMnjW9vG1Ffe3cHRdro=
 github.com/fbaube/fileutils v0.0.0-20241214171642-8f768cf51d18 h1:kKZQONKY2A1meWxNc6NVfvY/2imXPIWfRvrKPHrQ4X0=
 github.com/fbaube/fileutils v0.0.0-20241214171642-8f768cf51d18/go.mod h1:SO4JqEOPvdUPTkkN+MbkFUL32CpYeua4ercabK6N+o4=
@@ -113,6 +117,8 @@ github.com/fbaube/rest v0.0.0-20241228090820-81e0cc812c6e h1:ZgxskFJ6bZFwUeqhhwT
 github.com/fbaube/rest v0.0.0-20241228090820-81e0cc812c6e/go.mod h1:Neai7oCBgO4WXz1AZGHn0iUl0j3O0YU1xNiw1mksOew=
 github.com/fbaube/rest v0.0.0-20250213120136-d4e00500b972 h1:PUa6cJGSyFlNrTtbwOEJOYZYKdLzG60vI5kGy7D2ifs=
 github.com/fbaube/rest v0.0.0-20250213120136-d4e00500b972/go.mod h1:QrRqVy5TYybnfB/+Aqb5vrZBt484KNo8fjuGrhLKpgU=
+github.com/fbaube/rest v0.0.0-20250213154222-b38a45cabbc9 h1:BrLoSgMW+ULYHlQzPRgeiFFsG0RdLcpxwuT3j/sUxGc=
+github.com/fbaube/rest v0.0.0-20250213154222-b38a45cabbc9/go.mod h1:EkYXNmaNx+g8OVl1+t7mYtQG+xyO6OOonNfhRTsv/Yw=
 github.com/fbaube/stringutils v0.0.0-20210716195613-2633ae132b43/go.mod h1:pyXNXdLCEtNZyV2GFdbOGiO6nDrH6SVmxp7EG9oISIE=
 github.com/fbaube/stringutils v0.0.0-20240923132734-4299299a2f4d h1:0vtZZWaX3Vs9/4N1KUUkyVDMSFJU4T5YVwCezttglXw=
 github.com/fbaube/stringutils v0.0.0-20240923132734-4299299a2f4d/go.mod h1:45y1buj6hAF27oeACgRMSBJfV0uU6mmppnEaRftSy+g=
@@ -187,6 +193,8 @@ golang.org/x/exp v0.0.0-20250128182459-e0ece0dbea4c h1:KL/ZBHXgKGVmuZBZ01Lt57yE5
 golang.org/x/exp v0.0.0-20250128182459-e0ece0dbea4c/go.mod h1:tujkw807nyEEAamNbDrEGzRav+ilXA7PCRAd6xsmwiU=
 golang.org/x/exp v0.0.0-20250210185358-939b2ce775ac h1:l5+whBCLH3iH2ZNHYLbAe58bo7yrN4mVcnkHDYz5vvs=
 golang.org/x/exp v0.0.0-20250210185358-939b2ce775ac/go.mod h1:hH+7mtFmImwwcMvScyxUhjuVHR3HGaDPMn9rMSUUbxo=
+golang.org/x/exp v0.0.0-20250215185904-eff6e970281f h1:oFMYAjX0867ZD2jcNiLBrI9BdpmEkvPyi5YrBGXbamg=
+golang.org/x/exp v0.0.0-20250215185904-eff6e970281f/go.mod h1:BHOTPb3L19zxehTsLoJXVaTktb06DFgmdW6Wb9s8jqk=
 golang.org/x/net v0.0.0-20220225172249-27dd8689420f/go.mod h1:CfG3xpIq0wQ8r1q4Su4UZFWDARRcnwPjda9FqA0JpMk=
 golang.org/x/net v0.33.0 h1:74SYHlV8BIgHIFC/LrYkOGIwL19eTYXQ5wc6TBuO36I=
 golang.org/x/net v0.33.0/go.mod h1:HXLR5J+9DxmrqMwG9qjGCxZ+zKXxBru04zlTvWlWuN4=
