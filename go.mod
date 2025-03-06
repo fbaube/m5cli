@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.24.0
 
 require (
-	github.com/fbaube/datarepo v0.0.0-20250302134610-bce5e93a3aec
+	github.com/fbaube/datarepo v0.0.0-20250305123807-71a5acd321b9
 	github.com/fbaube/dsmnd v0.0.0-20250213154432-24143011da5a
 	github.com/fbaube/fileutils v0.0.0-20250203130830-629d4e4bc31b
 	github.com/fbaube/logutils v0.0.0-20240425064504-eb572963f0fc
@@ -43,7 +43,7 @@ require (
 	github.com/nbio/xml v0.0.0-20250127210239-7f9281fed8c6 // indirect
 	github.com/yuin/goldmark v1.7.8 // indirect
 	golang.org/x/exp v0.0.0-20250228200357-dead58393ab7 // indirect
-	golang.org/x/net v0.35.0 // indirect
+	golang.org/x/net v0.36.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/tools v0.30.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

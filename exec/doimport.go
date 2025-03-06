@@ -3,6 +3,7 @@ package exec
 import (
 	"fmt"
 	"time"
+	"strconv"
 	"database/sql"
 	DRP "github.com/fbaube/datarepo"
 	DRS "github.com/fbaube/datarepo/sqlite"
@@ -73,10 +74,17 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 	L.L.Okay("Batch imported OK: TRANSACTION SUCCEEDED")
 	L.L.Okay("Exec.DoImport: insert'ed inbatch OK, ID:%d", newInbatchID)
 
-	var wasFound bool
-	wasFound, e = DRP.DoSelectByIdGeneric(
-		  pSR, newInbatchID, new(m5db.InbatchRow))
-	L.L.Info("Found the just-added new Inbatch?: %t", wasFound)
-	
+//	wasFound, e = DRP.DoSelectByIdGeneric(
+//		  pSR, newInbatchID, new(m5db.InbatchRow))
+	pWS := new(DRP.UniquerySpec)
+	pWS.Field = "ID"
+	pWS.Value = strconv.Itoa(newInbatchID)
+	e, i := pSR.EngineUnique(
+	   "GET", "INB", pWS, new(m5db.InbatchRow))
+	if e != nil {
+	   L.L.Error("SQL error for INB %d", newInbatchID)
+	} else {
+	   L.L.Info("Found the just-added new Inbatch?: nr is: %d", i)
+	}
 	return nil
 }
