@@ -5,12 +5,12 @@ go 1.23.0
 toolchain go1.24.0
 
 require (
-	github.com/fbaube/datarepo v0.0.0-20250305123807-71a5acd321b9
-	github.com/fbaube/dsmnd v0.0.0-20250213154432-24143011da5a
+	github.com/fbaube/datarepo v0.0.0-20250310202149-1b402310212a
+	github.com/fbaube/dsmnd v0.0.0-20250305202727-066656bb5c6a
 	github.com/fbaube/fileutils v0.0.0-20250203130830-629d4e4bc31b
 	github.com/fbaube/logutils v0.0.0-20240425064504-eb572963f0fc
 	github.com/fbaube/m5db v0.0.0-20240509180501-84aae2bef357
-	github.com/fbaube/mcfile v0.0.0-20250302101318-0f246b963896
+	github.com/fbaube/mcfile v0.0.0-20250306092839-9b9bbeb5a9e6
 	github.com/fbaube/mlog v0.0.0-20240425064535-3b89e3b28a76
 	github.com/fbaube/rest v0.0.0-20250302102939-8c78f867590c
 	github.com/fbaube/stringutils v0.0.0-20250203130909-339670f598f3
@@ -27,7 +27,7 @@ require (
 	github.com/fbaube/ctoken v0.0.0-20250202175820-4a3ade2fbe7c // indirect
 	github.com/fbaube/gparse v0.0.0-20230421173125-0aaf74eb920c // indirect
 	github.com/fbaube/gtoken v0.0.0-20250202180149-400361451572 // indirect
-	github.com/fbaube/gtree v0.0.0-20240919113749-f4866e52ccbe // indirect
+	github.com/fbaube/gtree v0.0.0-20250306092915-45070ddabe0e // indirect
 	github.com/fbaube/humanbytes v0.0.0-20250119091546-d58fbfdd444c // indirect
 	github.com/fbaube/lwdx v0.0.0-20241028093627-8a7133fbc931 // indirect
 	github.com/fbaube/miscutils v0.0.0-20250126181629-6a2fa9af43b7 // indirect
@@ -42,9 +42,9 @@ require (
 	github.com/mgutz/str v1.2.0 // indirect
 	github.com/nbio/xml v0.0.0-20250127210239-7f9281fed8c6 // indirect
 	github.com/yuin/goldmark v1.7.8 // indirect
-	golang.org/x/exp v0.0.0-20250228200357-dead58393ab7 // indirect
-	golang.org/x/net v0.36.0 // indirect
-	golang.org/x/sys v0.30.0 // indirect
-	golang.org/x/tools v0.30.0 // indirect
+	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394 // indirect
+	golang.org/x/net v0.37.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
+	golang.org/x/tools v0.31.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

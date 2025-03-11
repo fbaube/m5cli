@@ -76,11 +76,11 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 
 //	wasFound, e = DRP.DoSelectByIdGeneric(
 //		  pSR, newInbatchID, new(m5db.InbatchRow))
-	pWS := new(DRP.UniquerySpec)
-	pWS.Field = "ID"
-	pWS.Value = strconv.Itoa(newInbatchID)
+	pFV := new(DRP.FieldValuePair) // UniquerySpec)
+	pFV.Field = "ID"
+	pFV.Value = strconv.Itoa(newInbatchID)
 	e, i := pSR.EngineUnique(
-	   "GET", "INB", pWS, new(m5db.InbatchRow))
+	   "GET", "INB", pFV, new(m5db.InbatchRow))
 	if e != nil {
 	   L.L.Error("SQL error for INB %d", newInbatchID)
 	} else {
