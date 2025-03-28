@@ -5,14 +5,14 @@ go 1.23.0
 toolchain go1.24.0
 
 require (
-	github.com/fbaube/datarepo v0.0.0-20250310202149-1b402310212a
+	github.com/fbaube/datarepo v0.0.0-20250327200558-acd5d3d83253
 	github.com/fbaube/dsmnd v0.0.0-20250305202727-066656bb5c6a
 	github.com/fbaube/fileutils v0.0.0-20250203130830-629d4e4bc31b
-	github.com/fbaube/logutils v0.0.0-20240425064504-eb572963f0fc
+	github.com/fbaube/logutils v0.0.0-20250316184850-0569e5bc6b6d
 	github.com/fbaube/m5db v0.0.0-20240509180501-84aae2bef357
 	github.com/fbaube/mcfile v0.0.0-20250306092839-9b9bbeb5a9e6
 	github.com/fbaube/mlog v0.0.0-20240425064535-3b89e3b28a76
-	github.com/fbaube/rest v0.0.0-20250302102939-8c78f867590c
+	github.com/fbaube/rest v0.0.0-20250311103301-525d609e91e0
 	github.com/fbaube/stringutils v0.0.0-20250203130909-339670f598f3
 	github.com/fbaube/wasmutils v0.0.0-20250302100751-c3d5b233f416
 	github.com/fbaube/xmlutils v0.0.0-20250202175952-00276e6317c7
@@ -34,16 +34,16 @@ require (
 	github.com/fbaube/orderednodes v0.0.0-20250203183906-01c69915c468 // indirect
 	github.com/fbaube/parseutils v0.0.0-20250126182432-3beb8a9f0044 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
-	github.com/gomarkdown/markdown v0.0.0-20250207164621-7a1f277a159e // indirect
+	github.com/gomarkdown/markdown v0.0.0-20250311123330-531bef5e742b // indirect
 	github.com/lainio/err2 v1.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-sqlite3 v1.14.24 // indirect
 	github.com/mgutz/str v1.2.0 // indirect
-	github.com/nbio/xml v0.0.0-20250127210239-7f9281fed8c6 // indirect
+	github.com/nbio/xml v0.0.0-20250325194151-57e639e7ba73 // indirect
 	github.com/yuin/goldmark v1.7.8 // indirect
 	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394 // indirect
-	golang.org/x/net v0.37.0 // indirect
+	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/tools v0.31.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

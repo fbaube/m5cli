@@ -3,9 +3,8 @@ package exec
 import (
 	"fmt"
 	"time"
-	"strconv"
 	"database/sql"
-	DRP "github.com/fbaube/datarepo"
+	// DRP "github.com/fbaube/datarepo"
 	DRS "github.com/fbaube/datarepo/sqlite"
 	"github.com/fbaube/mcfile"
 	L "github.com/fbaube/mlog" // Brings in global var L
@@ -40,7 +39,7 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 	pINB.T_Cre, pINB.T_Imp = timeNow, timeNow
 	var newInbatchID int
 	// newInbatchID, e = DRP.DoInsertGeneric(pSR, pINB)
-	e, newInbatchID = pSR.EngineUnique("Add", "INB", nil, pINB)
+	newInbatchID, e = pSR.EngineUnique("Add", "INB", -1, pINB)
 	if e != nil {
 		return fmt.Errorf("Exec.DoImport.inbatch failed: %w", e)
 	}
@@ -55,7 +54,7 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 		// L.L.Info("Exec.DoImport.L50: Trying new INSERT Generic")
 		var newCtyID int
 		// newCtyID, e = DRP.DoInsertGeneric(pSR, &pMCF.ContentityRow)
-		e, newCtyID = pSR.EngineUnique("Add", "CNT", nil, &pMCF.ContentityRow)
+		newCtyID, e = pSR.EngineUnique("Add", "CNT", -1, &pMCF.ContentityRow)
 		if e != nil {
 			return mcfile.WrapAsContentityError(e,
 				"Exec.DoImport.InsCty", pMCF)
@@ -76,11 +75,8 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 
 //	wasFound, e = DRP.DoSelectByIdGeneric(
 //		  pSR, newInbatchID, new(m5db.InbatchRow))
-	pFV := new(DRP.FieldValuePair) // UniquerySpec)
-	pFV.Field = "ID"
-	pFV.Value = strconv.Itoa(newInbatchID)
-	e, i := pSR.EngineUnique(
-	   "GET", "INB", pFV, new(m5db.InbatchRow))
+	i, e := pSR.EngineUnique(
+	   "GET", "INB", newInbatchID, new(m5db.InbatchRow))
 	if e != nil {
 	   L.L.Error("SQL error for INB %d", newInbatchID)
 	} else {
