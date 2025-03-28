@@ -51,10 +51,10 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 		// Prepare a DB record for the File
 		pMCF.T_Imp = timeNow
 		pMCF.Idx_Inbatch = newInbatchID
-		// L.L.Info("Exec.DoImport.L50: Trying new INSERT Generic")
 		var newCtyID int
 		// newCtyID, e = DRP.DoInsertGeneric(pSR, &pMCF.ContentityRow)
-		newCtyID, e = pSR.EngineUnique("Add", "CNT", -1, &pMCF.ContentityRow)
+		newCtyID, e = pSR.EngineUnique(
+			"Add", "CNT", -1, &pMCF.ContentityRow)
 		if e != nil {
 			return mcfile.WrapAsContentityError(e,
 				"Exec.DoImport.InsCty", pMCF)
