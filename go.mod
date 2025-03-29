@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.24.0
 
 require (
-	github.com/fbaube/datarepo v0.0.0-20250327200558-acd5d3d83253
+	github.com/fbaube/datarepo v0.0.0-20250329120211-64c174d09f5f
 	github.com/fbaube/dsmnd v0.0.0-20250305202727-066656bb5c6a
 	github.com/fbaube/fileutils v0.0.0-20250203130830-629d4e4bc31b
 	github.com/fbaube/logutils v0.0.0-20250316184850-0569e5bc6b6d

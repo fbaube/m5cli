@@ -76,7 +76,7 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 	nRA, e := pSR.EngineUnique(
 	   "GET", "INB", newInbatchID, new(m5db.InbatchRow))
 	if e != nil {
-	   L.L.Error("SQL error for Get INB %d", newInbatchID)
+	   L.L.Error("SQL error for Get INB %d: %s/%w", newInbatchID, e.Error(), e)
 	} else if nRA == 0 {
 	   L.L.Error("Just-added new INB not found: ID: %d", newInbatchID)
 	} else {
