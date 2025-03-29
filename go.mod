@@ -12,7 +12,7 @@ require (
 	github.com/fbaube/m5db v0.0.0-20240509180501-84aae2bef357
 	github.com/fbaube/mcfile v0.0.0-20250306092839-9b9bbeb5a9e6
 	github.com/fbaube/mlog v0.0.0-20240425064535-3b89e3b28a76
-	github.com/fbaube/rest v0.0.0-20250311103301-525d609e91e0
+	github.com/fbaube/rest v0.0.0-20250328054914-8b00cb666410
 	github.com/fbaube/stringutils v0.0.0-20250203130909-339670f598f3
 	github.com/fbaube/wasmutils v0.0.0-20250302100751-c3d5b233f416
 	github.com/fbaube/xmlutils v0.0.0-20250202175952-00276e6317c7

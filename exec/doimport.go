@@ -73,14 +73,14 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 	L.L.Okay("Batch imported OK: TRANSACTION SUCCEEDED")
 	L.L.Okay("Exec.DoImport: insert'ed inbatch OK, ID:%d", newInbatchID)
 
-//	wasFound, e = DRP.DoSelectByIdGeneric(
-//		  pSR, newInbatchID, new(m5db.InbatchRow))
-	i, e := pSR.EngineUnique(
+	nRA, e := pSR.EngineUnique(
 	   "GET", "INB", newInbatchID, new(m5db.InbatchRow))
 	if e != nil {
-	   L.L.Error("SQL error for INB %d", newInbatchID)
+	   L.L.Error("SQL error for Get INB %d", newInbatchID)
+	} else if nRA == 0 {
+	   L.L.Error("Just-added new INB not found: ID: %d", newInbatchID)
 	} else {
-	   L.L.Info("Found the just-added new Inbatch?: nr is: %d", i)
+	   L.L.Okay("Just-added new INB found OK: ID: %d", newInbatchID)
 	}
 	return nil
 }
