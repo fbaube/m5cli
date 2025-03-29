@@ -3,7 +3,8 @@ package exec
 import (
 	"fmt"
 	"time"
-	"database/sql"
+	"strconv"
+//##	"database/sql"
 	// DRP "github.com/fbaube/datarepo"
 	DRS "github.com/fbaube/datarepo/sqlite"
 	"github.com/fbaube/mcfile"
@@ -19,8 +20,8 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 	// =====================
 	//  START A TRANSACTION
 	// =====================
-	var Tx *sql.Tx
-	Tx, err = pSR.Begin()
+//##	var Tx *sql.Tx
+//##	Tx, err = pSR.Begin()
 	if err != nil {
 		L.L.Error("Exec.Begin.Tx failed: %w", err)
 	}
@@ -41,8 +42,10 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 	// newInbatchID, e = DRP.DoInsertGeneric(pSR, pINB)
 	newInbatchID, e = pSR.EngineUnique("Add", "INB", -1, pINB)
 	if e != nil {
+	     	println("DoImport: INSERT INBATCH failed")
 		return fmt.Errorf("Exec.DoImport.inbatch failed: %w", e)
 	}
+	println("DoImport: INSERT INBATCH ID:", strconv.Itoa(newInbatchID))
 	L.L.Okay("Exec.DoImport.inbatch: OK, ID: %d", newInbatchID)
 	// ======================
 	//  NOW THE CONTENTITIES
@@ -64,7 +67,7 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 	// =====================
 	//  END THE TRANSACTION
 	// =====================
-	e = Tx.Commit() // pSR.Commit()
+// ##	e = Tx.Commit() // pSR.Commit()
 	
 	if e != nil {
 		return mcfile.WrapAsContentityError(e,
