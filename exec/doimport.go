@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 	"strconv"
-//##	"database/sql"
+	"database/sql"
 	// DRP "github.com/fbaube/datarepo"
 	DRS "github.com/fbaube/datarepo/sqlite"
 	"github.com/fbaube/mcfile"
@@ -20,8 +20,8 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 	// =====================
 	//  START A TRANSACTION
 	// =====================
-//##	var Tx *sql.Tx
-//##	Tx, err = pSR.Begin()
+	var Tx *sql.Tx
+	Tx, err = pSR.Begin()
 	if err != nil {
 		L.L.Error("Exec.Begin.Tx failed: %w", err)
 	}
@@ -67,7 +67,7 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 	// =====================
 	//  END THE TRANSACTION
 	// =====================
-// ##	e = Tx.Commit() // pSR.Commit()
+	e = Tx.Commit() // pSR.Commit()
 	
 	if e != nil {
 		return mcfile.WrapAsContentityError(e,
