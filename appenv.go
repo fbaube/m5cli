@@ -33,33 +33,24 @@ type XmlAppEnv struct {
 	PrittOutput io.Writer
 }
 
-// ContentityProcessor (see ContentityStage !!)
-// is most probably the best way to go.
-// It preserves order of processing of MCFile's (unlike
-// iterating thru a map of them), and the func signature
-// is most def in the Go style, and the style IS CHAINABLE.
+// ContentityProcessor (see ContentityStage !!) is one 
+// way to go. It preserves order of processing of MCFile's 
+// (unlike iterating thru a map of them), and the func 
+// signature is in the Go style, and the style IS CHAINABLE.
 // 
-// Note that to declare a func that is a ContentityProcessor,
-// the func's signature is the RH side of this, NOT the LH side:
-// don't try to declare a "ContentityProcessor" named as such.
+// Note that interface [fileutils.Errer] makes this type
+// UNNECESSARY.
 //
-// Note also that interface [fileutils.Errer] kind of makes 
-// this type unnecessary. 
+// Note that to declare a func that is a ContentityProcessor,
+// the func's signature is the RH side of this, NOT the LH 
+// side: don't try to declare a "ContentityProcessor" named 
+// as such. Treat it like an interface, which is instantiated 
+// by doing, not by saying. 
 // . 
-type ContentityProcessor func(
-	p *mcfile.Contentity, e error) (*mcfile.Contentity, error)
+// type ContentityProcessor func(
+//	p *mcfile.Contentity, e error) (*mcfile.Contentity, error)
 
-/*
-We want errors to propogate end-to-end, thru all
-call chains (and maybe all type conversions too).
-So, if we're not using interface Errer, it would
-look something like
-func NewFSItemFromRelFP (PP,err <= string,err) [dummy err]
-func NewMCEfromFSItem(MCE,err <= PP,err)
-func MCEprocessor(MCE,err <= MCE,err) [CHAINABLE!]
-Then we plug these into an Iterator.
-*/
-
+// newXmlAppEnv turns an XmlAppCfg into an XmlAppEnv.
 func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	var env *XmlAppEnv
 	var e error

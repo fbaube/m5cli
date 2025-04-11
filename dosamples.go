@@ -4,7 +4,8 @@ import (
 	// "runtime/pprof"
 	// "github.com/davecheney/profile"
 	FU "github.com/fbaube/fileutils"
-	L "github.com/fbaube/mlog" 
+	"github.com/fbaube/m5db"
+	L "github.com/fbaube/mlog"
 	SU "github.com/fbaube/stringutils"
 )
 
@@ -76,6 +77,15 @@ func DoSamples() {
 	// includes color demo
 	L.L.Info("ID: %s", FU.SessionSummary())
 
+	// Dump out what a ContentityRow looks like in the DB
+	var cntro = new(m5db.ContentityRow)
+	var cptrs = m5db.ColumnPtrsFuncCNT(cntro, true)
+	L.L.Info("ContentityRow datarepo/TableDetails:")
+	L.L.Info("\t instance types: cntRow<%T> colPtrs <%T>", cntro, cptrs)
+	for iii, ppp := range cptrs {
+		L.L.Info("\t col[%d] <%T>", iii, ppp)
+	}
+
 	/*
 		// DEMO: Let's try a wrap'd traced error
 		println("==> Wrap'd Traced Error Demo START <==")
@@ -86,4 +96,5 @@ func DoSamples() {
 		// FIXME: glog.ErrorTrace(glog.SessionLogger, E2)
 		println("==>", "Error Demo END", "<====")
 	*/
+
 }

@@ -21,20 +21,20 @@ func InitLogging(appName string) {
 	L.L.Targets = append(L.L.Targets, fileTarget)
 	// (3) OPEN (and list) LOGGING TARGETS
 	L.L.Open()
+	L.L.Info("Log targets: %d", len(L.L.Targets))
+	for ii, pp := range L.L.Targets {
+		L.L.Info("\t Log target [%d]: %T", ii, pp)
+	}
 	/*
-                // RE-ENABLE AS NEEDED
-		L.L.Dbg("Log targets: %d", len(L.L.Targets))
-		for ii, pp := range L.L.Targets {
-			L.L.Dbg("Log target [%d]: %T", ii, pp)
-		}
-		// (4) DEMO MESSAGES
-		L.L.Dbg("example msg %v dbg", 10)
-		L.L.Progress("example msg %v prog", 20)
-		L.L.Info("example msg %v info", 30)
-		L.L.Okay("example msg %v okay", 40)
-		L.L.Warning("example msg %v warng", 40)
-		L.L.Error("example msg %v error", 50)
-		L.L.Panic("example msg %v panic", 60)
-		L.L.Dbg("- end - %v - end -", "***")
+        // RE-ENABLE AS NEEDED
+	// DEMO MESSAGES
+	L.L.Dbg("example msg %v dbg", 10)
+	L.L.Progress("example msg %v prog", 20)
+	L.L.Info("example msg %v info", 30)
+	L.L.Okay("example msg %v okay", 40)
+	L.L.Warning("example msg %v warng", 40)
+	L.L.Error("example msg %v error", 50)
+	L.L.Panic("example msg %v panic", 60)
+	L.L.Dbg("- end - %v - end -", "***")
 	*/
 }
