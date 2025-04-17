@@ -15,13 +15,40 @@ import (
 	"github.com/fbaube/m5db"
 )
 
-// XmlAppEnv should be usable in other scenarios.
+// InputPathItems is for gathering, expanding (directories),
+// verifying, and loading files and directories specified 
+// on the command line, and then organising everything as 
+// one large array of [mcfile.Contentity].
+//  - [NamedPaths] is an input slice of paths of files and
+//    directories; a path to a file that ends with "/" (or
+//    os.Sep) throws a panic 
+//  - [NamedFiles] is a slice of [fileutils.FSItem]
+//    for files named e.g. on the CLI
+//  - [NamedDirs]  is a slice of [fileutils.FSItem]
+//    for dirs  named e.g. on the CLI
+//  - [DirCntyFSs] is a slice of [mcfile.ContentityFS],
+//    one per element of [NamedDirs]
+//  - [AllCntys] is an output slice of [mcfile.Contentity] that 
+//    collects all Contentities (a) named by [NamedFiles], and
+//    (b) gathered by expanding [NamedDirs] and then walking
+//    their [DirCntyFSs]
+// . 
+type InputPathItems struct {
+        NamedPaths []string    // Input 
+	NamedFiles []FU.FSItem // or FSItemInfo ?
+	NamedDirs  []FU.FSItem // or FSItemInfo ?
+	DirCntyFSs []mcfile.ContentityFS
+	AllCntys   []mcfile.Contentity
+}
+
+// XmlAppEnv should be usable in other apps & scenarios too. 
 type XmlAppEnv struct {
 	cfg *XmlAppCfg
 	DRP.SimpleRepo
-	Infiles       []FU.FSItem
-	Indirs        []FU.FSItem
-	IndirFSs      []mcfile.ContentityFS 
+	InputPathItems 
+	Infiles       []FU.FSItem // bye 
+	Indirs        []FU.FSItem // bye 
+	IndirFSs      []mcfile.ContentityFS // bye 
 	Outdir, Dbdir FU.FSItem // NOT ptr! Barfs at startup.
 	Xmlcatfile    FU.FSItem // NOT ptr! Barfs at startup.
 	Xmlschemasdir FU.FSItem // NOT ptr! Barfs at startup.
