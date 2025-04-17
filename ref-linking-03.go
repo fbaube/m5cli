@@ -2,12 +2,9 @@ package m5cli
 
 import (
 	"fmt"
-	// S "github.com/fbaube/stringutils"
-	"github.com/fbaube/stringutils"
-	// "github.com/fbaube/m5cli/exec"
 	"github.com/fbaube/mcfile"
 	// L "github.com/fbaube/mlog" // Bring in global var L
-	SU "github.com/fbaube/stringutils"
+	S "strings"
 	// mime "github.com/fbaube/fileutils/contentmime"
 	// "github.com/fbaube/tags"
 )
@@ -60,7 +57,7 @@ func ref_linking_03(env *XmlAppEnv, InfileContentities []*mcfile.Contentity) err
 		for _, pGL := range AllGLinks.UriRefnts {
 			t := pGL.Tag
 			a := pGL.Att
-			b := stringutils.HasSuffix(pGL.Tag, "l") 
+			b := S.HasSuffix(pGL.Tag, "l") 
 			isList := b && (len(pGL.Tag) == 2)
 			if !isList {
 				fmt.Printf("%s@%s: %s: %s \n", a, t,
