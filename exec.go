@@ -52,20 +52,24 @@ func (env *XmlAppEnv) Exec() error {
 	// Timing:
 	// tt := MU.Into("Input file processing")
 
-	// At this point, "env" has three slices
-	// of variables related  to input files:
+	// At this point, "env" has struct InputPathItems, 
+	// containing variables related to input files:
 	//
-	// Infiles []FU.FSItem :: is all the files that were
-	// specified individually on the CLI. Note that if
-	// a wildcard was used, unquoted, then all files in
-	// the expansion appear individually here.
+	// InputPathItems.NamedFiles []FU.FSItem ::
+	// All the files that were specified individually on the CLI.
+	// Note that if an unqouted wildcard was used, then it was
+	// expanded by the shell, and all files in the expansion
+	// appear individually here.
 	//
-	// Indirs []FU.FSItem :: is all the directories
-	// that were specified individually on the CLI.
+	// InputPathItems.NamedDirrs []FU.FSItem ::
+	// All the directories that were specified individually on the CLI.
 	//
-	// IndirFSs []ContentityFS (still empty at this point)
-	// :: this maps to Indirs, making a ContentityFS for each
-	// Indir, and then later on, each is flattened into a slice.
+	// InputPathItems.NamedMiscs []FU.FSItem ::
+	// All "other stuff" that were specified individually on the CLI.
+	//
+	// InputPathItems.DirCntyFSs []ContentityFS
+	// (still empty at this point) :: Maps a ContentityFS to each
+	// NamedDirr; later, each is flattened into a slice.
 
 	// =======================
 	// =======================

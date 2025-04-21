@@ -7,6 +7,7 @@ import (
 	L "github.com/fbaube/mlog"
 	"github.com/fbaube/rest"
 	WU "github.com/fbaube/wasmutils"
+	SU "github.com/fbaube/stringutils"
 	"context" 
 
 	// flag "github.com/spf13/pflag"
@@ -98,7 +99,6 @@ func CLI(args []string) error {
 	//  NOW IT'S OKAY
 	//  TO USE FLARGS
 	// ===============
-
 	if cfg.b.Samples {
 		DoSamples()
 		// We're not really using contexts yet, but...
@@ -120,7 +120,6 @@ func CLI(args []string) error {
 		defer cancelFunc()
 		// fmt.Printf("SignalCtx: %+v \n", ctx)
 	}
-
 	// ===================
 	//  CONVERT AppCfg TO
 	//  A RUNNABLE AppEnv
@@ -131,6 +130,13 @@ func CLI(args []string) error {
 		L.L.Error("AppEnv cannot Exec():", e.Error())
 		return e
 	}
+	// ===================================
+	//  PROCESS INPUT PATHS, to get info
+        //  about paths, existence, and types
+        // ===================================
+        L.L.Warning(SU.Rfg(SU.Ybg("=== CLI PATH(S) ===")))
+        L.L.Debug("AppCfg.sInpaths: %+v", cfg.p.sInpaths)
+	env.InputPathItems = *(DoInpaths(cfg.p.sInpaths))
 	L.L.Debug("OK to Exec()...")
 
 	// =====
