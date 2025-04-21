@@ -1,6 +1,6 @@
 package exec
 
-// NEED TO USE
+// TODO: NEED TO USE
 // path.Clean (rmvs trlg slashes) 
 // fs.ValidPath
 // FP.IsLocal (implies ValidPath, so do VP first)
@@ -16,12 +16,12 @@ import(
 // LoadDirpathsContentFSs turns a slice of [FSItem] into
 // a slice of [ContentityFS]. Any error is returned as 
 // an interface [Errer] of a ContentityFS. 
-func LoadDirpathsContentFSs(ff []FU.FSItem) ([]*mcfile.ContentityFS) {
+func LoadDirpathsContentFSs(ff []FU.FSItem) ([]mcfile.ContentityFS) {
      if ff == nil || len(ff) == 0 {
      	return nil
 	}
-     var pFSs []*mcfile.ContentityFS
-     var pFS   *mcfile.ContentityFS
+     var FSs []mcfile.ContentityFS
+     var pFS  *mcfile.ContentityFS
 
      // For every input FSItem
      for iDir, pDir := range ff {
@@ -48,7 +48,7 @@ func LoadDirpathsContentFSs(ff []FU.FSItem) ([]*mcfile.ContentityFS) {
 			"process in dir: " + shortName)
 		continue
 	 }
-	 pFSs = append(pFSs, pFS) 
+	 FSs = append(FSs, *pFS) 
      }
-     return pFSs
+     return FSs
 }

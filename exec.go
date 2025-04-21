@@ -9,12 +9,30 @@ import (
 
 	DRS "github.com/fbaube/datarepo/sqlite"
 	"github.com/fbaube/m5cli/exec"
-	"github.com/fbaube/mcfile"
 	L "github.com/fbaube/mlog" // Bring in global var L
 	SU "github.com/fbaube/stringutils"
 	// mime "github.com/fbaube/fileutils/contentmime"
 	// "github.com/fbaube/tags"
+
+	"errors"
+	"io/fs"
+	FP "path/filepath"
 )
+
+func fpt(path string) string {
+     var A, V, L bool
+     var sA, sL string
+     var eA, eL error 
+     A = FP.IsAbs(path)
+     V = fs.ValidPath(path)
+     L = FP.IsLocal(path)
+     sA, eA = FP.Abs(path)
+     sL, eL = FP.Localize(path)
+     if eA == nil { eA = errors.New("OK") }
+     if eL == nil { eL = errors.New("OK") }
+     return fmt.Sprintf("%s\t A:%s L:%s V:%s A<%s:%s> L<%s:%s>",
+     	    path, SU.Yn(A), SU.Yn(L), SU.Yn(V), sA, eA, sL, eL)
+}
 
 // The general approach:
 //  1) os.Args
@@ -38,9 +56,19 @@ import (
 // Exec does all execution of all stages for
 // every [mcfile.Contentity], altho only after
 // all prep has already been done by other funcs.
-// The key input is an [*XmlAppEnv].
-// .
 func (env *XmlAppEnv) Exec() error {
+
+     	println(fpt(""))
+     	println(fpt("."))
+     	println(fpt(".."))
+     	println(fpt("../"))
+     	println(fpt("/"))
+     	println(fpt("/etc"))
+     	println(fpt("/etc/"))
+     	println(fpt("derf"))
+     	println(fpt("derf/derf2"))
+	println(fpt("/Users/fbaube/src/m5app/m5/m5"))
+	println(fpt("/Users/fbaube/src/m5app/m5/m5/derf/"))
 
 	// =====================
 	// =====================
@@ -83,24 +111,24 @@ func (env *XmlAppEnv) Exec() error {
 	//  line, then all directories named there
 	// ========================================
 	// DUMP env.Indirs, Inexpandirs
-	L.L.Info("AppEnv.Infiles: [%d]: %+v \n", len(env.Infiles), env.Infiles)
-	L.L.Info("AppEnv.Indirs:: [%d]: %+v \n", len(env.Indirs), env.Indirs)
+	// L.L.Info("AppEnv.Files: [%d]: %+v \n", len(env.Infiles), env.Infiles)
+	// L.L.Info("AppEnv.Indirs:: [%d]: %+v \n", len(env.Indirs), env.Indirs)
 	if env.cfg.b.Samples {
 		// ALSO DUMP AS JSON
 		var jout []byte
 		var jerr error
-		if len(env.Infiles) > 0 {
+		if len(env.NamedFiles) > 0 {
 			jout, jerr = json.MarshalIndent(
-				env.Infiles[0], "infile: ", "  ")
+				env.NamedFiles[0], "infile: ", "  ")
 			if jerr != nil {
 				println(jerr)
 				panic(jerr)
 			}
 			L.L.Debug("JSON! " + string(jout))
 		}
-		if len(env.Indirs) > 0 {
+		if len(env.NamedDirrs) > 0 {
 			jout, jerr = json.MarshalIndent(
-				env.Indirs[0], "indirr: ", "  ")
+				env.NamedDirrs[0], "indirr: ", "  ")
 			if jerr != nil {
 				println(jerr)
 				panic(jerr)
@@ -115,20 +143,15 @@ func (env *XmlAppEnv) Exec() error {
 	//  FOR EVERY CLI INPUT FILE
 	//  Make a new Contentity
 	// ==========================
-	var InfileContentities []*mcfile.Contentity   // directories
-	var IndirContentityFSs []*mcfile.ContentityFS // trees
-	var ee []error
-
 	L.L.Warning(SU.Rfg(SU.Ybg("=== LOAD CLI FILE(S) ===")))
-	// fmt.Fprintf(os.Stderr, "exec: env.Infiles: %#v \n", env.Infiles)
-	// fmt.Fprintf(os.Stderr, "exec: env.Infiles[0]: %#v \n", *env.Infiles[0].FPs)
-	InfileContentities, ee = exec.LoadFilepathsContentities(env.Infiles)
-	gotCtys := InfileContentities != nil && len(InfileContentities) > 0
-	gotErrs := ee != nil && len(ee) > 0
-	if gotCtys || gotErrs {
-		L.L.Okay("Results for %d infiles: %d OK, %d not OK \n",
-			len(env.Infiles), len(InfileContentities), len(ee))
-		for i, pC := range InfileContentities {
+	// fmt.Fprintf(os.Stderr, "exec: env.NamedFiles: %#v \n", env.NamedFiles)
+	// fmt.Fprintf(os.Stderr, "exec: env.NamedFiles[0]: %#v \n", *env.NamedFiles[0].FPs)
+	env.AllCntys = exec.LoadFilepathsContentities(env.NamedFiles)
+	gotCtys := len(env.AllCntys) > 0 
+	if gotCtys {
+		// L.L.Okay("Results for %d infiles: %d OK, %d not OK \n",
+		//	len(env.NamedFiles), len(InfileContentities), len(ee))
+		for i, pC := range env.AllCntys {
 			L.L.Okay("InFile[%02d] len:%d RawTp:%s : %s",
 				i, len(pC.FSItem.Raw), pC.RawType(),
 				pC.FSItem.FPs.ShortFP)
@@ -139,20 +162,17 @@ func (env *XmlAppEnv) Exec() error {
 			             pCty.RawType(), pCty.AbsFP())
 				panic("UNK RawType in ExecuteStages; \n" + s) */
 		}
-		for i, eC := range ee {
-			L.L.Error("InfileErr[%02d] ERR :: <%T> %s", i, eC, eC)
-		}
 	}
-	L.L.Info("Loaded %d file contentity/ies", len(InfileContentities))
+	L.L.Info("Loaded %d file contentity/ies", len(env.AllCntys))
 	// ==================================
 	//   FOR EVERY CLI INPUT DIRECTORY
 	//  Make a new Contentity filesystem
 	// ==================================
 	L.L.Warning(SU.Rfg(SU.Ybg("=== EXPAND CLI DIR(S) ===")))
-	IndirContentityFSs = exec.LoadDirpathsContentFSs(env.Indirs)
-	WriteContentityFStreeFiles(IndirContentityFSs)
+	env.DirCntyFSs = exec.LoadDirpathsContentFSs(env.NamedDirrs)
+	WriteContentityFStreeFiles(env.DirCntyFSs)
 	L.L.Info("Expanded %d file folder(s) into %d F/S(s)",
-		len(env.Indirs), len(IndirContentityFSs))
+		len(env.NamedDirrs), len(env.DirCntyFSs))
 
 	// ==============================
 	//  FOR EVERY CLI INPUT DIRECTORY
@@ -160,11 +180,11 @@ func (env *XmlAppEnv) Exec() error {
 	//  also makes new Contentities
 	// ==============================
 	L.L.Warning(SU.Rfg(SU.Ybg("=== LOAD CLI DIR(S) ===")))
-	for _, pED := range IndirContentityFSs {
-		InfileContentities = append(InfileContentities, pED.AsSlice()...)
+	for _, ED := range env.DirCntyFSs {
+		env.AllCntys = append(env.AllCntys, ED.AsSlice()...)
 	}
 	L.L.Info("Expanded %d F/S(s), now have %d contentities",
-		len(IndirContentityFSs), len(InfileContentities))
+		len(env.DirCntyFSs), len(env.AllCntys))
 
 	// Now we have all the inputs.
 	// TODO: We could count up and tell the user
@@ -174,14 +194,14 @@ func (env *XmlAppEnv) Exec() error {
 	//  FOR EVERY CONTENTITY
 	//  Prepare outputs
 	// ======================
-	InitContentityDebugFiles(InfileContentities, env.cfg.b.TotalTextal)
+	InitContentityDebugFiles(env.AllCntys, env.cfg.b.TotalTextal)
 
 	// =======================
 	//  SUMMARIZE TO THE USER
 	//  ALL CONTENTITIES THAT
 	//  ARE LOADED & READY
 	// =======================
-	for ii, cty := range InfileContentities {
+	for ii, cty := range env.AllCntys {
 		if cty == nil {
 			L.L.Okay("[%02d]  nil", ii)
 		} else if cty.IsDir() {
@@ -205,9 +225,9 @@ func (env *XmlAppEnv) Exec() error {
 	L.SetMaxLevel(LOG_LEVEL_EXEC_STAGES)
 	L.L.Okay(SU.Rfg(SU.Ybg("=== DO CONTENTITY STAGES ===")))
 
-	L.L.Info("Input contentities: total %d", len(InfileContentities))
+	L.L.Info("Input contentities: total %d", len(env.AllCntys))
 
-	for ii, cty := range InfileContentities {
+	for ii, cty := range env.AllCntys {
 		// Skip directories entirely
 		if cty.IsDir() {
 			continue
@@ -257,7 +277,7 @@ func (env *XmlAppEnv) Exec() error {
 	//  DUMP ACCUMULATED ERRORS
 	// =========================
 	L.L.Info("Accumulated errors:")
-	for _, p := range InfileContentities {
+	for _, p := range env.AllCntys {
 		if p.HasError() {
 			L.L.Error("file[%s: %s", p.LogPrefix("]"), p.Error())
 		}
@@ -281,7 +301,7 @@ func (env *XmlAppEnv) Exec() error {
 	// INTER-FILE REFERENCE LINKING
 	// ============================
 	// ============================
-	for _, p := range InfileContentities {
+	for _, p := range env.AllCntys {
 
 		// 2025.04 FIXME FIXME FIXME
 		p.GatherXmlGLinks() // (&AllGLinks)
@@ -411,7 +431,7 @@ func (env *XmlAppEnv) Exec() error {
 		//  WITH THE IMPORT
 		// =================
 		importError := exec.ImportBatchIntoDB(
-			pSR /* env.SimpleRepo */, InfileContentities)
+			pSR /* env.SimpleRepo */, env.AllCntys)
 		if importError != nil {
 			L.L.Error("exec.ImportBatchIntoDB failed: %w", importError)
 		}

@@ -11,20 +11,18 @@ import(
 )
 
 // LoadFilepathsContentities turns a slice of [FSItem] into
-// a slice of [Contentity]. If no errors are encountered,
-// the second return value may be nil or empty.
-// 
-// The items in the two arrays do not correspond:
-// the path sets are disjoint.
-// . 
-func LoadFilepathsContentities(inFSIs []FU.FSItem) ([]*mcfile.Contentity, []error) {
+// a slice of [Contentity]. Individual errors are returned
+// via embedded struct Errer.
+//
+// FIXME: Return second value = nErrors
+// .
+func LoadFilepathsContentities(inFSIs []FU.FSItem) []*mcfile.Contentity {
      if inFSIs == nil || len(inFSIs) == 0 {
      	L.L.Info("No filepaths to load")
-     	return nil, nil
+     	return nil 
 	}
      var pCC []*mcfile.Contentity
      var pC    *mcfile.Contentity
-     var ee  []error
      var e, eC error
      var path string 
 
@@ -34,13 +32,16 @@ func LoadFilepathsContentities(inFSIs []FU.FSItem) ([]*mcfile.Contentity, []erro
 	 // use of std lib when checking path 
      	 path = p.FPs.RelFP // AbsFP
 	 // println("LoadFiles: mcfile.NewContentity:", path)
+	 // FIXME: We should use the FSItem to create the Contentity. 
 	 pC, e = mcfile.NewContentity(path)
 	 // We know that [NewContentity] returns exactly one nil ptr, so...
-	 if pC == nil {
+	 // if pC == nil {
+	 if e != nil {
 		eC = &fs.PathError{Op:"LoadFilepathsContents.NewContentity",
-		     Err:e,Path:fmt.Sprintf("[%d]:",i)+path} 
-		ee = append(ee, eC)
-		L.L.Error("LoadFileOops, nil Cty, %s", path)
+		     Err:e,Path:fmt.Sprintf("[%d]:",i)+path}
+		if pC == nil { pC = &(mcfile.Contentity{}) }
+		pC.SetError(eC.Error())
+		L.L.Error("LoadFileOops: %s: %s", pC.Error(), path)
 		continue
 	 }
 	 if pC.RawType() == SU.Raw_type_DIRLIKE {
@@ -49,12 +50,13 @@ func LoadFilepathsContentities(inFSIs []FU.FSItem) ([]*mcfile.Contentity, []erro
 	 if pC.RawType() == "" { // or SU.MU_type_UNK {
 		eC = &fs.PathError{Op:"exec.loadFPs",
 		    Err:errors.New("RawType is UNK"),Path:path}
-		ee = append(ee, eC)
+		if pC == nil { pC = &(mcfile.Contentity{}) }
+                pC.SetError(eC.Error())
 		L.L.Error("LoadFileOops, unk RawType, %s", path)
                 continue
 	 }
 	 pCC = append(pCC, pC)
 	 L.L.Okay("Item OK: MType<%s> RawType<%s>", pC.MType, pC.RawType())
 	}
-	return pCC, ee 
+	return pCC 
 }

@@ -6,7 +6,7 @@ import (
 
 	D "github.com/fbaube/dsmnd"
 	FU "github.com/fbaube/fileutils"
-	"github.com/fbaube/mcfile"
+	// "github.com/fbaube/mcfile"
 	L "github.com/fbaube/mlog"
 	DRP "github.com/fbaube/datarepo"
 	SU "github.com/fbaube/stringutils"
@@ -19,9 +19,9 @@ type XmlAppEnv struct {
 	cfg *XmlAppCfg
 	DRP.SimpleRepo
 	InputPathItems 
-	Infiles       []FU.FSItem // bye 
-	Indirs        []FU.FSItem // bye 
-	IndirFSs      []mcfile.ContentityFS // bye 
+//	Infiles       []FU.FSItem // bye 
+//	Indirs        []FU.FSItem // bye 
+//	IndirFSs      []mcfile.ContentityFS // bye 
 	Outdir, Dbdir FU.FSItem // NOT ptr! Barfs at startup.
 	Xmlcatfile    FU.FSItem // NOT ptr! Barfs at startup.
 	Xmlschemasdir FU.FSItem // NOT ptr! Barfs at startup.
@@ -88,10 +88,10 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	// =================================
 	// A relative filepath is OK
 	if cfg.p.sOutdir != "" {
-	   pOF, e := FU.NewFSItem(cfg.p.sOutdir) // CA.Out.RelFilePath)
+	   pOF := FU.NewFSItem(cfg.p.sOutdir) // CA.Out.RelFilePath)
 	   env.Outdir = *pOF
-	   if e != nil {
-		return nil, errors.New("Could not process output file argument")
+	   if pOF.HasError() {
+		return nil, errors.New("xould not process output file argument")
 		}
 	}
 	return env, nil
