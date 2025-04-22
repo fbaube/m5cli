@@ -1,6 +1,6 @@
 package exec
 
-// TODO: NEED TO USE
+// TODO: SHOULD USE
 // path.Clean (rmvs trlg slashes) 
 // fs.ValidPath
 // FP.IsLocal (implies ValidPath, so do VP first)

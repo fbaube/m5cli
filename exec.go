@@ -146,13 +146,15 @@ func (env *XmlAppEnv) Exec() error {
 	L.L.Warning(SU.Rfg(SU.Ybg("=== LOAD CLI FILE(S) ===")))
 	// fmt.Fprintf(os.Stderr, "exec: env.NamedFiles: %#v \n", env.NamedFiles)
 	// fmt.Fprintf(os.Stderr, "exec: env.NamedFiles[0]: %#v \n", *env.NamedFiles[0].FPs)
-	env.AllCntys = exec.LoadFilepathsContentities(env.NamedFiles)
+	var errct int 
+	env.AllCntys, errct = exec.LoadFilepathsContentities(env.NamedFiles)
 	gotCtys := len(env.AllCntys) > 0 
 	if gotCtys {
-		// L.L.Okay("Results for %d infiles: %d OK, %d not OK \n",
-		//	len(env.NamedFiles), len(InfileContentities), len(ee))
+		L.L.Okay("Results for %d infiles: %d OK, %d not OK \n",
+			len(env.NamedFiles), len(env.AllCntys)-errct, errct)
 		for i, pC := range env.AllCntys {
-			L.L.Okay("InFile[%02d] len:%d RawTp:%s : %s",
+		        if !pC.HasError() {
+			   L.L.Okay("InFile[%02d] len:%d RawTp:%s : %s",
 				i, len(pC.FSItem.Raw), pC.RawType(),
 				pC.FSItem.FPs.ShortFP)
 			/* if pCty.RawType() == SU.Raw_type_UNK ||
@@ -161,6 +163,10 @@ func (env *XmlAppEnv) Exec() error {
 			             i, len(pCty.PathProps.Raw),
 			             pCty.RawType(), pCty.AbsFP())
 				panic("UNK RawType in ExecuteStages; \n" + s) */
+			   } else {
+			     L.L.Error("InFile[%02d] ERROR: %s",
+			     	 i, pC.GetError())
+			   }
 		}
 	}
 	L.L.Info("Loaded %d file contentity/ies", len(env.AllCntys))
@@ -244,7 +250,7 @@ func (env *XmlAppEnv) Exec() error {
 		if cty.FSItem.TypedRaw != nil {
 			rawlen = len(cty.FSItem.Raw)
 		}
-		dsp = fmt.Sprintf(" %4d  %s  %s  %s",
+		dsp = fmt.Sprintf(" len:%4d  %s  %s  %s",
 			rawlen, cty.RawType(),
 			cmp.Or(cty.MType, "(nil-MType)"),
 			cmp.Or(cty.MimeType, "(nil-Mime)"))
