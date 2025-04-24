@@ -30,8 +30,15 @@ func fpt(path string) string {
      sL, eL = FP.Localize(path)
      if eA == nil { eA = errors.New("OK") }
      if eL == nil { eL = errors.New("OK") }
-     return fmt.Sprintf("%s\t A:%s L:%s V:%s A<%s:%s> L<%s:%s>",
-     	    path, SU.Yn(A), SU.Yn(L), SU.Yn(V), sA, eA, sL, eL)
+     nF, nE := os.Open(path)
+     rF, rE :=  R.Open(path) // this line barfs on symlink to ".."!
+     nF.Close()
+     rF.Close()
+     return fmt.Sprintf("Path: %s \n" +
+     	    "Abs:%s LV:%s%s A<%s:%s> L<%s:%s> \n" +
+     	    "norm.Open.error: %s \n" +
+	    "root.Open.error: %s \n", 
+     	    path, SU.Yn(A), SU.Yn(L), SU.Yn(V), sA, eA, sL, eL, nE, rE)
 }
 
 // The general approach:
@@ -53,15 +60,21 @@ func fpt(path string) string {
 //  8) GTree
 //  9) ContentiTree
 
+var R *os.Root
+
 // Exec does all execution of all stages for
 // every [mcfile.Contentity], altho only after
 // all prep has already been done by other funcs.
 func (env *XmlAppEnv) Exec() error {
 
+        var e error 
+     	R, e = os.OpenRoot(".")
+	if e != nil { panic("OOPS Root") }
      	println(fpt(""))
      	println(fpt("."))
      	println(fpt(".."))
      	println(fpt("../"))
+     	println(fpt("../../"))
      	println(fpt("/"))
      	println(fpt("/etc"))
      	println(fpt("/etc/"))
@@ -69,7 +82,14 @@ func (env *XmlAppEnv) Exec() error {
      	println(fpt("derf/derf2"))
 	println(fpt("/Users/fbaube/src/m5app/m5/m5"))
 	println(fpt("/Users/fbaube/src/m5app/m5/m5/derf/"))
-
+	println(fpt("tstat/L-etc"))
+	println(fpt("tstat/L-file-Nexist"))
+	println(fpt("tstat/L-file-OK"))
+	println("=> tilde")
+	println(fpt("tstat/L-tilde"))
+	// println("=> double dot:")
+	// println(fpt("tstat/L-par-dbldot"))
+	
 	// =====================
 	// =====================
 	// TOP LEVEL: FILE INTRO
@@ -79,7 +99,7 @@ func (env *XmlAppEnv) Exec() error {
 	defer func() { L.L.Flush() }()
 	// Timing:
 	// tt := MU.Into("Input file processing")
-
+// ********
 	// At this point, "env" has struct InputPathItems, 
 	// containing variables related to input files:
 	//
@@ -220,7 +240,7 @@ func (env *XmlAppEnv) Exec() error {
 			L.L.Okay("[%02d]  %s \t%s", ii, mt, cty.FSItem.FPs.ShortFP)
 		}
 	}
-
+// ********
 	// =========================
 	// =========================
 	// TOP LEVEL: EXECUTE STAGES
