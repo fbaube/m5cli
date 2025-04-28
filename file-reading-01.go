@@ -1,7 +1,7 @@
 package m5cli
 
 import (
-	"encoding/json"
+	// "encoding/json"
 	"github.com/fbaube/m5cli/exec"
 	L "github.com/fbaube/mlog" // Bring in global var L
 	SU "github.com/fbaube/stringutils"
@@ -9,7 +9,9 @@ import (
 	// "github.com/fbaube/tags"
 )
 
-func file_reading_01(env *XmlAppEnv) error {
+// *InputPathItems
+// func file_reading_01(env *XmlAppEnv) error {
+func file_reading_01(pIPI *InputPathItems) error {
 
 	// At this point, "env" has three slices
 	// of variables related  to input files:
@@ -37,25 +39,28 @@ func file_reading_01(env *XmlAppEnv) error {
 	//  First all files named on the command
 	//  line, then all directories named there
 	// ========================================
-	// DUMP env.NamedDirrs, Inexpandirs
-	L.L.Info("AppEnv.NamedFiles: [%d]: %+v \n", len(env.NamedFiles), env.NamedFiles)
-	L.L.Info("AppEnv.NamedDirrs:: [%d]: %+v \n", len(env.NamedDirrs), env.NamedDirrs)
+	// DUMP pIPI.NamedDirrs, Inexpandirs
+	L.L.Info("AppEnv.NamedFiles: [%d]: %+v \n",
+		len(pIPI.NamedFiles), pIPI.NamedFiles)
+	L.L.Info("AppEnv.NamedDirrs:: [%d]: %+v \n",
+		len(pIPI.NamedDirrs), pIPI.NamedDirrs)
+	/*
 	if env.cfg.b.Samples {
 		// ALSO DUMP AS JSON
 		var jout []byte
 		var jerr error
-		if len(env.NamedFiles) > 0 {
+		if len(pIPI.NamedFiles) > 0 {
 			jout, jerr = json.MarshalIndent(
-				env.NamedFiles[0], "infile: ", "  ")
+				pIPI.NamedFiles[0], "infile: ", "  ")
 			if jerr != nil {
 				println(jerr)
 				panic(jerr)
 			}
 			L.L.Debug("JSON! " + string(jout))
 		}
-		if len(env.NamedDirrs) > 0 {
+		if len(pIPI.NamedDirrs) > 0 {
 			jout, jerr = json.MarshalIndent(
-				env.NamedDirrs[0], "indirr: ", "  ")
+				pIPI.NamedDirrs[0], "indirr: ", "  ")
 			if jerr != nil {
 				println(jerr)
 				panic(jerr)
@@ -63,8 +68,8 @@ func file_reading_01(env *XmlAppEnv) error {
 			L.L.Debug("JSON! " + string(jout))
 		}
 	}
-
-	// fmt.Printf("==> env.Inexpandirs: %#v \n", env.Inexpandirs)
+	*/
+	// fmt.Printf("==> pIPI.Inexpandirs: %#v \n", pIPI.Inexpandirs)
 
 	// ==========================
 	//  FOR EVERY CLI INPUT FILE
@@ -74,15 +79,15 @@ func file_reading_01(env *XmlAppEnv) error {
 	// var IndirContentityFSs []*mcfile.ContentityFS // trees
 
 	L.L.Warning(SU.Rfg(SU.Ybg("=== LOAD CLI FILE(S) ===")))
-	// fmt.Fprintf(os.Stderr, "exec: env.NamedFiles: %#v \n", env.NamedFiles)
-	// fmt.Fprintf(os.Stderr, "exec: env.NamedFiles[0]: %#v \n", *env.NamedFiles[0].FPs)
+	// fmt.Fprintf(os.Stderr, "exec: pIPI.NamedFiles: %#v \n", pIPI.NamedFiles)
+	// fmt.Fprintf(os.Stderr, "exec: pIPI.NamedFiles[0]: %#v \n", *pIPI.NamedFiles[0].FPs)
 	var errct int 
-	env.AllCntys, errct = exec.LoadFilepathsContentities(env.NamedFiles)
-	gotCtys := env.AllCntys != nil && len(env.AllCntys) > 0
+	pIPI.AllCntys, errct = exec.LoadFilepathsContentities(pIPI.NamedFiles)
+	gotCtys := pIPI.AllCntys != nil && len(pIPI.AllCntys) > 0
 	if gotCtys {
 		L.L.Okay("Results for %d infiles: %d OK, %d not OK \n",
-			len(env.NamedFiles), len(env.AllCntys)-errct, errct)
-		for i, pC := range env.AllCntys {
+			len(pIPI.NamedFiles), len(pIPI.AllCntys)-errct, errct)
+		for i, pC := range pIPI.AllCntys {
 		        if !pC.HasError() {
 			   L.L.Okay("InFile[%02d] len:%d RawTp:%s : %s",
 				i, len(pC.FSItem.Raw), pC.RawType(),
@@ -99,16 +104,16 @@ func file_reading_01(env *XmlAppEnv) error {
 			}
 		}
 	}
-	L.L.Info("Loaded %d file contentity/ies", len(env.AllCntys))
+	L.L.Info("Loaded %d file contentity/ies", len(pIPI.AllCntys))
 	// ==================================
 	//   FOR EVERY CLI INPUT DIRECTORY
 	//  Make a new Contentity filesystem
 	// ==================================
 	L.L.Warning(SU.Rfg(SU.Ybg("=== EXPAND CLI DIR(S) ===")))
-	env.DirCntyFSs = exec.LoadDirpathsContentFSs(env.NamedDirrs)
-	WriteContentityFStreeFiles(env.DirCntyFSs)
+	pIPI.DirCntyFSs = exec.LoadDirpathsContentFSs(pIPI.NamedDirrs)
+	WriteContentityFStreeFiles(pIPI.DirCntyFSs)
 	L.L.Info("Expanded %d file folder(s) into %d F/S(s)",
-		len(env.NamedDirrs), len(env.DirCntyFSs))
+		len(pIPI.NamedDirrs), len(pIPI.DirCntyFSs))
 
 	// ==============================
 	//  FOR EVERY CLI INPUT DIRECTORY
@@ -116,28 +121,22 @@ func file_reading_01(env *XmlAppEnv) error {
 	//  also makes new Contentities
 	// ==============================
 	L.L.Warning(SU.Rfg(SU.Ybg("=== LOAD CLI DIR(S) ===")))
-	for _, pED := range env.DirCntyFSs {
-		env.AllCntys = append(env.AllCntys, pED.AsSlice()...)
+	for _, pED := range pIPI.DirCntyFSs {
+		pIPI.AllCntys = append(pIPI.AllCntys, pED.AsSlice()...)
 	}
 	L.L.Info("Expanded %d F/S(s), now have %d contentities",
-		len(env.DirCntyFSs), len(env.AllCntys))
+		len(pIPI.DirCntyFSs), len(pIPI.AllCntys))
 
 	// Now we have all the inputs.
 	// TODO: We could count up and tell the user
 	// how many files of each valid extension.
-
-	// ======================
-	//  FOR EVERY CONTENTITY
-	//  Prepare outputs
-	// ======================
-	InitContentityDebugFiles(env.AllCntys, env.cfg.b.TotalTextal)
 
 	// =======================
 	//  SUMMARIZE TO THE USER
 	//  ALL CONTENTITIES THAT
 	//  ARE LOADED & READY
 	// =======================
-	for ii, cty := range env.AllCntys {
+	for ii, cty := range pIPI.AllCntys {
 		if cty == nil {
 			L.L.Okay("[%02d]  nil", ii)
 		} else if cty.IsDir() {

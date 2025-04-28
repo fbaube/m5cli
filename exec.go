@@ -35,10 +35,10 @@ func fpt(path string) string {
      nF.Close()
      rF.Close()
      return fmt.Sprintf("Path: %s \n" +
-     	    "Abs:%s LV:%s%s A<%s:%s> L<%s:%s> \n" +
+     	    "Rel:%s LV:%s%s Abs<%s:%s> Lcl<%s:%s> \n" +
      	    "norm.Open.error: %s \n" +
 	    "root.Open.error: %s \n", 
-     	    path, SU.Yn(A), SU.Yn(L), SU.Yn(V), sA, eA, sL, eL, nE, rE)
+     	    path, SU.Yn(!A), SU.Yn(L), SU.Yn(V), sA, eA, sL, eL, nE, rE)
 }
 
 // The general approach:
@@ -99,148 +99,14 @@ func (env *XmlAppEnv) Exec() error {
 	defer func() { L.L.Flush() }()
 	// Timing:
 	// tt := MU.Into("Input file processing")
-// ********
-	// At this point, "env" has struct InputPathItems, 
-	// containing variables related to input files:
-	//
-	// InputPathItems.NamedFiles []FU.FSItem ::
-	// All the files that were specified individually on the CLI.
-	// Note that if an unqouted wildcard was used, then it was
-	// expanded by the shell, and all files in the expansion
-	// appear individually here.
-	//
-	// InputPathItems.NamedDirrs []FU.FSItem ::
-	// All the directories that were specified individually on the CLI.
-	//
-	// InputPathItems.NamedMiscs []FU.FSItem ::
-	// All "other stuff" that were specified individually on the CLI.
-	//
-	// InputPathItems.DirCntyFSs []ContentityFS
-	// (still empty at this point) :: Maps a ContentityFS to each
-	// NamedDirr; later, each is flattened into a slice.
-
-	// =======================
-	// =======================
-	// TOP LEVEL: FILE READING
-	// =======================
-	// =======================
-	L.SetMaxLevel(LOG_LEVEL_FILE_READING)
-	// ========================================
-	//  EVERY CLI INPUT ITEM IS COLLECTED HERE
-	//  First all files named on the command
-	//  line, then all directories named there
-	// ========================================
-	// DUMP env.Indirs, Inexpandirs
-	// L.L.Info("AppEnv.Files: [%d]: %+v \n", len(env.Infiles), env.Infiles)
-	// L.L.Info("AppEnv.Indirs:: [%d]: %+v \n", len(env.Indirs), env.Indirs)
-	if env.cfg.b.Samples {
-		// ALSO DUMP AS JSON
-		var jout []byte
-		var jerr error
-		if len(env.NamedFiles) > 0 {
-			jout, jerr = json.MarshalIndent(
-				env.NamedFiles[0], "infile: ", "  ")
-			if jerr != nil {
-				println(jerr)
-				panic(jerr)
-			}
-			L.L.Debug("JSON! " + string(jout))
-		}
-		if len(env.NamedDirrs) > 0 {
-			jout, jerr = json.MarshalIndent(
-				env.NamedDirrs[0], "indirr: ", "  ")
-			if jerr != nil {
-				println(jerr)
-				panic(jerr)
-			}
-			L.L.Debug("JSON! " + string(jout))
-		}
+	
+	e01 := file_reading_01(&(env.InputPathItems))
+	if e01 != nil {
+	   L.L.Error("File reading failed: %s", e01)
+	   return fmt.Errorf("exec.filereading: %w", e01)
 	}
-
-	// fmt.Printf("==> env.Inexpandirs: %#v \n", env.Inexpandirs)
-
-	// ==========================
-	//  FOR EVERY CLI INPUT FILE
-	//  Make a new Contentity
-	// ==========================
-	L.L.Warning(SU.Rfg(SU.Ybg("=== LOAD CLI FILE(S) ===")))
-	// fmt.Fprintf(os.Stderr, "exec: env.NamedFiles: %#v \n", env.NamedFiles)
-	// fmt.Fprintf(os.Stderr, "exec: env.NamedFiles[0]: %#v \n", *env.NamedFiles[0].FPs)
-	var errct int 
-	env.AllCntys, errct = exec.LoadFilepathsContentities(env.NamedFiles)
-	gotCtys := len(env.AllCntys) > 0 
-	if gotCtys {
-		L.L.Okay("Results for %d infiles: %d OK, %d not OK \n",
-			len(env.NamedFiles), len(env.AllCntys)-errct, errct)
-		for i, pC := range env.AllCntys {
-		        if !pC.HasError() {
-			   L.L.Okay("InFile[%02d] len:%d RawTp:%s : %s",
-				i, len(pC.FSItem.Raw), pC.RawType(),
-				pC.FSItem.FPs.ShortFP)
-			/* if pCty.RawType() == SU.Raw_type_UNK ||
-			      pCty.RawType() ==  "" { {
-				s := fmt.Sprintf("INfile[%d]: [%d] %s %s",
-			             i, len(pCty.PathProps.Raw),
-			             pCty.RawType(), pCty.AbsFP())
-				panic("UNK RawType in ExecuteStages; \n" + s) */
-			   } else {
-			     L.L.Error("InFile[%02d] ERROR: %s",
-			     	 i, pC.GetError())
-			   }
-		}
-	}
-	L.L.Info("Loaded %d file contentity/ies", len(env.AllCntys))
-	// ==================================
-	//   FOR EVERY CLI INPUT DIRECTORY
-	//  Make a new Contentity filesystem
-	// ==================================
-	L.L.Warning(SU.Rfg(SU.Ybg("=== EXPAND CLI DIR(S) ===")))
-	env.DirCntyFSs = exec.LoadDirpathsContentFSs(env.NamedDirrs)
-	WriteContentityFStreeFiles(env.DirCntyFSs)
-	L.L.Info("Expanded %d file folder(s) into %d F/S(s)",
-		len(env.NamedDirrs), len(env.DirCntyFSs))
-
-	// ==============================
-	//  FOR EVERY CLI INPUT DIRECTORY
-	//  Expand it into files, which
-	//  also makes new Contentities
-	// ==============================
-	L.L.Warning(SU.Rfg(SU.Ybg("=== LOAD CLI DIR(S) ===")))
-	for _, ED := range env.DirCntyFSs {
-		env.AllCntys = append(env.AllCntys, ED.AsSlice()...)
-	}
-	L.L.Info("Expanded %d F/S(s), now have %d contentities",
-		len(env.DirCntyFSs), len(env.AllCntys))
-
-	// Now we have all the inputs.
-	// TODO: We could count up and tell the user
-	// how many files of each valid extension.
-
-	// ======================
-	//  FOR EVERY CONTENTITY
-	//  Prepare outputs
-	// ======================
 	InitContentityDebugFiles(env.AllCntys, env.cfg.b.TotalTextal)
-
-	// =======================
-	//  SUMMARIZE TO THE USER
-	//  ALL CONTENTITIES THAT
-	//  ARE LOADED & READY
-	// =======================
-	for ii, cty := range env.AllCntys {
-		if cty == nil {
-			L.L.Okay("[%02d]  nil", ii)
-		} else if cty.IsDir() {
-			L.L.Okay("[%02d]  DIR \t\t%s", ii, cty.FPs.ShortFP)
-		} else {
-			mt := cty.MType
-			if mt == "" {
-				mt = "(nil MType)"
-			}
-			L.L.Okay("[%02d]  %s \t%s", ii, mt, cty.FSItem.FPs.ShortFP)
-		}
-	}
-// ********
+	
 	// =========================
 	// =========================
 	// TOP LEVEL: EXECUTE STAGES

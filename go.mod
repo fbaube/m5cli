@@ -5,12 +5,12 @@ go 1.23.0
 toolchain go1.24.0
 
 require (
-	github.com/fbaube/datarepo v0.0.0-20250417165238-14c6deb2ec2a
-	github.com/fbaube/dsmnd v0.0.0-20250305202727-066656bb5c6a
-	github.com/fbaube/fileutils v0.0.0-20250421105025-accbd6796679
+	github.com/fbaube/datarepo v0.0.0-20250422172143-4b2a5bad214f
+	github.com/fbaube/dsmnd v0.0.0-20250421183122-a8998ca05628
+	github.com/fbaube/fileutils v0.0.0-20250424151502-5f1c7c39f010
 	github.com/fbaube/logutils v0.0.0-20250316184850-0569e5bc6b6d
 	github.com/fbaube/m5db v0.0.0-20240509180501-84aae2bef357
-	github.com/fbaube/mcfile v0.0.0-20250417165343-637b80d828c9
+	github.com/fbaube/mcfile v0.0.0-20250424151535-e003ba4c76c1
 	github.com/fbaube/mlog v0.0.0-20240425064535-3b89e3b28a76
 	github.com/fbaube/rest v0.0.0-20250328054914-8b00cb666410
 	github.com/fbaube/stringutils v0.0.0-20250417165306-e5b66aefb1de
@@ -39,7 +39,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.28 // indirect
 	github.com/mgutz/str v1.2.0 // indirect
 	github.com/nbio/xml v0.0.0-20250325194151-57e639e7ba73 // indirect
-	github.com/yuin/goldmark v1.7.10 // indirect
+	github.com/yuin/goldmark v1.7.11 // indirect
 	golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0 // indirect
 	golang.org/x/net v0.39.0 // indirect
 	golang.org/x/sys v0.32.0 // indirect
