@@ -141,7 +141,10 @@ func file_reading_01(pIPI *InputPathItems) error {
 			L.L.Okay("[%02d]  nil", ii)
 		} else if cty.IsDir() {
 			L.L.Okay("[%02d]  DIR \t\t%s", ii, cty.FPs.ShortFP)
-		} else {
+		} else if cty.PathAnalysis == nil {
+			L.L.Okay("[%02d]  nilPathAnalysis \t%s",
+				ii,  cty.FSItem.FPs.ShortFP)
+		} else { 
 			mt := cty.MType
 			if mt == "" {
 				mt = "(nil MType)"
