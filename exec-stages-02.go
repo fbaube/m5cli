@@ -13,7 +13,7 @@ import (
 	// "github.com/fbaube/tags"
 )
 
-func exec_stages_2(env *XmlAppEnv, InfileContentities []*mcfile.Contentity) error {
+func exec_stages_2(InfileContentities []*mcfile.Contentity) error {
 
 	// =========================
 	// =========================
@@ -32,6 +32,11 @@ func exec_stages_2(env *XmlAppEnv, InfileContentities []*mcfile.Contentity) erro
 		if cty.IsDir() {
 			continue
 		}
+		// If we still have symlinks here, note it
+		if cty.IsDirlike() {
+		   	L.L.Warning("execstages: got symlink: " + cty.AbsFP())
+                        continue
+                }
 		// Complain loudly if the contentity type is unidentified
 		if cty.RawType() == "" { // or SU.Raw_type_UNK {
 			L.L.Error("UNK RawType in ExecuteStages (2nd chance)")
@@ -67,9 +72,11 @@ func exec_stages_2(env *XmlAppEnv, InfileContentities []*mcfile.Contentity) erro
 		}
 		L.L.Info("Wrote JSON to: " + jsonOutFilename)
 		// defer jsonOutFile.Close()
-		// ==================
-		//  AND NOW, EXECUTE
-		// ==================
+		// ==============================================
+		//     AND NOW, EXECUTE
+		//   If we want to try a fancy execution model, 
+		// such as lots of gogunc's, it will happen here. 
+		// ==============================================
 		cty.ExecuteStages()
 	}
 

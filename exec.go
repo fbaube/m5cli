@@ -1,12 +1,9 @@
 package m5cli
 
 import (
-	"cmp"
-	"encoding/json"
 	"fmt"
 	"os"
-	S "strings"
-
+	
 	DRS "github.com/fbaube/datarepo/sqlite"
 	"github.com/fbaube/m5cli/exec"
 	L "github.com/fbaube/mlog" // Bring in global var L
@@ -93,6 +90,7 @@ func (env *XmlAppEnv) Exec() error {
 	// =====================
 	// =====================
 	// TOP LEVEL: FILE INTRO
+	//    file_reading_01
 	// =====================
 	// =====================
 	L.SetMaxLevel(LOG_LEVEL_FILE_INTRO)
@@ -111,197 +109,37 @@ func (env *XmlAppEnv) Exec() error {
 	// =========================
 	// TOP LEVEL: EXECUTE STAGES
 	// =========================
-	// =========================
-	//  FOR EVERY CONTENTITY
-	// ======================
-	L.SetMaxLevel(LOG_LEVEL_EXEC_STAGES)
-	L.L.Okay(SU.Rfg(SU.Ybg("=== DO CONTENTITY STAGES ===")))
-
-	L.L.Info("Input contentities: total %d", len(env.AllCntys))
-
-	for ii, cty := range env.AllCntys {
-		// Skip directories entirely
-		if cty.IsDir() {
-			continue
-		}
-		// Complain loudly if the contentity type is unidentified
-		if cty.RawType() == "" { // or SU.Raw_type_UNK {
-			L.L.Error("UNK RawType in ExecuteStages (2nd chance)")
-		}
-		var dsp string
-		L.L.SetCategory(fmt.Sprintf("%02d", ii))
-		dsp = fmt.Sprintf("[F%02d] %s", ii, SU.Tildotted(cty.AbsFP()))
-		L.L.Info(SU.Cyanbg(SU.Wfg(dsp)))
-		var rawlen int
-		if cty.FSItem.TypedRaw != nil {
-			rawlen = len(cty.FSItem.Raw)
-		}
-		dsp = fmt.Sprintf(" len:%4d  %s  %s  %s",
-			rawlen, cty.RawType(),
-			cmp.Or(cty.MType, "(nil-MType)"),
-			cmp.Or(cty.MimeType, "(nil-Mime)"))
-		L.L.Info(SU.Cyanbg(SU.Wfg(dsp)))
-
-		// Now try dumping it as JSON !
-		// func MarshalIndent(v any, prefix,
-		//    indent string) ([]byte, error)
-		var jsonOut []byte
-		jsonOut, _ = json.MarshalIndent(cty, "", "  ")
-		/*
-			L.L.Info("================\n" +
-				 "%s \n" +
-				 "================", string(jsonOut))
-		*/
-		jsonOutFilename := cty.FPs.AbsFP + ".tmp.json"
-		errr := os.WriteFile(jsonOutFilename, jsonOut, 0644)
-		if errr != nil {
-			panic("os.WriteFile json: " + jsonOutFilename)
-		}
-		L.L.Info("Wrote JSON to: " + jsonOutFilename)
-		// defer jsonOutFile.Close()
-		// ==================
-		//  AND NOW, EXECUTE
-		// ==================
-		cty.ExecuteStages()
+	e02 := exec_stages_2(env.AllCntys)
+	if e02 != nil {
+	   L.L.Error("Exec stages failed: %s", e02)
+	   return fmt.Errorf("exec.execstages: %w", e02)
 	}
-
-	// =========================
-	//  DUMP ACCUMULATED ERRORS
-	// =========================
-	L.L.Info("Accumulated errors:")
-	for _, p := range env.AllCntys {
-		if p.HasError() {
-			L.L.Error("file[%s: %s", p.LogPrefix("]"), p.Error())
-		}
-	}
-	/*
-		// ================================
-		//  2a. PREPARE FOR OUTPUT FILES
-		//      Maybe ConfigureOutputFiles
-		// ================================
-		(for every InfileContentity)
-		if env.GroupGenerated {
-			// println("==> Creating output directories.")
-			e = pMCF.ConfigureOutputFiles("_" + myAppName)
-			errorbarf(e, "ConfigureOutputFiles")
-			}
-		}
-	*/
+	
 	// ============================
 	// ============================
 	// TOP LEVEL: INTRA-FILE AND
 	// INTER-FILE REFERENCE LINKING
 	// ============================
 	// ============================
-	for _, p := range env.AllCntys {
-
-		// 2025.04 FIXME FIXME FIXME
-		p.GatherXmlGLinks() // (&AllGLinks)
-
-		// Cross-reference and resolve the links
-		println("D=> TODO: Cross-ref the GLinks")
-
-		// MU.Outa("Processing input file(s)", tt)
-
-		/*
-			fmt.Printf("==> Summary counts: %d Tags, %d Atts \n",
-				mcfile.GlobalTagCount, mcfile.GlobalAttCount)
-			println("--> Tags:", mcfile.GlobalTagTally.StringSortedValues())
-			println("--> Atts:", mcfile.GlobalAttTally.StringSortedValues())
-		*/
-		println("#### GLink KEY SOURCES ####")
-		for _, pGL := range AllGLinks.KeyRefncs {
-			fmt.Printf("%s@%s: %s: %s \n", pGL.Att, pGL.Tag,
-				pGL.AddressMode, pGL.AbsFP.Tildotted())
-		}
-		println("#### GLink KEY TARGETS ####")
-		for _, pGL := range AllGLinks.KeyRefnts {
-			t := pGL.Tag
-			a := pGL.Att
-			// if S.HasPrefix(t, "topi") ||
-			// S.Contains(a, "key") || S.Contains(a, "ref") {
-			fmt.Printf("%s@%s: %s: %s \n",
-				a, t, pGL.AddressMode, pGL.AbsFP.Tildotted())
-			// }
-		}
-		println("#### GLink URI SOURCES ####")
-		for _, pGL := range AllGLinks.UriRefncs {
-			fmt.Printf("%s@%s: %s: %s \n", pGL.Att, pGL.Tag,
-				pGL.AddressMode, pGL.AbsFP.Tildotted())
-		}
-		println("#### GLink URI TARGETS ####")
-		for _, pGL := range AllGLinks.UriRefnts {
-			t := pGL.Tag
-			a := pGL.Att
-			isList := (len(pGL.Tag) == 2 &&
-				S.HasSuffix(pGL.Tag, "l"))
-			if !isList {
-				fmt.Printf("%s@%s: %s: %s \n", a, t,
-					pGL.AddressMode, pGL.AbsFP.Tildotted())
-			}
-		}
+	e03 := ref_linking_03(env.AllCntys)
+	if e03 != nil {
+	   L.L.Error("Ref linking failed: %s", e03)
+	   return fmt.Errorf("exec.reflinking: %w", e03)
 	}
-
-	// Cross-reference and resolve the links
-
-	// ===========================
-	//   3. VALIDATE INPUT FILES
-	//  This code actually belongs
-	//     above: see line 145.
-	// ===========================
-
-	// We can use xmllint to validate here, but we don't
-	// want to rely on schema files already in the system
-	// - no using its normal catalogs, or anything at or
-	// under `/etc/xml/catalog` - and we can't use the
-	// envar `XML_CATALOG_FILES`. But if we have our own
-	// catalog file, we can pass it our own value as (say)
-	// envar `MMMC_XML_CATALOG_FILES`.
-
-	/* if pCA.Validate && * / env.XmlCatalogFile != nil {
-
-		println(" ")
-		tt = MU.Into("")
-		println("==> Validating input file(s)...")
-
-		var dtdStatus, docStatus, errStatus string
-
-		print("==> Text file validation statuses: \n")
-		for _, pMCF = range MCFiles {
-			if pMCF.IsXML() {
-				if FU.MTypeSub(pMCF.MType, 0) == "img" {
-					continue
-				}
-			}
-			if !pMCF.IsXML() {
-				continue
-			}
-			var dtdDesc string
-
-			// DO THE VALIDATION
-			dtdStatus, docStatus, errStatus = pMCF.DoValidation(env.XmlCatalogFile)
-
-			if pMCF.XmlDoctypeFields != nil {
-				dtdDesc = pMCF.XmlDoctypeFields.PIDSIDcatalogFileRecord.PublicTextDesc
-			}
-			fmt.Printf("%s/%s/%s %s %s :: %s :: %s  \n",
-				pMCF.MType[0], pMCF.MType[1], pMCF.MType[2], dtdStatus,
-				docStatus, pMCF.AbsFilePath, dtdDesc)
-			if errStatus != "" {
-				println(errStatus)
-			}
-		}
-		MU.Outa("Validating input file(s)", tt)
+	// =======================
+	//   VALIDATE INPUT FILES
+	// =======================
+	e04 := validateInputFiles(env) 
+	if e04 != nil {
+	   L.L.Error("Input validation failed: %s", e04)
+	   return fmt.Errorf("exec.valdateinputs: %w", e04)
 	}
-	*/
-
-	// ===============================
-	//   4. LOAD FILES INTO DATABASE
-	//      See also above
-	// ===============================
-
+	
+	// ==========================
+	//  LOAD FILES INTO DATABASE
+	// ==========================
 	if env.cfg.b.DBdoImport {
-
+	
 		if haveDB := (env.SimpleRepo != nil); !haveDB {
 			L.L.Error("Cannot proceed: SqliteRepo is not valid")
 			os.Exit(1)
@@ -333,9 +171,3 @@ func (env *XmlAppEnv) Exec() error {
 	return nil
 }
 
-func prerr(e error) string {
-	if e == nil {
-		return "-"
-	}
-	return e.Error()
-}
