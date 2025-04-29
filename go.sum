@@ -18,6 +18,8 @@ github.com/fbaube/fileutils v0.0.0-20250421105025-accbd6796679 h1:Yld2wiQeYhmxp2
 github.com/fbaube/fileutils v0.0.0-20250421105025-accbd6796679/go.mod h1:3+TKMaiat+4l2dRxxueTh32ZvNS06M4HtfEwPbxDL0U=
 github.com/fbaube/fileutils v0.0.0-20250424151502-5f1c7c39f010 h1:lzTh1/nfxSCck4OyXCxE2PzIqOoOfPawbNTw4+RdeJQ=
 github.com/fbaube/fileutils v0.0.0-20250424151502-5f1c7c39f010/go.mod h1:3+TKMaiat+4l2dRxxueTh32ZvNS06M4HtfEwPbxDL0U=
+github.com/fbaube/fileutils v0.0.0-20250429104741-ba243b363f14 h1:sis5tHPBsIe0Toa+lejI/W0hzCA0iTr0N//4WA2VBdM=
+github.com/fbaube/fileutils v0.0.0-20250429104741-ba243b363f14/go.mod h1:3+TKMaiat+4l2dRxxueTh32ZvNS06M4HtfEwPbxDL0U=
 github.com/fbaube/gparse v0.0.0-20230421173125-0aaf74eb920c h1:Wc/p/iz4WKF00neYNYszzfGsI7VhR2P/ZAu7TCjtXQs=
 github.com/fbaube/gparse v0.0.0-20230421173125-0aaf74eb920c/go.mod h1:0eMhKY31+tGA22qYyPzkDHPf/Q+3BZyUfDRLGjZywFM=
 github.com/fbaube/gtoken v0.0.0-20220221192313-06c1a87f1884/go.mod h1:L5TPmM5qhEVECO49RCwHxUMIJStcDicDuXPz9VzgyNs=

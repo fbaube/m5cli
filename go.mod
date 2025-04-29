@@ -7,7 +7,7 @@ toolchain go1.24.0
 require (
 	github.com/fbaube/datarepo v0.0.0-20250422172143-4b2a5bad214f
 	github.com/fbaube/dsmnd v0.0.0-20250421183122-a8998ca05628
-	github.com/fbaube/fileutils v0.0.0-20250424151502-5f1c7c39f010
+	github.com/fbaube/fileutils v0.0.0-20250429104741-ba243b363f14
 	github.com/fbaube/logutils v0.0.0-20250316184850-0569e5bc6b6d
 	github.com/fbaube/m5db v0.0.0-20240509180501-84aae2bef357
 	github.com/fbaube/mcfile v0.0.0-20250424151535-e003ba4c76c1
