@@ -74,6 +74,9 @@ func DoSamples() {
 			CTE, CTE.Error())
 	*/
 
+	// includes path/os.Root demo
+	FU.PathDemo()
+
 	// includes color demo
 	L.L.Info("ID: %s", FU.SessionSummary())
 

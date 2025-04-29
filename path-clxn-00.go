@@ -28,6 +28,8 @@ import (
 //    (b) gathered by expanding [NamedDirs] and then walking
 //    their [DirCntyFSs]
 //  - Everything should implement interface [Errer]
+//
+// FIXME: Add NamedSymls
 // . 
 type InputPathItems struct {
         NamedPaths []string    // copied from input arg 
@@ -91,6 +93,13 @@ func DoInpaths(inPaths []string) *InputPathItems {
 		case FU.FSItem_type_DIRR: // if FSI.IsDir() {
 		     pIPI.NamedDirrs = append(pIPI.NamedDirrs, FSI)
 		     sNote = ": to process recursively"
+		// SYMLINK?
+		case FU.FSItem_type_SYML:
+		  // Should not happen! Cos we use Stat not Lstat
+		     panic("path-clxn-00 FU.FSItem_type_SYML") /*
+		     pIPI.NamedMiscs = append(pIPI.NamedDirrs, FSI)
+		     symlS, symlE := 
+		     sNote = ": processing is TBD" */
 		  // Now this is where it gets tricky. We may or 
 		  // may not want to follow a symlink, but we can 
 		  // use funcs EvalSymlink & IsLocal, and os.Root.
