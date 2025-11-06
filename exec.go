@@ -24,7 +24,7 @@ import (
 //  2) Filename absolute path  (i.e. Abs.FP)
 //  3) FSItem
 //  4) Loading & parsing: GTokens
-//  5) PathAnalysis (i.e. content analysis)
+//  5) ContentAnalysis 
 //  6) ContentityRow
 //  7) Contentity
 //  8) GTree
