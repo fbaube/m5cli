@@ -30,6 +30,7 @@ type XmlAppCfg struct {
 // it copies args to os.Args before parsing begins.
 //
 // NOTE that args is probably nil !!
+// .
 func newXmlAppCfg(args []string) (*XmlAppCfg, error) {
 	var cfg *XmlAppCfg
 	var e error
@@ -64,6 +65,7 @@ func newXmlAppCfg(args []string) (*XmlAppCfg, error) {
 	/* if len(flag.Args()) == 0 {
 		panic("OOPS")
 	} */
+	
 	cfg.CmdTail = flag.Args()
 	cfg.p.sInpaths = flag.Args()
 	L.L.Debug("CLI bool flargs: " + cfg.b.String())

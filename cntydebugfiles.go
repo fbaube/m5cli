@@ -36,28 +36,28 @@ func InitContentityDebugFiles(InfileContentities []*cnty.Contentity, doTotalText
 		cty.GTreeWriter = io.Discard
 		cty.GEchoWriter = io.Discard
 
-		if doTotalTextal { // env.cfg.b.TotalTextal {
-			fnm := cty.FSO.FPs.AbsFP
-			if len(InfileContentities) == 1 {
-				fnm = "./debug"
-			}
-			// To name output files, append
-			// "_(echo,tkns,tree)" to the entire file name.
-			echoName := (fnm + "_echo")
-			tknsName := (fnm + "_tkns")
-			treeName := (fnm + "_tree")
-			f1, e1 := os.Create(echoName)
-			f2, e2 := os.Create(tknsName)
-			f3, e3 := os.Create(treeName)
-			if e1 == nil && e2 == nil && e3 == nil {
-				L.L.Info("created %s _echo,_tkns,_tree",
-					SU.Tildotted(fnm))
-			} else {
-				L.L.Error("Cannot open a Total Textual file")
-			}
-			cty.GEchoWriter = f1
-			cty.GTknsWriter = f2
-			cty.GTreeWriter = f3
+		if !doTotalTextal { return }
+
+		fnm := cty.FSO.FPs.AbsFP
+		if len(InfileContentities) == 1 {
+			fnm = "./debug"
 		}
+		// To name output files, append
+		// "_(echo,tkns,tree)" to the entire file name.
+		echoName := (fnm + "_echo")
+		tknsName := (fnm + "_tkns")
+		treeName := (fnm + "_tree")
+		f1, e1 := os.Create(echoName)
+		f2, e2 := os.Create(tknsName)
+		f3, e3 := os.Create(treeName)
+		if e1 == nil && e2 == nil && e3 == nil {
+			L.L.Info("created %s _echo,_tkns,_tree",
+				SU.Tildotted(fnm))
+		} else {
+			L.L.Error("Cannot open a Total Textual file")
+		}
+		cty.GEchoWriter = f1
+		cty.GTknsWriter = f2
+		cty.GTreeWriter = f3
 	}
 }

@@ -7,24 +7,24 @@ package exec
 
 
 import(
-	"github.com/fbaube/cnty"
+	   "github.com/fbaube/cnty"
 	FU "github.com/fbaube/fileutils"
 	SU "github.com/fbaube/stringutils"
-	L "github.com/fbaube/mlog"
+	L  "github.com/fbaube/mlog"
 )
 
-// LoadDirpathsContentFSs turns a slice of [FSItem] into
+// LoadDirpathsContentFSs turns a slice of [FSObject] into
 // a slice of [ContentityFS]. Any error is returned as 
 // an interface [Errer] of a ContentityFS. 
-func LoadDirpathsContentFSs(ff []FU.FSObject) ([]cnty.ContentityFS) {
-     if ff == nil || len(ff) == 0 {
+func LoadDirpathsContentFSs(inFSOs []FU.FSObject) ([]cnty.ContentityFS) {
+     if inFSOs == nil || len(inFSOs) == 0 {
      	return nil
 	}
      var FSs []cnty.ContentityFS
      var pFS  *cnty.ContentityFS
 
-     // For every input FSItem
-     for iDir, pDir := range ff {
+     // For every input FSObject
+     for iDir, pDir := range inFSOs {
      	 var shortName = FU.EnsureTrailingPathSep(
 	     SU.Tildotted(pDir.FPs.AbsFP))
 	 L.L.Info("InDir[%d]: %s", iDir, shortName)
@@ -32,7 +32,8 @@ func LoadDirpathsContentFSs(ff []FU.FSObject) ([]cnty.ContentityFS) {
 	 // nil is []string of OK file extensions 
 	 pFS, e = cnty.NewContentityFS(pDir.FPs.AbsFP, nil)
 	 if e != nil { /*
-	      	 isRillyNil := reflect.ValueOf(e).Kind() == reflect.Ptr && reflect.ValueOf(e).IsNil()
+	      	 isRillyNil := reflect.ValueOf(e).Kind() ==
+		 	       reflect.Ptr && reflect.ValueOf(e).IsNil()
 		 if isRillyNil { fmt.Printf("IT IS OK NOT ERROR") }
 	      	 println(fmt.Sprintf("error %T %p", e, e))
 	      	 println(fmt.Sprintf("error %+v", e))

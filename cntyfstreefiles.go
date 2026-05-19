@@ -14,7 +14,6 @@ func WriteContentityFStreeFiles(IndirContentityFSs []cnty.ContentityFS) {
 		// ==============================
 		// Write out a tree rep to a file
 		// ==============================
-		// L.L.Warning("Skip'd wrtg out tree rep: [%d]", iFS)
 		var treeFile *os.File
 		var treeFilename string
 		// Now write out a tree representation
@@ -39,6 +38,7 @@ func WriteContentityFStreeFiles(IndirContentityFSs []cnty.ContentityFS) {
 			// An error here does not need to be fatal
 			L.L.Error("CssTreefile " + treeFilename + ": " + e.Error())
 		} else {
+		        L.L.Error("cntyfsfreefiles.go FIXME")
 		//	pFS.RootContentity().PrintCssTree(treeFile)
 		//	L.L.Okay("Wrote css tree file: " + treeFilename)
 		}

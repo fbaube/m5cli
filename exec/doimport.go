@@ -21,7 +21,7 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*cnty.Contentity
 	//  START A TRANSACTION
 	// =====================
 	var Tx *sql.Tx
-	Tx, err = pSR.Begin()
+	Tx,err  = pSR.Begin()
 	if err != nil {
 		L.L.Error("Exec.Begin.Tx failed: %w", err)
 	}

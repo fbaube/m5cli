@@ -10,13 +10,13 @@ import(
 	L "github.com/fbaube/mlog"
 )
 
-// LoadFilepathsContentities turns a slice of [FSItem] into
+// LoadFilepathsContentities turns a slice of [FSObject] into
 // a slice of [Contentity]. Individual errors are returned
 // via embedded struct Errer, but for convenience, a summary
 // count of errors is the second return value. 
 // .
-func LoadFilepathsContentities(inFSIs []FU.FSObject) ([]*cnty.Contentity, int) {
-     if inFSIs == nil || len(inFSIs) == 0 {
+func LoadFilepathsContentities(inFSOs []FU.FSObject) ([]*cnty.Contentity, int) {
+     if inFSOs == nil || len(inFSOs) == 0 {
      	L.L.Info("No filepaths to load")
      	return make([]*cnty.Contentity, 0), 0
 	}
@@ -26,19 +26,19 @@ func LoadFilepathsContentities(inFSIs []FU.FSObject) ([]*cnty.Contentity, int) {
      var errct int 
      var path  string
 
-     // For every input FSItem
-     for i, fsi := range inFSIs {
-     	 // If the FSI already has an error, skip it.
-	 if fsi.HasError() {
+     // For every input FSObject
+     for i, fso := range inFSOs {
+     	 // If the FSO already has an error, skip it.
+	 if fso.HasError() {
 	    errct++
 	    continue
 	 }
      	 // Use Rel.FP here, not Abs.FP, cos of
 	 // use of std lib when checking path 
-     	 path = fsi.FPs.RelFP // AbsFP
+     	 path = fso.FPs.RelFP // AbsFP
 	 // println("LoadFiles: cnty.NewContentity:", path)
-	 // FIXME: Contentity contains a ContentityRecord contains
-	 // an FSItem, so DUH we should use the FSItem to create the 
+	 // FIXME: Contentity contains a ContentityRecord contains an
+	 // FSObject, so DUH we should use the FSObject to create the 
 	 // Contentity. But the Contentity also contains a Nord, so 
 	 // it gets complicated. So don't worry about this too much. 
 	 pC = cnty.NewContentity(path)
