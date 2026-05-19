@@ -6,14 +6,14 @@ import (
 	"fmt"
 	"os"
 	// "github.com/fbaube/m5cli/exec"
-	"github.com/fbaube/mcfile"
+	"github.com/fbaube/cnty"
 	L "github.com/fbaube/mlog" // Bring in global var L
 	SU "github.com/fbaube/stringutils"
 	// mime "github.com/fbaube/fileutils/contentmime"
 	// "github.com/fbaube/tags"
 )
 
-func exec_stages_2(InfileContentities []*mcfile.Contentity) error {
+func exec_stages_2(InfileContentities []*cnty.Contentity) error {
 
 	// =========================
 	// =========================
@@ -29,12 +29,13 @@ func exec_stages_2(InfileContentities []*mcfile.Contentity) error {
 
 	for ii, cty := range InfileContentities {
 		// Skip directories entirely
-		if cty.IsDir() {
+		if cty.FSO.FPs.IsDir {
 			continue
 		}
 		// If we still have symlinks here, note it
-		if cty.IsDirlike() {
-		   	L.L.Warning("execstages: got symlink: " + cty.AbsFP())
+		if cty.FSO.FPs.IsDirlike {
+		   	L.L.Warning("execstages: got symlink: " +
+				cty.FSO.FPs.AbsFP)
                         continue
                 }
 		// Complain loudly if the contentity type is unidentified
@@ -43,11 +44,12 @@ func exec_stages_2(InfileContentities []*mcfile.Contentity) error {
 		}
 		var dsp string
 		L.L.SetCategory(fmt.Sprintf("%02d", ii))
-		dsp = fmt.Sprintf("[F%02d] %s", ii, SU.Tildotted(cty.AbsFP()))
+		dsp = fmt.Sprintf("[F%02d] %s", ii,
+		      	SU.Tildotted(cty.FSO.FPs.AbsFP))
 		L.L.Info(SU.Cyanbg(SU.Wfg(dsp)))
 		var rawlen int
-		if cty.FSItem.TypedRaw != nil {
-			rawlen = len(cty.FSItem.Raw)
+		if cty.FSO.TypedRaw != nil {
+			rawlen = len(cty.FSO.Raw)
 		}
 		dsp = fmt.Sprintf(" %4d  %s  %s  %s",
 			rawlen, cty.RawType(),
@@ -65,7 +67,7 @@ func exec_stages_2(InfileContentities []*mcfile.Contentity) error {
 				 "%s \n" +
 				 "================", string(jsonOut))
 		*/
-		jsonOutFilename := cty.FPs.AbsFP + ".tmp.json"
+		jsonOutFilename := cty.FSO.FPs.AbsFP + ".tmp.json"
 		errr := os.WriteFile(jsonOutFilename, jsonOut, 0644)
 		if errr != nil {
 			panic("os.WriteFile json: " + jsonOutFilename)

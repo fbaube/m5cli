@@ -6,7 +6,7 @@ import (
 
 	D "github.com/fbaube/dsmnd"
 	FU "github.com/fbaube/fileutils"
-	// "github.com/fbaube/mcfile"
+	// "github.com/fbaube/cnty"
 	L "github.com/fbaube/mlog"
 	DRP "github.com/fbaube/datarepo"
 	SU "github.com/fbaube/stringutils"
@@ -19,12 +19,12 @@ type XmlAppEnv struct {
 	cfg *XmlAppCfg
 	DRP.SimpleRepo
 	InputPathItems 
-//	Infiles       []FU.FSItem // bye 
-//	Indirs        []FU.FSItem // bye 
-//	IndirFSs      []mcfile.ContentityFS // bye 
-	Outdir, Dbdir FU.FSItem // NOT ptr! Barfs at startup.
-	Xmlcatfile    FU.FSItem // NOT ptr! Barfs at startup.
-	Xmlschemasdir FU.FSItem // NOT ptr! Barfs at startup.
+//	Infiles       []FU.FSObject // bye 
+//	Indirs        []FU.FSObject // bye 
+//	IndirFSs      []cnty.ContentityFS // bye 
+	Outdir, Dbdir FU.FSObject // NOT ptr! Barfs at startup.
+	Xmlcatfile    FU.FSObject // NOT ptr! Barfs at startup.
+	Xmlschemasdir FU.FSObject // NOT ptr! Barfs at startup.
 	// IsSingleFile is a convenience flag, and a
 	// result of processing CLI arg for input file(s)
 	IsSingleFile bool
@@ -48,7 +48,7 @@ type XmlAppEnv struct {
 // by doing, not by saying. 
 // . 
 // type ContentityProcessor func(
-//	p *mcfile.Contentity, e error) (*mcfile.Contentity, error)
+//	p *cnty.Contentity, e error) (*mcfile.Contentity, error)
 
 // newXmlAppEnv turns an XmlAppCfg into an XmlAppEnv.
 func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
@@ -88,7 +88,7 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	// =================================
 	// A relative filepath is OK
 	if cfg.p.sOutdir != "" {
-	   pOF := FU.NewFSItem(cfg.p.sOutdir) // CA.Out.RelFilePath)
+	   pOF := FU.NewFSObject(cfg.p.sOutdir) // CA.Out.RelFilePath)
 	   env.Outdir = *pOF
 	   if pOF.HasError() {
 		return nil, errors.New("xould not process output file argument")

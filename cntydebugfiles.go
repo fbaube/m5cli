@@ -4,16 +4,16 @@ import(
         "os"
         "fmt"
 	"io"
-        "github.com/fbaube/mcfile"
+        "github.com/fbaube/cnty"
         L "github.com/fbaube/mlog"
         SU "github.com/fbaube/stringutils"
 )
 
-func InitContentityDebugFiles(InfileContentities []*mcfile.Contentity, doTotalTextal bool) {
+func InitContentityDebugFiles(InfileContentities []*cnty.Contentity, doTotalTextal bool) {
 
      for ii, cty := range InfileContentities {
 		// L.L.Info("LOOPING on IN-Cty %d", ii)
-		if cty.IsDir() {
+		if cty.FSO.IsDir() {
 			// println("Skip dir: " + cty.AbsFP())
 			continue
 		}
@@ -37,7 +37,7 @@ func InitContentityDebugFiles(InfileContentities []*mcfile.Contentity, doTotalTe
 		cty.GEchoWriter = io.Discard
 
 		if doTotalTextal { // env.cfg.b.TotalTextal {
-			fnm := cty.AbsFP()
+			fnm := cty.FSO.FPs.AbsFP
 			if len(InfileContentities) == 1 {
 				fnm = "./debug"
 			}

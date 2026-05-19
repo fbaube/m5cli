@@ -1,7 +1,7 @@
 package m5cli
 
 import (
-	"github.com/fbaube/mcfile"
+	"github.com/fbaube/cnty"
 	XU "github.com/fbaube/xmlutils"
 )
 
@@ -31,5 +31,5 @@ var InputExts = []string{
 // AllGLinks gathers all [mcfile.GLinks] in the current
 // run's input set. This should actually be re-entrant,
 // like [mcfile.ContentityEngine].
-var AllGLinks mcfile.GLinks
+var AllGLinks cnty.GLinks
 

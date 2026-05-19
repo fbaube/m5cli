@@ -7,13 +7,13 @@ import (
 	"database/sql"
 	// DRP "github.com/fbaube/datarepo"
 	DRS "github.com/fbaube/datarepo/sqlite"
-	"github.com/fbaube/mcfile"
+	"github.com/fbaube/cnty"
 	L "github.com/fbaube/mlog" // Brings in global var L
 	"github.com/fbaube/m5db"
 )
 
 // SimpleRepo is stored in struct [appenv].
-func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contentity) error {
+func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*cnty.Contentity) error {
 
 	var err, e error
 	L.L.Info("Starting import batch...")
@@ -59,7 +59,7 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 		newCtyID, e = pSR.EngineUnique(
 			"Add", "CNT", -1, &pMCF.ContentityRow)
 		if e != nil {
-			return mcfile.WrapAsContentityError(e,
+			return cnty.WrapAsContentityError(e,
 				"Exec.DoImport.InsCty", pMCF)
 		}
 		L.L.Info("Added file to import batch, ID: %d", newCtyID)
@@ -70,7 +70,7 @@ func ImportBatchIntoDB(pSR *DRS.SqliteRepo, InputContentities []*mcfile.Contenti
 	e = Tx.Commit() // pSR.Commit()
 	
 	if e != nil {
-		return mcfile.WrapAsContentityError(e,
+		return cnty.WrapAsContentityError(e,
 			"commit txn to DB failed (cli.exec)", nil)
 	}
 	L.L.Okay("Batch imported OK: TRANSACTION SUCCEEDED")

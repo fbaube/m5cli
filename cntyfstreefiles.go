@@ -3,11 +3,11 @@ package m5cli
 import(
 	"os"
 	"fmt"
-	"github.com/fbaube/mcfile"
+	"github.com/fbaube/cnty"
 	L "github.com/fbaube/mlog"
 )
 
-func WriteContentityFStreeFiles(IndirContentityFSs []mcfile.ContentityFS) {
+func WriteContentityFStreeFiles(IndirContentityFSs []cnty.ContentityFS) {
 
      var e error 
      for iFS, pFS := range IndirContentityFSs {
@@ -39,8 +39,8 @@ func WriteContentityFStreeFiles(IndirContentityFSs []mcfile.ContentityFS) {
 			// An error here does not need to be fatal
 			L.L.Error("CssTreefile " + treeFilename + ": " + e.Error())
 		} else {
-			pFS.RootContentity().PrintCssTree(treeFile)
-			L.L.Okay("Wrote css tree file: " + treeFilename)
+		//	pFS.RootContentity().PrintCssTree(treeFile)
+		//	L.L.Okay("Wrote css tree file: " + treeFilename)
 		}
 		treeFile.Close()
 	}

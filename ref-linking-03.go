@@ -2,14 +2,14 @@ package m5cli
 
 import (
 	"fmt"
-	"github.com/fbaube/mcfile"
+	"github.com/fbaube/cnty"
 	// L "github.com/fbaube/mlog" // Bring in global var L
 	S "strings"
 	// mime "github.com/fbaube/fileutils/contentmime"
 	// "github.com/fbaube/tags"
 )
 
-func ref_linking_03(InfileContentities []*mcfile.Contentity) error {
+func ref_linking_03(InfileContentities []*cnty.Contentity) error {
 
 	// ============================
 	// ============================
@@ -29,9 +29,9 @@ func ref_linking_03(InfileContentities []*mcfile.Contentity) error {
 
 		/*
 			fmt.Printf("==> Summary counts: %d Tags, %d Atts \n",
-				mcfile.GlobalTagCount, mcfile.GlobalAttCount)
-			println("--> Tags:", mcfile.GlobalTagTally.StringSortedValues())
-			println("--> Atts:", mcfile.GlobalAttTally.StringSortedValues())
+				cnty.GlobalTagCount, mcfile.GlobalAttCount)
+			println("--> Tags:", cnty.GlobalTagTally.StringSortedValues())
+			println("--> Atts:", cnty.GlobalAttTally.StringSortedValues())
 		*/
 		println("#### GLink KEY SOURCES ####")
 		for _, pGL := range AllGLinks.KeyRefncs {

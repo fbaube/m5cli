@@ -2,7 +2,7 @@ package m5cli
 
 import (
 	// "fmt"
-	// "github.com/fbaube/mcfile"
+	// "github.com/fbaube/cnty"
 	// L "github.com/fbaube/mlog" // Bring in global var L
 	// S "strings"
 	// mime "github.com/fbaube/fileutils/contentmime"
