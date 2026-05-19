@@ -16,12 +16,12 @@ func file_reading_01(pIPI *InputPathItems) error {
 	// At this point, "env" has three slices
 	// of variables related  to input files:
 	//
-	// Infiles []FU.FSItem :: is all the files that were
+	// Infiles []FU.FSO :: is all the files that were
 	// specified individually on the CLI. Note that if
 	// a wildcard was used, unquoted, then all files in
 	// the expansion appear individually here.
 	//
-	// Indirs []FU.FSItem :: is all the directories
+	// Indirs []FU.FSO :: is all the directories
 	// that were specified individually on the CLI.
 	//
 	// IndirFSs []ContentityFS (still empty at this point)
@@ -90,8 +90,8 @@ func file_reading_01(pIPI *InputPathItems) error {
 		for i, pC := range pIPI.AllCntys {
 		        if !pC.HasError() {
 			   L.L.Okay("InFile[%02d] len:%d RawTp:%s : %s",
-				i, len(pC.FSItem.Raw), pC.RawType(),
-				pC.FSItem.FPs.ShortFP)
+				i, len(pC.FSO.Raw), pC.RawType(),
+				pC.FSO.FPs.ShortFP)
 			/* if pCty.RawType() == SU.Raw_type_UNK ||
 			      pCty.RawType() ==  "" { {
 				s := fmt.Sprintf("INfile[%d]: [%d] %s %s",
@@ -139,17 +139,17 @@ func file_reading_01(pIPI *InputPathItems) error {
 	for ii, cty := range pIPI.AllCntys {
 		if cty == nil {
 			L.L.Okay("[%02d]  nil", ii)
-		} else if cty.IsDir() {
-			L.L.Okay("[%02d]  DIR \t\t%s", ii, cty.FPs.ShortFP)
+		} else if cty.FSO.FPs.IsDir {
+			L.L.Okay("[%02d]  DIR \t\t%s", ii, cty.FSO.FPs.ShortFP)
 		} else if cty.ContentAnalysis == nil {
 			L.L.Okay("[%02d]  nilContentAnalysis \t%s",
-				ii,  cty.FSItem.FPs.ShortFP)
+				ii,  cty.FSO.FPs.ShortFP)
 		} else { 
 			mt := cty.MType
 			if mt == "" {
 				mt = "(nil MType)"
 			}
-			L.L.Okay("[%02d]  %s \t%s", ii, mt, cty.FSItem.FPs.ShortFP)
+			L.L.Okay("[%02d]  %s \t%s", ii, mt, cty.FSO.FPs.ShortFP)
 		}
 	}
 	return nil
