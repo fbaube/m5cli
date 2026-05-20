@@ -1,70 +1,68 @@
 package exec
 
 import(
-	"fmt"
 	"errors"
-	"io/fs"
-	"github.com/fbaube/cnty"
+	"os"
+	   "github.com/fbaube/cnty"
 	FU "github.com/fbaube/fileutils"
 	SU "github.com/fbaube/stringutils"
-	L "github.com/fbaube/mlog"
+	L  "github.com/fbaube/mlog"
 )
 
-// LoadFilepathsContentities turns a slice of [FSObject] into
+// LoadFSOsIntoContentities turns a slice of [FSObject] into
 // a slice of [Contentity]. Individual errors are returned
-// via embedded struct Errer, but for convenience, a summary
-// count of errors is the second return value. 
+// via embedded struct [Errer]. The input and output slices 
+// are the same length, for a one-to-one mapping. 
 // .
-func LoadFilepathsContentities(inFSOs []FU.FSObject) ([]*cnty.Contentity, int) {
+func LoadFSOsIntoContentities(inFSOs []FU.FSObject) ([]*cnty.Contentity) {
      if inFSOs == nil || len(inFSOs) == 0 {
-     	L.L.Info("No filepaths to load")
-     	return make([]*cnty.Contentity, 0), 0
+     	L.L.Info("LoadFSOsIntoContentities: no filepaths to load")
+     	return nil 
 	}
      var pCC []*cnty.Contentity
-     var pC    *cnty.Contentity
-     var eC    error
-     var errct int 
+     var pCnty *cnty.Contentity
      var path  string
 
      // For every input FSObject
-     for i, fso := range inFSOs {
+     for iFso, pFso := range inFSOs {
      	 // If the FSO already has an error, skip it.
-	 if fso.HasError() {
-	    errct++
+	 if pFso.HasError() {
+	    pCC = append(pCC, nil)
 	    continue
 	 }
      	 // Use Rel.FP here, not Abs.FP, cos of
-	 // use of std lib when checking path 
-     	 path = fso.FPs.RelFP // AbsFP
-	 // println("LoadFiles: cnty.NewContentity:", path)
-	 // FIXME: Contentity contains a ContentityRecord contains an
-	 // FSObject, so DUH we should use the FSObject to create the 
-	 // Contentity. But the Contentity also contains a Nord, so 
-	 // it gets complicated. So don't worry about this too much. 
-	 pC = cnty.NewContentity(path)
-	 if pC.HasError() {
-		eC = &fs.PathError{Op:"loadfilepathscontents.newcontentity",
-		     Err:pC.GetError(),Path:fmt.Sprintf("[%d]:",i)+path}
-		// if pC == nil { pC = &(cnty.Contentity{}) }
-		pC.SetError(eC) 
-		L.L.Error("LoadFileOops: %s: %s", pC.Error(), path)
-		errct++
+	 // use of stdlib when checking path. 
+	 // 2026.05 Change to Abs.FP as more reliable.
+     	 path = pFso.FPs.AbsFP
+	 L.L.Info("InFile[%d]: %s", iFso, path)
+	 pPE := new(os.PathError{Path:pFso.FPs.CreatPath()})
+	 pCnty = cnty.NewContentity(pFso.FPs.RelFP)
+	 // Error? 
+	 if pCnty.HasError() {
+	    	pPE.Op = "loadfiles:newconty"
+		pPE.Err = pCnty.GetError()
+		pCnty.SetError(pPE) 
+		L.L.Error("InFile[%d](%s) error: %s", iFso, path, pPE) // .Error())
+		pCC = append(pCC, nil) 
 		continue
 	 }
-	 if pC.RawType() == SU.Raw_type_DIRLIKE {
-	    L.L.Warning("LoadFilepathsContents: DIRLIKE: " + path)
+	 // -----------------------------------
+         //  Now that the Contentity has been 
+         //  created, it has its own valid FSO. 
+         // -----------------------------------
+	 if pCnty.RawType() == SU.Raw_type_DIRLIKE {
+	    L.L.Warning("LoadFiles: DIRLIKE: " + path)
 	 }
-	 if pC.RawType() == "" { // or SU.MU_type_UNK {
-		eC = &fs.PathError{Op:"exec.loadFPs",
-		    Err:errors.New("RawType is UNK"),Path:path}
-		if pC == nil { pC = &(cnty.Contentity{}) }
-                pC.SetError(eC)
+	 if pCnty.RawType() == "" { // or SU.MU_type_UNK {
+	    	pPE.Op = "exec:loadfiles"
+		pPE.Err = errors.New("RawType is UNK")
+                pCnty.SetError(pPE)
 		L.L.Error("LoadFileOops, unk RawType, %s", path)
-		errct++
                 continue
 	 }
-	 pCC = append(pCC, pC)
-	 L.L.Okay("Item OK: MType<%s> RawType<%s>", pC.MType, pC.RawType())
+	 pCC = append(pCC, pCnty)
+	 L.L.Okay("File OK: MType<%s> RawType<%s>",
+	 	pCnty.MType, pCnty.RawType())
 	}
-	return pCC, errct
+	return pCC 
 }

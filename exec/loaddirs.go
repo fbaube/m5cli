@@ -7,49 +7,63 @@ package exec
 
 
 import(
+	   "fmt"
 	   "github.com/fbaube/cnty"
 	FU "github.com/fbaube/fileutils"
-	SU "github.com/fbaube/stringutils"
-	L  "github.com/fbaube/mlog"
+	 L "github.com/fbaube/mlog"
+
 )
 
-// LoadDirpathsContentFSs turns a slice of [FSObject] into
-// a slice of [ContentityFS]. Any error is returned as 
-// an interface [Errer] of a ContentityFS. 
-func LoadDirpathsContentFSs(inFSOs []FU.FSObject) ([]cnty.ContentityFS) {
+// LoadFSOsIntiContentityFSs turns a slice of [FSObject] into
+// a slice of [ContentityFS]. Individual errors are returned
+// via embedded struct [Errer]. The input and output slices
+// are the same length, for a one-to-one mapping.
+// .
+func LoadFSOsIntoContentityFSs(inFSOs []*FU.FSObject) ([]*cnty.ContentityFS) {
      if inFSOs == nil || len(inFSOs) == 0 {
+     	L.L.Info("LoadFSOsIntoContentityFSs: no filepaths to load")
      	return nil
 	}
-     var FSs []cnty.ContentityFS
-     var pFS  *cnty.ContentityFS
+     var FSs []*cnty.ContentityFS
+     var pFS   *cnty.ContentityFS
+     var path  string
 
-     // For every input FSObject
-     for iDir, pDir := range inFSOs {
-     	 var shortName = FU.EnsureTrailingPathSep(
-	     SU.Tildotted(pDir.FPs.AbsFP))
-	 L.L.Info("InDir[%d]: %s", iDir, shortName)
+     //  For every input FSObject
+     for iFso, pFso := range inFSOs {
+     	 // If the FSO already has an error, copy it into an
+	 // empty ContentityFS and skip further processing.
+         if pFso.HasError() {
+	 // FSs = append(FSs, new(cnty.ContentityFS { rootCnty.FSO:*pFso } ))
+	    tmp,_ := cnty.NewContentityFS(pFso.FPs.CreatPath(), nil)
+	    FSs = append(FSs, tmp)
+            continue
+         }
+	 // AbsFP might be more reliable, but use 
+	 // RelFPbecause we will be using [os.Root]. 
+	 path = pFso.FPs.RelFP
+	 L.L.Info("InDir[%d]: %s", iFso, path)
+	 // pPE := new(os.PathError{Path:pFso.CreatPath})
 	 var e error
 	 // nil is []string of OK file extensions 
-	 pFS, e = cnty.NewContentityFS(pDir.FPs.AbsFP, nil)
-	 if e != nil { /*
-	      	 isRillyNil := reflect.ValueOf(e).Kind() ==
-		 	       reflect.Ptr && reflect.ValueOf(e).IsNil()
-		 if isRillyNil { fmt.Printf("IT IS OK NOT ERROR") }
-	      	 println(fmt.Sprintf("error %T %p", e, e))
-	      	 println(fmt.Sprintf("error %+v", e))
-	      	 fmt.Printf("InDir[%d]: %s: error: %s", iDir, shortName, e.Error()) */
-		 L.L.Error("InDir[%d]: %s: error: %s", iDir, shortName, e.Error())
-	      	 // panic("Failed: cnty.NewContentityFS: " + pDir.FPs.AbsFP)
+	 pFS, e = cnty.NewContentityFS(pFso.FPs.RelFP, nil)
+	 // Error?
+	 if e != nil { 
+	      	 fmt.Printf("InDir[%d](%s) error: %s", iFso, e.Error(), path)
+		 L.L.Error ("InDir[%d](%s) error: %s", iFso, e.Error(), path)
+	 	 FSs = append(FSs, nil)
 		 continue
 	 }
-	 L.L.Okay("Found %d item(s) total (%d dirs, %d files)",
+	 // --------------------------------------------------
+	 //   Now that the ContentityFS has been created, it
+	 //  has its own valid FSO and a valid RootContentity.
+	 // --------------------------------------------------
+	 L.L.Okay("Got %d item(s) total (%d dirs, %d files)",
 	 	pFS.ItemCount(), pFS.DirCount(), pFS.FileCount())
 	 if pFS.FileCount() == 0 {
-	    	L.L.Warning("Found no content inputs to " +
-			"process in dir: " + shortName)
+	    	L.L.Warning("Found no content inputs in dir: " + path)
 		continue
 	 }
-	 FSs = append(FSs, *pFS) 
+	 FSs = append(FSs, pFS) 
      }
      return FSs
 }

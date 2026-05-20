@@ -23,18 +23,17 @@ var cancelFunc context.CancelFunc
 // The general approach:
 // 1. Filename via command line (RelFP = relative filepath)
 // 2. Filename absolute path (AbsFP)
-// 3. PathProps
-// 4. ContentityRecord
-// 5. MCFile
-// 6. GTree
-// 7. ForesTree
+// 3. fileutils/FSObject
+// 4. Contentity
+// 5. GTree
+// 6. ForesTree
 
-// CLI parses the arguments passed in (tipicly [os.Args]) and then
-// processes them; therefore it is very easy to pass in whatever
-// arguments are suitable for testing.
+// CLI parses the arguments passed in (via [os.Args]) and 
+// then processes them; therefore it is very easy to pass 
+// in whatever arguments are suitable for testing.
 //
 // NOTE: [os.Args] is writable so you can also assign your own set
-// of argument - this might be useful for testing or for WASM usage.
+// of arguments - this might be useful for testing or for WASM usage.
 //
 // An error from this func is returned unmodified and unprocessed,
 // and so it is up to the caller to sort out its severity and how to
@@ -54,8 +53,7 @@ var cancelFunc context.CancelFunc
 //  4. NewXmlAppCfg creates XmlAppCfg config from CLI arguments
 //  5. NewXmlAppEnv creates XmlAppEnv env'mt from XmlAppCfg
 //  6. XmlAppEnv.Exec() to Get Things Done
-//  7. If REST port nr given, run web UI
-//
+//  7. (If REST port number is given...) Run web UI
 // .
 func CLI(args []string) error {
 
@@ -72,7 +70,7 @@ func CLI(args []string) error {
 	// Unix-style request for help ? 
 	if len(args) < 2 && !WU.IsBrowser() {
 		myUsage()
-		return errors.New("No arguments. Nothing to do.")
+		return errors.New("No arguments. Nothing to do but Usage'd.")
 	}
 	
 	// Initialize logging 
@@ -144,7 +142,7 @@ func CLI(args []string) error {
 	// =====
 	if e = env.Exec(); e != nil {
 		L.L.Flush()
-		println("Exec:", e.Error())
+		fmt.Fprintf(os.Stderr, "Exec: " + e.Error())
 		L.L.Error("Exec: " + e.Error()) 
 		// return e
 	}
