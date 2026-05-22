@@ -14,7 +14,7 @@ import(
 
 )
 
-// LoadFSOsIntiContentityFSs turns a slice of [FSObject] into
+// LoadFSOsIntoContentityFSs turns a slice of [FSObject] into
 // a slice of [ContentityFS]. Individual errors are returned
 // via embedded struct [Errer]. The input and output slices
 // are the same length, for a one-to-one mapping.
@@ -24,8 +24,8 @@ func LoadFSOsIntoContentityFSs(inFSOs []*FU.FSObject) ([]*cnty.ContentityFS) {
      	L.L.Info("LoadFSOsIntoContentityFSs: no filepaths to load")
      	return nil
 	}
-     var FSs []*cnty.ContentityFS
-     var pFS   *cnty.ContentityFS
+     var CFSs []*cnty.ContentityFS
+     var pCFS   *cnty.ContentityFS
      var path  string
 
      //  For every input FSObject
@@ -33,24 +33,29 @@ func LoadFSOsIntoContentityFSs(inFSOs []*FU.FSObject) ([]*cnty.ContentityFS) {
      	 // If the FSO already has an error, copy it into an
 	 // empty ContentityFS and skip further processing.
          if pFso.HasError() {
-	 // FSs = append(FSs, new(cnty.ContentityFS { rootCnty.FSO:*pFso } ))
-	    tmp,_ := cnty.NewContentityFS(pFso.FPs.CreatPath(), nil)
-	    FSs = append(FSs, tmp)
+	 // tmp, _ := cnty.NewContentityFS(pFso.FPs.CreatPath(), nil)
+	    CFSs = append(CFSs, nil) // tmp) 
             continue
          }
+	 // -------------------
+	 //  Prepare variebles
+	 // -------------------
 	 // AbsFP might be more reliable, but use 
 	 // RelFPbecause we will be using [os.Root]. 
 	 path = pFso.FPs.RelFP
 	 L.L.Info("InDir[%d]: %s", iFso, path)
 	 // pPE := new(os.PathError{Path:pFso.CreatPath})
 	 var e error
+	 // --------
+	 //  Create
+	 // --------
 	 // nil is []string of OK file extensions 
-	 pFS, e = cnty.NewContentityFS(pFso.FPs.RelFP, nil)
+	 pCFS, e = cnty.NewContentityFS(pFso.FPs.RelFP, nil)
 	 // Error?
 	 if e != nil { 
 	      	 fmt.Printf("InDir[%d](%s) error: %s", iFso, e.Error(), path)
 		 L.L.Error ("InDir[%d](%s) error: %s", iFso, e.Error(), path)
-	 	 FSs = append(FSs, nil)
+	 	 CFSs = append(CFSs, nil)
 		 continue
 	 }
 	 // --------------------------------------------------
@@ -58,12 +63,12 @@ func LoadFSOsIntoContentityFSs(inFSOs []*FU.FSObject) ([]*cnty.ContentityFS) {
 	 //  has its own valid FSO and a valid RootContentity.
 	 // --------------------------------------------------
 	 L.L.Okay("Got %d item(s) total (%d dirs, %d files)",
-	 	pFS.ItemCount(), pFS.DirCount(), pFS.FileCount())
-	 if pFS.FileCount() == 0 {
+	 	pCFS.ItemCount(), pCFS.DirCount(), pCFS.FileCount())
+	 if pCFS.FileCount() == 0 {
 	    	L.L.Warning("Found no content inputs in dir: " + path)
 		continue
 	 }
-	 FSs = append(FSs, pFS) 
+	 CFSs = append(CFSs, pCFS) 
      }
-     return FSs
+     return CFSs
 }

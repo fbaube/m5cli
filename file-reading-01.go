@@ -82,7 +82,8 @@ func file_reading_01(pIPI *InputPathItems) error {
 	// fmt.Fprintf(os.Stderr, "exec: pIPI.NamedFiles: %#v \n", pIPI.NamedFiles)
 	// fmt.Fprintf(os.Stderr, "exec: pIPI.NamedFiles[0]: %#v \n", *pIPI.NamedFiles[0].FPs)
 	var errct int 
-	pIPI.AllCntys, errct = exec.LoadFilepathsContentities(pIPI.NamedFiles)
+//	pIPI.AllCntys, errct = exec.LoadFilepathsContentities(pIPI.NamedFiles)
+	pIPI.AllCntys, errct = exec.LoadFSOsIntoContentities(pIPI.NamedFiles)
 	gotCtys := pIPI.AllCntys != nil && len(pIPI.AllCntys) > 0
 	if gotCtys {
 		L.L.Okay("Results for %d infiles: %d OK, %d not OK \n",
@@ -110,7 +111,8 @@ func file_reading_01(pIPI *InputPathItems) error {
 	//  Make a new Contentity filesystem
 	// ==================================
 	L.L.Warning(SU.Rfg(SU.Ybg("=== EXPAND CLI DIR(S) ===")))
-	pIPI.DirCntyFSs = exec.LoadDirpathsContentFSs(pIPI.NamedDirrs)
+//	pIPI.DirCntyFSs = exec.LoadDirpathsContentFSs(pIPI.NamedDirrs)
+	pIPI.DirCntyFSs = exec.LoadFSOsIntoContentityFSs(pIPI.NamedDirrs)
 	WriteContentityFStreeFiles(pIPI.DirCntyFSs)
 	L.L.Info("Expanded %d file folder(s) into %d F/S(s)",
 		len(pIPI.NamedDirrs), len(pIPI.DirCntyFSs))

@@ -1,12 +1,12 @@
 package exec
 
 import(
-	"errors"
-	"os"
+	   "os"
+	   "errors"
 	   "github.com/fbaube/cnty"
 	FU "github.com/fbaube/fileutils"
 	SU "github.com/fbaube/stringutils"
-	L  "github.com/fbaube/mlog"
+ 	 L "github.com/fbaube/mlog"
 )
 
 // LoadFSOsIntoContentities turns a slice of [FSObject] into
@@ -19,7 +19,7 @@ func LoadFSOsIntoContentities(inFSOs []FU.FSObject) ([]*cnty.Contentity) {
      	L.L.Info("LoadFSOsIntoContentities: no filepaths to load")
      	return nil 
 	}
-     var pCC []*cnty.Contentity
+     var Cntys []*cnty.Contentity
      var pCnty *cnty.Contentity
      var path  string
 
@@ -27,15 +27,21 @@ func LoadFSOsIntoContentities(inFSOs []FU.FSObject) ([]*cnty.Contentity) {
      for iFso, pFso := range inFSOs {
      	 // If the FSO already has an error, skip it.
 	 if pFso.HasError() {
-	    pCC = append(pCC, nil)
-	    continue
+            Cntys = append(Cntys, nil) // cnty.NewContentity(pFso.FPs.CreatPath()))
+            continue
 	 }
+	 // -------------------
+	 //  Prepare variebles
+	 // -------------------
      	 // Use Rel.FP here, not Abs.FP, cos of
 	 // use of stdlib when checking path. 
 	 // 2026.05 Change to Abs.FP as more reliable.
      	 path = pFso.FPs.AbsFP
 	 L.L.Info("InFile[%d]: %s", iFso, path)
 	 pPE := new(os.PathError{Path:pFso.FPs.CreatPath()})
+	 // --------
+         //  Create
+         // --------
 	 pCnty = cnty.NewContentity(pFso.FPs.RelFP)
 	 // Error? 
 	 if pCnty.HasError() {
@@ -43,7 +49,7 @@ func LoadFSOsIntoContentities(inFSOs []FU.FSObject) ([]*cnty.Contentity) {
 		pPE.Err = pCnty.GetError()
 		pCnty.SetError(pPE) 
 		L.L.Error("InFile[%d](%s) error: %s", iFso, path, pPE) // .Error())
-		pCC = append(pCC, nil) 
+		Cntys = append(Cntys, nil) 
 		continue
 	 }
 	 // -----------------------------------
@@ -60,9 +66,9 @@ func LoadFSOsIntoContentities(inFSOs []FU.FSObject) ([]*cnty.Contentity) {
 		L.L.Error("LoadFileOops, unk RawType, %s", path)
                 continue
 	 }
-	 pCC = append(pCC, pCnty)
+	 Cntys = append(Cntys, pCnty)
 	 L.L.Okay("File OK: MType<%s> RawType<%s>",
 	 	pCnty.MType, pCnty.RawType())
 	}
-	return pCC 
+	return Cntys 
 }
