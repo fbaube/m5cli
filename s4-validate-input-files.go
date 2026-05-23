@@ -9,7 +9,7 @@ import (
 	// "github.com/fbaube/tags"
 )
 
-func validateInputFiles(env *XmlAppEnv) error {
+func step4_validate_input_files(env *XmlAppEnv) error {
 
 	// ======================
 	//  VALIDATE INPUT FILES

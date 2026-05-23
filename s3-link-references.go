@@ -9,7 +9,7 @@ import (
 	// "github.com/fbaube/tags"
 )
 
-func ref_linking_03(InfileContentities []*cnty.Contentity) error {
+func step3_link_references(InfileContentities []*cnty.Contentity) error {
 
 	// ============================
 	// ============================

@@ -13,7 +13,7 @@ import (
 	// "github.com/fbaube/tags"
 )
 
-func exec_stages_2(InfileContentities []*cnty.Contentity) error {
+func step2_do_contentity_stages(InfileContentities []*cnty.Contentity) error {
 
 	// =========================
 	// =========================

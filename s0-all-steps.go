@@ -41,7 +41,7 @@ func (env *XmlAppEnv) Exec() error {
 	// =====================
 	// =====================
 	// TOP LEVEL: FILE INTRO
-	//    file_reading_01
+	//      step1_read_files
 	// =====================
 	// =====================
 	L.SetMaxLevel(LOG_LEVEL_FILE_INTRO)
@@ -49,7 +49,7 @@ func (env *XmlAppEnv) Exec() error {
 	// Timing:
 	// tt := MU.Into("Input file processing")
 	
-	e01 := file_reading_01(&(env.InputPathItems))
+	e01 := step1_read_files(&(env.InputPathItems))
 	if e01 != nil {
 	   L.L.Error("File reading failed: %s", e01)
 	   return fmt.Errorf("exec.filereading: %w", e01)
@@ -60,7 +60,7 @@ func (env *XmlAppEnv) Exec() error {
 	// =========================
 	// TOP LEVEL: EXECUTE STAGES
 	// =========================
-	e02 := exec_stages_2(env.AllCntys)
+	e02 := step2_do_contentity_stages(env.AllCntys)
 	if e02 != nil {
 	   L.L.Error("Exec stages failed: %s", e02)
 	   return fmt.Errorf("exec.execstages: %w", e02)
@@ -72,7 +72,7 @@ func (env *XmlAppEnv) Exec() error {
 	// INTER-FILE REFERENCE LINKING
 	// ============================
 	// ============================
-	e03 := ref_linking_03(env.AllCntys)
+	e03 := step3_link_references(env.AllCntys)
 	if e03 != nil {
 	   L.L.Error("Ref linking failed: %s", e03)
 	   return fmt.Errorf("exec.reflinking: %w", e03)
@@ -80,7 +80,7 @@ func (env *XmlAppEnv) Exec() error {
 	// =======================
 	//   VALIDATE INPUT FILES
 	// =======================
-	e04 := validateInputFiles(env) 
+	e04 := step4_validate_input_files(env) 
 	if e04 != nil {
 	   L.L.Error("Input validation failed: %s", e04)
 	   return fmt.Errorf("exec.valdateinputs: %w", e04)

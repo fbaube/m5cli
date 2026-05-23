@@ -9,9 +9,7 @@ import (
 	// "github.com/fbaube/tags"
 )
 
-// *InputPathItems
-// func file_reading_01(env *XmlAppEnv) error {
-func file_reading_01(pIPI *InputPathItems) error {
+func step1_read_files(pIPI *InputPathItems) error {
 
 	// At this point, "env" has three slices
 	// of variables related  to input files:
