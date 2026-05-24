@@ -3,7 +3,7 @@ module github.com/fbaube/m5cli
 go 1.26.3
 
 require (
-	github.com/fbaube/cnty v0.0.0-20260519171051-ab4481b3972b
+	github.com/fbaube/cnty v0.0.0-20260520114238-fc36d655815e
 	github.com/fbaube/datarepo v0.0.0-20250422172143-4b2a5bad214f
 	github.com/fbaube/dsmnd v0.0.0-20260423181020-c1c848686981
 	github.com/fbaube/fileutils v0.0.0-20260519121518-d3a3ed720974
@@ -39,8 +39,8 @@ require (
 	github.com/nbio/xml v0.0.0-20260302224236-9f64bb3b5a9e // indirect
 	github.com/yuin/goldmark v1.8.2 // indirect
 	golang.org/x/exp v0.0.0-20260508232706-74f9aab9d74a // indirect
-	golang.org/x/net v0.54.0 // indirect
-	golang.org/x/sys v0.44.0 // indirect
+	golang.org/x/net v0.55.0 // indirect
+	golang.org/x/sys v0.45.0 // indirect
 	golang.org/x/tools/godoc v0.1.0-deprecated // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

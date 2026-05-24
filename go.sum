@@ -7,6 +7,8 @@ github.com/fbaube/cnty v0.0.0-20260519082517-9d12f0a81883 h1:VttooaTJs8Jx4pZYOfg
 github.com/fbaube/cnty v0.0.0-20260519082517-9d12f0a81883/go.mod h1:YMN3Yn7SYwD4afNUdOYwC/u0w2dZc05MlH/jG/vnibk=
 github.com/fbaube/cnty v0.0.0-20260519171051-ab4481b3972b h1:8Uqmwg41sFodgxESClzMUFGs1tajf3F16YXFHsnX1Co=
 github.com/fbaube/cnty v0.0.0-20260519171051-ab4481b3972b/go.mod h1:5qU7Ca9/+XWDvcp2sO6H0Wa4WajinYNZ+Y4F8XGQekE=
+github.com/fbaube/cnty v0.0.0-20260520114238-fc36d655815e h1:QycK0P/+4XpHSKHHBnLfzk1+H6kAlFpsb/nSnTVwF2k=
+github.com/fbaube/cnty v0.0.0-20260520114238-fc36d655815e/go.mod h1:cC6vnrshIXGKrJGm2+hhBqsi0+19n4EvVfNR2SYCxWo=
 github.com/fbaube/contentanalysis v0.0.0-20260517055552-f425ff9fd041 h1:tXn0ryal1meV02twRrZ148B6f13/39LXmDKmqw5CMqk=
 github.com/fbaube/contentanalysis v0.0.0-20260517055552-f425ff9fd041/go.mod h1:w895/1AQdJngyaPij1rrrbAd4xDEUNQuZBa4k0jHuzw=
 github.com/fbaube/ctoken v0.0.0-20251106121702-333021124221 h1:7c4QGJmjCuUSaLUjlLPq15TRxz16832sH9+Mjxcs9lE=
@@ -93,6 +95,8 @@ golang.org/x/exp v0.0.0-20260508232706-74f9aab9d74a/go.mod h1:d2fgXJLVs4dYDHUk5l
 golang.org/x/net v0.0.0-20220225172249-27dd8689420f/go.mod h1:CfG3xpIq0wQ8r1q4Su4UZFWDARRcnwPjda9FqA0JpMk=
 golang.org/x/net v0.54.0 h1:2zJIZAxAHV/OHCDTCOHAYehQzLfSXuf/5SoL/Dv6w/w=
 golang.org/x/net v0.54.0/go.mod h1:Sj4oj8jK6XmHpBZU/zWHw3BV3abl4Kvi+Ut7cQcY+cQ=
+golang.org/x/net v0.55.0 h1:bcvxaJn3e1U6InsFWt1JUq1aSjnRxLzT2rtD2KfkDF8=
+golang.org/x/net v0.55.0/go.mod h1:L5U2KuzuOe1lY7Z+aWVIKK6qEeJXnXV9yzGA+WCHJww=
 golang.org/x/sys v0.0.0-20200116001909-b77594299b42/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
@@ -102,6 +106,8 @@ golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e/go.mod h1:oPkhp1MJrh7nUepCBc
 golang.org/x/sys v0.0.0-20220310020820-b874c991c1a5/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.44.0 h1:ildZl3J4uzeKP07r2F++Op7E9B29JRUy+a27EibtBTQ=
 golang.org/x/sys v0.44.0/go.mod h1:4GL1E5IUh+htKOUEOaiffhrAeqysfVGipDYzABqnCmw=
+golang.org/x/sys v0.45.0 h1:dO4czNzziLiiXplLQgBCEpCvXQ3dnkn0SdaZSYdQ+FY=
+golang.org/x/sys v0.45.0/go.mod h1:4GL1E5IUh+htKOUEOaiffhrAeqysfVGipDYzABqnCmw=
 golang.org/x/term v0.0.0-20210927222741-03fcf44c2211/go.mod h1:jbD1KX2456YbFQfuXm/mYQcufACuNUgVhRMnK/tPxf8=
 golang.org/x/text v0.3.7/go.mod h1:u+2+/6zg+i71rQMx5EYifcz6MCKuco9NR6JIITiCfzQ=
 golang.org/x/tools v0.0.0-20180917221912-90fa682c2a6e/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=

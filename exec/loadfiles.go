@@ -9,12 +9,12 @@ import(
  	 L "github.com/fbaube/mlog"
 )
 
-// LoadFSOsIntoContentities turns a slice of [FSObject] into
+// LoadFSOsIntoContentities turns a slice of [*FSObject] into
 // a slice of [Contentity]. Individual errors are returned
 // via embedded struct [Errer]. The input and output slices 
 // are the same length, for a one-to-one mapping. 
 // .
-func LoadFSOsIntoContentities(inFSOs []FU.FSObject) ([]*cnty.Contentity) {
+func LoadFSOsIntoContentities(inFSOs []*FU.FSObject) ([]*cnty.Contentity) {
      if inFSOs == nil || len(inFSOs) == 0 {
      	L.L.Info("LoadFSOsIntoContentities: no filepaths to load")
      	return nil 

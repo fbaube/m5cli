@@ -80,8 +80,7 @@ func step1_read_files(pIPI *InputPathItems) error {
 	// fmt.Fprintf(os.Stderr, "exec: pIPI.NamedFiles: %#v \n", pIPI.NamedFiles)
 	// fmt.Fprintf(os.Stderr, "exec: pIPI.NamedFiles[0]: %#v \n", *pIPI.NamedFiles[0].FPs)
 	var errct int 
-//	pIPI.AllCntys, errct = exec.LoadFilepathsContentities(pIPI.NamedFiles)
-	pIPI.AllCntys, errct = exec.LoadFSOsIntoContentities(pIPI.NamedFiles)
+	pIPI.AllCntys = exec.LoadFSOsIntoContentities(pIPI.NamedFiles)
 	gotCtys := pIPI.AllCntys != nil && len(pIPI.AllCntys) > 0
 	if gotCtys {
 		L.L.Okay("Results for %d infiles: %d OK, %d not OK \n",
@@ -133,12 +132,13 @@ func step1_read_files(pIPI *InputPathItems) error {
 
 	// =======================
 	//  SUMMARIZE TO THE USER
-	//  ALL CONTENTITIES THAT
-	//  ARE LOADED & READY
+	//    ALL CONTENTITIES 
 	// =======================
 	for ii, cty := range pIPI.AllCntys {
-		if cty == nil {
-			L.L.Okay("[%02d]  nil", ii)
+	    	if cty.HasError() {
+		   	L.L.Error("[%02d] %s", ii, cty.Error())
+		} else if cty == nil {
+			panic("NIL CNTY ?!") // L.L.Okay("[%02d]  nil", ii)
 		} else if cty.FSO.FPs.IsDir {
 			L.L.Okay("[%02d]  DIR \t\t%s", ii, cty.FSO.FPs.ShortFP)
 		} else if cty.ContentAnalysis == nil {

@@ -72,19 +72,17 @@ func CLI(args []string) error {
 		myUsage()
 		return errors.New("No arguments. Nothing to do but Usage'd.")
 	}
-	
-	// Initialize logging 
+	// =======================
+	//  1) Initialize logging 
+	// =======================
 	InitLogging(args[0])
-	// ===============
-	//  IT'S NOW OKAY
-	//  TO USE LOGGING
-	// ===============
+	// Now it's OK to use logging
 	L.SetMaxLevel(LOG_LEVEL_FILE_INTRO)
 
-	// ==============
-	//  CONVERT args
-	//  TO AN AppCfg
-	// ==============
+	// =================
+	//  2) CONVERT args
+	//     TO AN AppCfg
+	// =================
 	// TODO: Use this rather than edit the
 	// flargs init stuff: DisableFlags("hDgpr")
 	var cfg *XmlAppCfg
@@ -93,10 +91,10 @@ func CLI(args []string) error {
 		L.L.Flush()
 		return e
 	}
-	// ===============
-	//  NOW IT'S OKAY
-	//  TO USE FLARGS
-	// ===============
+	// Now it's OK to use flargs
+	// =====================
+	//  3) Maybe do samples
+	// =====================
 	if cfg.b.Samples {
 		DoSamples()
 		// We're not really using contexts yet, but...
@@ -118,28 +116,28 @@ func CLI(args []string) error {
 		defer cancelFunc()
 		// fmt.Printf("SignalCtx: %+v \n", ctx)
 	}
-	// ===================
-	//  CONVERT AppCfg TO
-	//  A RUNNABLE AppEnv
-	// ===================
+	// ========================
+	//  4) CONVERT AppCfg TO A
+	//    RUNNABLE AppEnv
+	// ========================
 	var env *XmlAppEnv
 	if env, e = cfg.newXmlAppEnv(); e != nil {
 		L.L.Flush()
 		L.L.Error("AppEnv cannot Exec():", e.Error())
 		return e
 	}
-	// ===================================
-	//  PROCESS INPUT PATHS, to get info
-        //  about paths, existence, and types
-        // ===================================
+	// ======================================
+	//  5) PROCESS INPUT PATHS, to get info
+        //     about paths, existence, and types
+        // ======================================
         L.L.Warning(SU.Rfg(SU.Ybg("=== CLI PATH(S) ===")))
         L.L.Debug("AppCfg.sInpaths: %+v", cfg.p.sInpaths)
 	env.InputPathItems = *(DoInpaths(cfg.p.sInpaths))
 	L.L.Debug("OK to Exec()...")
 
-	// =====
-	//  RUN
-	// =====
+	// ============
+	//  6) RUN IT!
+	// ============
 	if e = env.Exec(); e != nil {
 		L.L.Flush()
 		fmt.Fprintf(os.Stderr, "Exec: " + e.Error())
@@ -150,8 +148,10 @@ func CLI(args []string) error {
 	// Give messages a chance to get visible.
 	time.Sleep(300 * time.Millisecond)
 
+	// ==============================
+	//  7) Maybe run the REST server 
+	// ==============================
 	cfg.AllFlargs.restPort = 8000 // HACK!
-
 	if cfg.AllFlargs.webPort != 0 {
 		RunWeb(cfg.AllFlargs.webPort)
 	} else if cfg.AllFlargs.restPort != 0 {

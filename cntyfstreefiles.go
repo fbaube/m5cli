@@ -7,7 +7,7 @@ import(
 	L "github.com/fbaube/mlog"
 )
 
-func WriteContentityFStreeFiles(IndirContentityFSs []cnty.ContentityFS) {
+func WriteContentityFStreeFiles(IndirContentityFSs []*cnty.ContentityFS) {
 
      var e error 
      for iFS, pFS := range IndirContentityFSs {
