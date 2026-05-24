@@ -132,7 +132,7 @@ func CLI(args []string) error {
         // ======================================
         L.L.Warning(SU.Rfg(SU.Ybg("=== CLI INPATH(S) from args ===")))
         L.L.Debug("AppCfg.sInpaths: %+v", cfg.p.sInpaths)
-	env.InputPathItems = *(DoInpaths(cfg.p.sInpaths))
+	env.InputPathObjex = *(DoInpaths(cfg.p.sInpaths))
 	L.L.Debug("OK to Exec()...")
 
 	// ============

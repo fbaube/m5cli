@@ -46,8 +46,8 @@ func newXmlAppCfg(args []string) (*XmlAppCfg, error) {
 	if pFlargs, e = parseFlargs(args); e != nil {
 		return nil, e
 	}
-	L.L.Info("newXmlAppCfg IN:  %+v \n", args)
-	L.L.Info("newXmlAppCfg OUT: %+v \n", *pFlargs)
+	L.L.Info("newXmlAppCfg IN:  %+v", args)
+	L.L.Info("newXmlAppCfg OUT: %+v", *pFlargs)
 	
 	cfg = new(XmlAppCfg)
 	cfg.AllFlargs = *pFlargs

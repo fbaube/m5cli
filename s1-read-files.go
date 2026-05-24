@@ -9,7 +9,7 @@ import (
 	// "github.com/fbaube/tags"
 )
 
-func step1_read_files(pIPI *InputPathItems) error {
+func step1_read_files(pIPO *InputPathObjex) error {
 
 	// At this point, "env" has three slices
 	// of variables related  to input files:
@@ -37,28 +37,28 @@ func step1_read_files(pIPI *InputPathItems) error {
 	//  First all files named on the command
 	//  line, then all directories named there
 	// ========================================
-	// DUMP pIPI.NamedDirrs, Inexpandirs
+	// DUMP pIPO.NamedDirrs, Inexpandirs
 	L.L.Info("AppEnv.NamedFiles: [%d]: %+v \n",
-		len(pIPI.NamedFiles), pIPI.NamedFiles)
+		len(pIPO.NamedFiles), pIPO.NamedFiles)
 	L.L.Info("AppEnv.NamedDirrs:: [%d]: %+v \n",
-		len(pIPI.NamedDirrs), pIPI.NamedDirrs)
+		len(pIPO.NamedDirrs), pIPO.NamedDirrs)
 	/*
 	if env.cfg.b.Samples {
 		// ALSO DUMP AS JSON
 		var jout []byte
 		var jerr error
-		if len(pIPI.NamedFiles) > 0 {
+		if len(pIPO.NamedFiles) > 0 {
 			jout, jerr = json.MarshalIndent(
-				pIPI.NamedFiles[0], "infile: ", "  ")
+				pIPO.NamedFiles[0], "infile: ", "  ")
 			if jerr != nil {
 				println(jerr)
 				panic(jerr)
 			}
 			L.L.Debug("JSON! " + string(jout))
 		}
-		if len(pIPI.NamedDirrs) > 0 {
+		if len(pIPO.NamedDirrs) > 0 {
 			jout, jerr = json.MarshalIndent(
-				pIPI.NamedDirrs[0], "indirr: ", "  ")
+				pIPO.NamedDirrs[0], "indirr: ", "  ")
 			if jerr != nil {
 				println(jerr)
 				panic(jerr)
@@ -67,7 +67,7 @@ func step1_read_files(pIPI *InputPathItems) error {
 		}
 	}
 	*/
-	// fmt.Printf("==> pIPI.Inexpandirs: %#v \n", pIPI.Inexpandirs)
+	// fmt.Printf("==> pIPO.Inexpandirs: %#v \n", pIPO.Inexpandirs)
 
 	// ==========================
 	//  FOR EVERY CLI INPUT FILE
@@ -77,15 +77,15 @@ func step1_read_files(pIPI *InputPathItems) error {
 	// var IndirContentityFSs []*mcfile.ContentityFS // trees
 
 	L.L.Warning(SU.Rfg(SU.Ybg("=== (stg1) LOAD CLI FILE(S) ===")))
-	// fmt.Fprintf(os.Stderr, "exec: pIPI.NamedFiles: %#v \n", pIPI.NamedFiles)
-	// fmt.Fprintf(os.Stderr, "exec: pIPI.NamedFiles[0]: %#v \n", *pIPI.NamedFiles[0].FPs)
+	// fmt.Fprintf(os.Stderr, "exec: pIPO.NamedFiles: %#v \n", pIPO.NamedFiles)
+	// fmt.Fprintf(os.Stderr, "exec: pIPO.NamedFiles[0]: %#v \n", *pIPO.NamedFiles[0].FPs)
 	var errct int 
-	pIPI.AllCntys = exec.LoadFSOsIntoContentities(pIPI.NamedFiles)
-	gotCtys := pIPI.AllCntys != nil && len(pIPI.AllCntys) > 0
+	pIPO.AllCntys = exec.LoadFSOsIntoContentities(pIPO.NamedFiles)
+	gotCtys := pIPO.AllCntys != nil && len(pIPO.AllCntys) > 0
 	if gotCtys {
 		L.L.Okay("Results for %d infiles: %d OK, %d not OK \n",
-			len(pIPI.NamedFiles), len(pIPI.AllCntys)-errct, errct)
-		for i, pC := range pIPI.AllCntys {
+			len(pIPO.NamedFiles), len(pIPO.AllCntys)-errct, errct)
+		for i, pC := range pIPO.AllCntys {
 		        if !pC.HasError() {
 			   L.L.Okay("InFile[%02d] len:%d RawTp:%s : %s",
 				i, len(pC.FSO.Raw), pC.RawType(),
@@ -102,17 +102,17 @@ func step1_read_files(pIPI *InputPathItems) error {
 			}
 		}
 	}
-	L.L.Info("Loaded %d file contentity/ies", len(pIPI.AllCntys))
+	L.L.Info("Loaded %d file contentity/ies", len(pIPO.AllCntys))
 	// ==================================
 	//   FOR EVERY CLI INPUT DIRECTORY
 	//  Make a new Contentity filesystem
 	// ==================================
 	L.L.Warning(SU.Rfg(SU.Ybg("=== (stg1) EXPAND CLI DIR(S) ===")))
-//	pIPI.DirCntyFSs = exec.LoadDirpathsContentFSs(pIPI.NamedDirrs)
-	pIPI.DirCntyFSs = exec.LoadFSOsIntoContentityFSs(pIPI.NamedDirrs)
-	WriteContentityFStreeFiles(pIPI.DirCntyFSs)
+//	pIPO.DirCntyFSs = exec.LoadDirpathsContentFSs(pIPO.NamedDirrs)
+	pIPO.DirCntyFSs = exec.LoadFSOsIntoContentityFSs(pIPO.NamedDirrs)
+	WriteContentityFStreeFiles(pIPO.DirCntyFSs)
 	L.L.Info("Expanded %d file folder(s) into %d F/S(s)",
-		len(pIPI.NamedDirrs), len(pIPI.DirCntyFSs))
+		len(pIPO.NamedDirrs), len(pIPO.DirCntyFSs))
 
 	// ==============================
 	//  FOR EVERY CLI INPUT DIRECTORY
@@ -120,11 +120,11 @@ func step1_read_files(pIPI *InputPathItems) error {
 	//  also makes new Contentities
 	// ==============================
 	L.L.Warning(SU.Rfg(SU.Ybg("=== (stg1) LOAD CLI DIR(S) ===")))
-	for _, pED := range pIPI.DirCntyFSs {
-		pIPI.AllCntys = append(pIPI.AllCntys, pED.AsSlice()...)
+	for _, pED := range pIPO.DirCntyFSs {
+		pIPO.AllCntys = append(pIPO.AllCntys, pED.AsSlice()...)
 	}
 	L.L.Info("Expanded %d F/S(s), now have %d contentities",
-		len(pIPI.DirCntyFSs), len(pIPI.AllCntys))
+		len(pIPO.DirCntyFSs), len(pIPO.AllCntys))
 
 	// Now we have all the inputs.
 	// TODO: We could count up and tell the user
@@ -134,7 +134,7 @@ func step1_read_files(pIPI *InputPathItems) error {
 	//  SUMMARIZE TO THE USER
 	//    ALL CONTENTITIES 
 	// =======================
-	for ii, cty := range pIPI.AllCntys {
+	for ii, cty := range pIPO.AllCntys {
 	    	if cty.HasError() {
 		   	L.L.Error("[%02d] %s", ii, cty.Error())
 		} else if cty == nil {

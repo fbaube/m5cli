@@ -46,7 +46,7 @@ func (env *XmlAppEnv) Exec() error {
 	// Timing:
 	// tt := MU.Into("Input file processing")
 	
-	e01 := step1_read_files(&(env.InputPathItems))
+	e01 := step1_read_files(&(env.InputPathObjex))
 	if e01 != nil {
 	   L.L.Error("File reading failed: %s", e01)
 	   return fmt.Errorf("exec.filereading: %w", e01)

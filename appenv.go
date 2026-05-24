@@ -18,10 +18,7 @@ import (
 type XmlAppEnv struct {
 	cfg *XmlAppCfg
 	DRP.SimpleRepo
-	InputPathItems 
-//	Infiles       []FU.FSObject // bye 
-//	Indirs        []FU.FSObject // bye 
-//	IndirFSs      []cnty.ContentityFS // bye 
+	InputPathObjex
 	Outdir, Dbdir FU.FSObject // NOT ptr! Barfs at startup.
 	Xmlcatfile    FU.FSObject // NOT ptr! Barfs at startup.
 	Xmlschemasdir FU.FSObject // NOT ptr! Barfs at startup.

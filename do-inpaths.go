@@ -32,7 +32,7 @@ import (
 //
 // FIXME: Add NamedSymls
 // . 
-type InputPathItems struct {
+type InputPathObjex struct {
         NamedPaths []string    // copied from input arg 
 	NamedFiles []*FU.FSObject // was: env.Infiles
 	NamedDirrs []*FU.FSObject // was: env.Indirs
@@ -41,7 +41,7 @@ type InputPathItems struct {
 	AllCntys   []*cnty.Contentity
 }
 
-func (p *InputPathItems) String() string {
+func (p *InputPathObjex) String() string {
      	return fmt.Sprintf("paths:%d files:%d " +
 	       "dirs:%d miscs:%d dirFSs:%d allCntys:%d",
 	       len(p.NamedPaths), len(p.NamedFiles), len(p.NamedDirrs),
@@ -58,54 +58,55 @@ func (p *InputPathItems) String() string {
 //  - Resolve symlinks, appending them to files or dirrs, 
 //    but keep them sandboxed by using [os.Root]
 // .
-func DoInpaths(inPaths []string) *InputPathItems {
+func DoInpaths(inPaths []string) *InputPathObjex {
 
-     	var pIPI *InputPathItems // return value 
+     	var pIPO *InputPathObjex // return value 
 	var path string
-	var pFSI *FU.FSObject
+	var pFSO *FU.FSObject
 	var i, errct int
-	var inPathItems []*FU.FSObject // temp
+	var inPathObjex []*FU.FSObject // temp
 
-	pIPI = new(InputPathItems)
-	pIPI.NamedFiles = make ([]*FU.FSObject, 0)
-	pIPI.NamedDirrs = make ([]*FU.FSObject, 0)
-	pIPI.NamedMiscs = make ([]*FU.FSObject, 0)
-	inPathItems = make ([]*FU.FSObject, 0)
+	pIPO = new(InputPathObjex)
+	pIPO.NamedFiles = make ([]*FU.FSObject, 0)
+	pIPO.NamedDirrs = make ([]*FU.FSObject, 0)
+	pIPO.NamedMiscs = make ([]*FU.FSObject, 0)
+	inPathObjex = make ([]*FU.FSObject, 0)
 
 	for i, path = range inPaths {
 	        L.L.Debug("doinpaths[%02d]: " + path, i)
-		pFSI := FU.NewFSObject(path)
-		inPathItems = append(inPathItems, pFSI)
+		pFSO := FU.NewFSObject(path)
+		inPathObjex = append(inPathObjex, pFSO)
 		// ERROR? 
-		if pFSI.HasError() {
+		if pFSO.HasError() {
 		   errct++
-		   pFSI.SetError(&fs.PathError{
-		   	Op: "NewFSObject", Path: path, Err: pFSI.GetError() })
-		   L.L.Error(pFSI.Error() + ": " + path)
+		   pFSO.SetError(&fs.PathError{
+		   	Op: "NewFSObject", Path: path, Err: pFSO.GetError() })
+		   L.L.Error(pFSO.Error() + ": " + path)
 		 }
 	}	
 	L.L.Info("%d input path(s) had %d error(s)", len(inPaths), errct)
 	
 	L.L.Warning(SU.Rfg(SU.Ybg("=== CLI INPATH(S) & F/S ITEM(S) ===")))
-	for i, pFSI = range inPathItems {
-	        if pFSI.HasError() { continue }
-		path = SU.Tildotted(pFSI.FPs.AbsFP)
+	for i, pFSO = range inPathObjex {
+	        if pFSO.HasError() { continue }
+		path = SU.Tildotted(pFSO.FPs.AbsFP)
 		var msg, sNote string
 		msg = fmt.Sprintf("[%d]<%s>", i, path)
 
-		switch pFSI.FSO_type {
 		// REGULAR FILE?
-		case FU.FSO_type_FILE: // if pFSI.IsFile() {
-		     pIPI.NamedFiles = append(pIPI.NamedFiles, pFSI)
+		if pFSO.IsFile() {
+		     pIPO.NamedFiles = append(pIPO.NamedFiles, pFSO)
+		} else
 		// DIRECTORY?
-		case FU.FSO_type_DIRR: // if pFSI.IsDir() {
-		     pIPI.NamedDirrs = append(pIPI.NamedDirrs, pFSI)
+		if pFSO.IsDir() {
+		     pIPO.NamedDirrs = append(pIPO.NamedDirrs, pFSO)
 		     sNote = "to process recursively"
+		} else
 		// SYMLINK?
-		case FU.FSO_type_SYML:
+		if pFSO.IsSymlink() {
 		  // Should not happen! Cos we use Stat not Lstat
 		     panic("path-clxn-00 FU.FSO_type_SYML") /*
-		     pIPI.NamedMiscs = append(pIPI.NamedDirrs, pFSI)
+		     pIPO.NamedMiscs = append(pIPO.NamedDirrs, pFSO)
 		     symlS, symlE := 
 		     sNote = "processing is TBD" */
 		  // Now this is where it gets tricky. We may or 
@@ -114,17 +115,17 @@ func DoInpaths(inPaths []string) *InputPathItems {
 		  // And, anything besides symlinks, fuggeddabouddit.
 		  // FIXME: For now, we just attach any¨of
 		  // these (incl.  symlinks) to NamedMiscs.
-		 default:
-		     pIPI.NamedMiscs = append(pIPI.NamedMiscs, pFSI)
+		 } else { 
+		     pIPO.NamedMiscs = append(pIPO.NamedMiscs, pFSO)
 		     sNote = "[TODO: check CLI symlink flag]"
 		 }
-		L.L.Info(msg + ": " + string(pFSI.FSO_type) + sNote)
+		L.L.Info(msg + ": " + string(pFSO.FSO_type) + sNote)
 	}
-	L.L.Info("DoInpaths OUT: " + pIPI.String())
+	L.L.Info("DoInpaths OUT: " + pIPO.String())
 	L.L.Okay("Summary: Detected %d files, %d dirs, %d other",
-		len(pIPI.NamedFiles), len(pIPI.NamedDirrs), len(pIPI.NamedMiscs))
-	// if len(inPathItems) == 1 {
+		len(pIPO.NamedFiles), len(pIPO.NamedDirrs), len(pIPO.NamedMiscs))
+	// if len(inPathObjex) == 1 {
 	//	env.IsSingleFile = true
 	// }
-	return pIPI
+	return pIPO
 }
