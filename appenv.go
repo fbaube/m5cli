@@ -60,7 +60,7 @@ func (cfg *XmlAppCfg) newXmlAppEnv() (*XmlAppEnv, error) {
 	// =======================================
 	//   PROCESS DATABASE DIRECTORY ARGUMENT
 	// =======================================
-	L.L.Warning(SU.Rfg(SU.Ybg("=== CLI DATABASE ===")))
+	L.L.Warning(SU.Rfg(SU.Ybg("=== CLI DATABASE (via AppEnv) ===")))
 	dbargs := *new(DRP.Init9nArgs)
 	dbargs.DB_type = D.DB_SQLite
 	dbargs.BaseFilename = "m5" // DRP.DEFAULT_FILENAME // if omitted, still default! 

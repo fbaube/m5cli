@@ -38,12 +38,9 @@ var R *os.Root
 // .
 func (env *XmlAppEnv) Exec() error {
 
-	// =====================
-	// =====================
-	// TOP LEVEL: FILE INTRO
-	//      step1_read_files
-	// =====================
-	// =====================
+	// ===============
+	//  1) READ FILES 
+	// ===============
 	L.SetMaxLevel(LOG_LEVEL_FILE_INTRO)
 	defer func() { L.L.Flush() }()
 	// Timing:
@@ -56,39 +53,37 @@ func (env *XmlAppEnv) Exec() error {
 	}
 	InitContentityDebugFiles(env.AllCntys, env.cfg.b.TotalTextal)
 	
-	// =========================
-	// =========================
-	// TOP LEVEL: EXECUTE STAGES
-	// =========================
+	// ==============================
+	//  2) EXECUTE CONTENTITY STAGES 
+	// ==============================
 	e02 := step2_do_contentity_stages(env.AllCntys)
 	if e02 != nil {
 	   L.L.Error("Exec stages failed: %s", e02)
 	   return fmt.Errorf("exec.execstages: %w", e02)
 	}
 	
-	// ============================
-	// ============================
-	// TOP LEVEL: INTRA-FILE AND
-	// INTER-FILE REFERENCE LINKING
-	// ============================
-	// ============================
+	// =========================
+	//  3) LINK INTRA-FILE AND
+	//    INTER-FILE REFERENCES
+	// =========================
 	e03 := step3_link_references(env.AllCntys)
 	if e03 != nil {
 	   L.L.Error("Ref linking failed: %s", e03)
 	   return fmt.Errorf("exec.reflinking: %w", e03)
 	}
-	// =======================
-	//   VALIDATE INPUT FILES
-	// =======================
+	// =========================
+	//  4) VALIDATE INPUT FILES
+	// =========================
 	e04 := step4_validate_input_files(env) 
 	if e04 != nil {
 	   L.L.Error("Input validation failed: %s", e04)
 	   return fmt.Errorf("exec.valdateinputs: %w", e04)
 	}
 	
-	// ==========================
-	//  LOAD FILES INTO DATABASE
-	// ==========================
+	// =====================
+	//  5) Maybe LOAD FILES
+	//      INTO DATABASE
+	// =====================
 	if env.cfg.b.DBdoImport {
 	
 		if haveDB := (env.SimpleRepo != nil); !haveDB {

@@ -76,7 +76,7 @@ func step1_read_files(pIPI *InputPathItems) error {
 	// var InfileContentities []*mcfile.Contentity   // directories
 	// var IndirContentityFSs []*mcfile.ContentityFS // trees
 
-	L.L.Warning(SU.Rfg(SU.Ybg("=== LOAD CLI FILE(S) ===")))
+	L.L.Warning(SU.Rfg(SU.Ybg("=== (stg1) LOAD CLI FILE(S) ===")))
 	// fmt.Fprintf(os.Stderr, "exec: pIPI.NamedFiles: %#v \n", pIPI.NamedFiles)
 	// fmt.Fprintf(os.Stderr, "exec: pIPI.NamedFiles[0]: %#v \n", *pIPI.NamedFiles[0].FPs)
 	var errct int 
@@ -107,7 +107,7 @@ func step1_read_files(pIPI *InputPathItems) error {
 	//   FOR EVERY CLI INPUT DIRECTORY
 	//  Make a new Contentity filesystem
 	// ==================================
-	L.L.Warning(SU.Rfg(SU.Ybg("=== EXPAND CLI DIR(S) ===")))
+	L.L.Warning(SU.Rfg(SU.Ybg("=== (stg1) EXPAND CLI DIR(S) ===")))
 //	pIPI.DirCntyFSs = exec.LoadDirpathsContentFSs(pIPI.NamedDirrs)
 	pIPI.DirCntyFSs = exec.LoadFSOsIntoContentityFSs(pIPI.NamedDirrs)
 	WriteContentityFStreeFiles(pIPI.DirCntyFSs)
@@ -119,7 +119,7 @@ func step1_read_files(pIPI *InputPathItems) error {
 	//  Expand it into files, which
 	//  also makes new Contentities
 	// ==============================
-	L.L.Warning(SU.Rfg(SU.Ybg("=== LOAD CLI DIR(S) ===")))
+	L.L.Warning(SU.Rfg(SU.Ybg("=== (stg1) LOAD CLI DIR(S) ===")))
 	for _, pED := range pIPI.DirCntyFSs {
 		pIPI.AllCntys = append(pIPI.AllCntys, pED.AsSlice()...)
 	}

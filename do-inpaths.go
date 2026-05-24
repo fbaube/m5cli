@@ -41,6 +41,13 @@ type InputPathItems struct {
 	AllCntys   []*cnty.Contentity
 }
 
+func (p *InputPathItems) String() string {
+     	return fmt.Sprintf("paths:%d files:%d " +
+	       "dirs:%d miscs:%d dirFSs:%d allCntys:%d",
+	       len(p.NamedPaths), len(p.NamedFiles), len(p.NamedDirrs),
+	       len(p.NamedMiscs), len(p.DirCntyFSs), len(p.AllCntys))
+}
+
 // DoInpaths processes a list of paths of any type - files, directories,
 // symlinks, "other". Its processing is pretty straightforward: 
 //  - Use input []string to generate []FSObject
@@ -57,7 +64,7 @@ func DoInpaths(inPaths []string) *InputPathItems {
 	var path string
 	var pFSI *FU.FSObject
 	var i, errct int
-	var inPathItems []*FU.FSObject // temp 
+	var inPathItems []*FU.FSObject // temp
 
 	pIPI = new(InputPathItems)
 	pIPI.NamedFiles = make ([]*FU.FSObject, 0)
@@ -79,12 +86,12 @@ func DoInpaths(inPaths []string) *InputPathItems {
 	}	
 	L.L.Info("%d input path(s) had %d error(s)", len(inPaths), errct)
 	
-	L.L.Warning(SU.Rfg(SU.Ybg("=== CLI F/S ITEM(S) ===")))
+	L.L.Warning(SU.Rfg(SU.Ybg("=== CLI INPATH(S) & F/S ITEM(S) ===")))
 	for i, pFSI = range inPathItems {
 	        if pFSI.HasError() { continue }
 		path = SU.Tildotted(pFSI.FPs.AbsFP)
 		var msg, sNote string
-		msg = fmt.Sprintf("[%d]<%s>: ", i, path)
+		msg = fmt.Sprintf("[%d]<%s>", i, path)
 
 		switch pFSI.FSO_type {
 		// REGULAR FILE?
@@ -93,14 +100,14 @@ func DoInpaths(inPaths []string) *InputPathItems {
 		// DIRECTORY?
 		case FU.FSO_type_DIRR: // if pFSI.IsDir() {
 		     pIPI.NamedDirrs = append(pIPI.NamedDirrs, pFSI)
-		     sNote = ": to process recursively"
+		     sNote = "to process recursively"
 		// SYMLINK?
 		case FU.FSO_type_SYML:
 		  // Should not happen! Cos we use Stat not Lstat
 		     panic("path-clxn-00 FU.FSO_type_SYML") /*
 		     pIPI.NamedMiscs = append(pIPI.NamedDirrs, pFSI)
 		     symlS, symlE := 
-		     sNote = ": processing is TBD" */
+		     sNote = "processing is TBD" */
 		  // Now this is where it gets tricky. We may or 
 		  // may not want to follow a symlink, but we can 
 		  // use funcs EvalSymlink & IsLocal, and os.Root.
@@ -109,10 +116,11 @@ func DoInpaths(inPaths []string) *InputPathItems {
 		  // these (incl.  symlinks) to NamedMiscs.
 		 default:
 		     pIPI.NamedMiscs = append(pIPI.NamedMiscs, pFSI)
-		     sNote = ": (TODO: check CLI symlink flag)"
+		     sNote = "[TODO: check CLI symlink flag]"
 		 }
-		L.L.Info(msg + string(pFSI.FSO_type) + sNote)
+		L.L.Info(msg + ": " + string(pFSI.FSO_type) + sNote)
 	}
+	L.L.Info("DoInpaths OUT: " + pIPI.String())
 	L.L.Okay("Summary: Detected %d files, %d dirs, %d other",
 		len(pIPI.NamedFiles), len(pIPI.NamedDirrs), len(pIPI.NamedMiscs))
 	// if len(inPathItems) == 1 {

@@ -1,7 +1,7 @@
 package m5cli
 
 import (
-	"fmt"
+	// "fmt"
 	"io/fs"
 	"os"
 	"os/exec"
@@ -46,8 +46,8 @@ func newXmlAppCfg(args []string) (*XmlAppCfg, error) {
 	if pFlargs, e = parseFlargs(args); e != nil {
 		return nil, e
 	}
-	fmt.Printf("newXmlAppCfg IN:  %+v \n", args)
-	fmt.Printf("newXmlAppCfg OUT: %+v \n", *pFlargs)
+	L.L.Info("newXmlAppCfg IN:  %+v \n", args)
+	L.L.Info("newXmlAppCfg OUT: %+v \n", *pFlargs)
 	
 	cfg = new(XmlAppCfg)
 	cfg.AllFlargs = *pFlargs

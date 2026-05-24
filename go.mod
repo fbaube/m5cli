@@ -4,9 +4,9 @@ go 1.26.3
 
 require (
 	github.com/fbaube/cnty v0.0.0-20260520114238-fc36d655815e
-	github.com/fbaube/datarepo v0.0.0-20250422172143-4b2a5bad214f
+	github.com/fbaube/datarepo v0.0.0-20260524181931-79043549cdf3
 	github.com/fbaube/dsmnd v0.0.0-20260423181020-c1c848686981
-	github.com/fbaube/fileutils v0.0.0-20260519121518-d3a3ed720974
+	github.com/fbaube/fileutils v0.0.0-20260524182024-38a64571b887
 	github.com/fbaube/logutils v0.0.0-20250316184850-0569e5bc6b6d
 	github.com/fbaube/m5db v0.0.0-20240509180501-84aae2bef357
 	github.com/fbaube/mlog v0.0.0-20240425064535-3b89e3b28a76
