@@ -43,14 +43,13 @@ func LoadFSOsIntoContentityFSs(inFSOs []*FU.FSObject) ([]*cnty.ContentityFS) {
 	 // AbsFP might be more reliable, but use 
 	 // RelFPbecause we will be using [os.Root]. 
 	 path = pFso.FPs.RelFP
-	 L.L.Info("InDir[%d]: %s", iFso, path)
-	 // pPE := new(os.PathError{Path:pFso.CreatPath})
+	 L.L.Info("InDir[%d]: %s", iFso, path) // FIXME pFso.FPs.CreatPath()) 
 	 var e error
 	 // --------
 	 //  Create
 	 // --------
 	 // nil is []string of OK file extensions 
-	 pCFS, e = cnty.NewContentityFS(pFso.FPs.RelFP, nil)
+	 pCFS, e = cnty.NewContentityFS(path, nil)
 	 // Error?
 	 if e != nil { 
 	      	 fmt.Printf("InDir[%d](%s) error: %s", iFso, e.Error(), path)
@@ -65,7 +64,7 @@ func LoadFSOsIntoContentityFSs(inFSOs []*FU.FSObject) ([]*cnty.ContentityFS) {
 	 L.L.Okay("Got %d item(s) total (%d dirs, %d files)",
 	 	pCFS.ItemCount(), pCFS.DirCount(), pCFS.FileCount())
 	 if pCFS.FileCount() == 0 {
-	    	L.L.Warning("Found no content inputs in dir: " + path)
+	    	L.L.Warning("Found no content inputs in/under dir: " + path)
 		continue
 	 }
 	 CFSs = append(CFSs, pCFS) 

@@ -26,22 +26,18 @@ func step1_read_files(pIPO *InputPathObjex) error {
 	// :: this maps to Indirs, making a ContentityFS for each
 	// Indir, and then later on, each is flattened into a slice.
 
-	// =======================
-	// =======================
-	// TOP LEVEL: FILE READING
-	// =======================
-	// =======================
+	// =================================
+	//  1) READ FILES INTO Contentities 
+	// =================================
 	L.SetMaxLevel(LOG_LEVEL_FILE_READING)
-	// ========================================
-	//  EVERY CLI INPUT ITEM IS COLLECTED HERE
-	//  First all files named on the command
-	//  line, then all directories named there
-	// ========================================
+	// ==========================================
+	//  EVERY CLI INPUT ITEM IS COLLECTED HERE.
+	//  First all files named on the command line.
+	//  Then all directories named there.
+	// ==========================================
 	// DUMP pIPO.NamedDirrs, Inexpandirs
-	L.L.Info("AppEnv.NamedFiles: [%d]: %+v \n",
-		len(pIPO.NamedFiles), pIPO.NamedFiles)
-	L.L.Info("AppEnv.NamedDirrs:: [%d]: %+v \n",
-		len(pIPO.NamedDirrs), pIPO.NamedDirrs)
+	L.L.Info("AppEnv: %d named files, %d named dirs", 
+		len(pIPO.NamedFiles), pIPO.NamedDirrs)
 	/*
 	if env.cfg.b.Samples {
 		// ALSO DUMP AS JSON
@@ -69,19 +65,18 @@ func step1_read_files(pIPO *InputPathObjex) error {
 	*/
 	// fmt.Printf("==> pIPO.Inexpandirs: %#v \n", pIPO.Inexpandirs)
 
-	// ==========================
-	//  FOR EVERY CLI INPUT FILE
-	//  Make a new Contentity
-	// ==========================
-	// var InfileContentities []*mcfile.Contentity   // directories
-	// var IndirContentityFSs []*mcfile.ContentityFS // trees
-
+	// =============================
+	//  2) FOR EVERY CLI INPUT FILE
+	//        Make a new Contentity
+	// =============================
 	L.L.Warning(SU.Rfg(SU.Ybg("=== (stg1) LOAD CLI FILE(S) ===")))
-	// fmt.Fprintf(os.Stderr, "exec: pIPO.NamedFiles: %#v \n", pIPO.NamedFiles)
-	// fmt.Fprintf(os.Stderr, "exec: pIPO.NamedFiles[0]: %#v \n", *pIPO.NamedFiles[0].FPs)
-	var errct int 
+	var errct int
+	// ----------------------------------
+	//  This func does the heavy lifting 
+	// ----------------------------------
 	pIPO.AllCntys = exec.LoadFSOsIntoContentities(pIPO.NamedFiles)
 	gotCtys := pIPO.AllCntys != nil && len(pIPO.AllCntys) > 0
+
 	if gotCtys {
 		L.L.Okay("Results for %d infiles: %d OK, %d not OK \n",
 			len(pIPO.NamedFiles), len(pIPO.AllCntys)-errct, errct)
@@ -101,24 +96,26 @@ func step1_read_files(pIPO *InputPathObjex) error {
                                  i, pC.GetError())
 			}
 		}
+		L.L.Info("Loaded %d file contentity(s)", len(pIPO.AllCntys))
+	} else {
+	        L.L.Info("Loaded NO file contentitys")
 	}
-	L.L.Info("Loaded %d file contentity/ies", len(pIPO.AllCntys))
-	// ==================================
-	//   FOR EVERY CLI INPUT DIRECTORY
-	//  Make a new Contentity filesystem
-	// ==================================
-	L.L.Warning(SU.Rfg(SU.Ybg("=== (stg1) EXPAND CLI DIR(S) ===")))
-//	pIPO.DirCntyFSs = exec.LoadDirpathsContentFSs(pIPO.NamedDirrs)
+	// ===================================
+	//   3) FOR EVERY CLI INPUT DIRECTORY
+	//     Make a new Contentity FS
+	// ===================================
+	L.L.Warning(SU.Rfg(SU.Ybg("=== (stg1) CLI DIR(S) form FSs ===")))
 	pIPO.DirCntyFSs = exec.LoadFSOsIntoContentityFSs(pIPO.NamedDirrs)
 	WriteContentityFStreeFiles(pIPO.DirCntyFSs)
 	L.L.Info("Expanded %d file folder(s) into %d F/S(s)",
 		len(pIPO.NamedDirrs), len(pIPO.DirCntyFSs))
 
-	// ==============================
-	//  FOR EVERY CLI INPUT DIRECTORY
-	//  Expand it into files, which
-	//  also makes new Contentities
-	// ==============================
+	// ==================================
+	//  4) FOR EVERY CLI INPUT DIRECTORY
+	//    (and Contentity FS) Expand it
+	//    into files, which also makes
+	//    new Contentities
+	// ==================================
 	L.L.Warning(SU.Rfg(SU.Ybg("=== (stg1) LOAD CLI DIR(S) ===")))
 	for _, pED := range pIPO.DirCntyFSs {
 		pIPO.AllCntys = append(pIPO.AllCntys, pED.AsSlice()...)
