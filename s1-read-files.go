@@ -78,7 +78,7 @@ func step1_read_files(pIPO *InputPathObjex) error {
 	gotCtys := pIPO.AllCntys != nil && len(pIPO.AllCntys) > 0
 
 	if gotCtys {
-		L.L.Okay("Results for %d infiles: %d OK, %d not OK \n",
+		L.L.Okay("Results for %d infile(s): %d OK, %d not OK \n",
 			len(pIPO.NamedFiles), len(pIPO.AllCntys)-errct, errct)
 		for i, pC := range pIPO.AllCntys {
 		        if !pC.HasError() {
