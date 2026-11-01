@@ -67,8 +67,8 @@ func LoadFSOsIntoContentities(inFSOs []*FU.FSObject) ([]*cnty.Contentity) {
                 continue
 	 }
 	 Cntys = append(Cntys, pCnty)
-	 L.L.Okay("File OK: MType<%s> RawType<%s>",
-	 	pCnty.MType, pCnty.RawType())
+	 L.L.Okay("File is OK: RawType<%s> MType<%s>", 
+	 	pCnty.RawType(), pCnty.MType)
 	}
 	return Cntys 
 }

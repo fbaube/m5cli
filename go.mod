@@ -3,8 +3,8 @@ module github.com/fbaube/m5cli
 go 1.26.3
 
 require (
-	github.com/fbaube/cnty v0.0.0-20260520114238-fc36d655815e
-	github.com/fbaube/datarepo v0.0.0-20260524181931-79043549cdf3
+	github.com/fbaube/cnty v0.0.0-20260526142909-f2e03c89ab00
+	github.com/fbaube/datarepo v0.0.0-20260524190758-1266d024a715
 	github.com/fbaube/dsmnd v0.0.0-20260423181020-c1c848686981
 	github.com/fbaube/fileutils v0.0.0-20260524182024-38a64571b887
 	github.com/fbaube/logutils v0.0.0-20250316184850-0569e5bc6b6d
@@ -20,7 +20,7 @@ require (
 
 require (
 	github.com/fatih/color v1.19.0 // indirect
-	github.com/fbaube/contentanalysis v0.0.0-20260517055552-f425ff9fd041 // indirect
+	github.com/fbaube/contentanalysis v0.0.0-20260526142648-abe4bb358695 // indirect
 	github.com/fbaube/ctoken v0.0.0-20251106121702-333021124221 // indirect
 	github.com/fbaube/gparse v0.0.0-20230421173125-0aaf74eb920c // indirect
 	github.com/fbaube/gtoken v0.0.0-20250202180149-400361451572 // indirect
@@ -28,7 +28,7 @@ require (
 	github.com/fbaube/humanbytes v0.0.0-20250119091546-d58fbfdd444c // indirect
 	github.com/fbaube/lwdx v0.0.0-20241028093627-8a7133fbc931 // indirect
 	github.com/fbaube/miscutils v0.0.0-20250126181629-6a2fa9af43b7 // indirect
-	github.com/fbaube/nork v0.0.0-20260519122447-6ce697984057 // indirect
+	github.com/fbaube/nork v0.0.0-20260526142720-701992afca32 // indirect
 	github.com/fbaube/parseutils v0.0.0-20260519121606-fe9b77608d6f // indirect
 	github.com/gabriel-vasile/mimetype v1.4.13 // indirect
 	github.com/gomarkdown/markdown v0.0.0-20260417124207-7d523f7318df // indirect
